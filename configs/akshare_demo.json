@@ -1,0 +1,47 @@
+{
+  "data": {
+    "source": "akshare",
+    "symbols": ["000001", "600519", "000858", "601318", "600036"],
+    "start_date": "2022-01-01",
+    "end_date": "2025-12-31",
+    "adjust": "qfq",
+    "cache_dir": "data/cache/daily"
+  },
+  "universe": {
+    "min_history_days": 120,
+    "min_amount": 0,
+    "max_missing_ratio": 0.25,
+    "exclude_symbols": []
+  },
+  "strategy": {
+    "rebalance": "W-FRI",
+    "top_n": 3,
+    "min_amount": 0,
+    "max_single_weight": 0.35,
+    "max_turnover": 1.0,
+    "factor_weights": {
+      "momentum_20": 0.30,
+      "momentum_60": 0.20,
+      "reversal_5": 0.15,
+      "volatility_20": -0.15,
+      "amount_mean_20": 0.10,
+      "turnover_mean_20": 0.10
+    }
+  },
+  "backtest": {
+    "initial_cash": 1000000,
+    "fee_rate": 0.0003,
+    "tax_rate": 0.001,
+    "slippage_rate": 0.0005,
+    "lot_size": 100,
+    "min_trade_value": 1000
+  },
+  "analysis": {
+    "label_horizons": [5, 20],
+    "quantiles": 5
+  },
+  "report": {
+    "output_dir": "reports"
+  }
+}
+

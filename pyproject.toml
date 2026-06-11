@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aquant-mvp"
+version = "0.1.0"
+description = "A lightweight A-share quantitative research MVP."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "cytxnyu" }]
+license = { file = "LICENSE" }
+keywords = ["a-share", "quant", "backtest", "factor", "akshare"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+data = ["akshare>=1.14.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+aquant-mvp = "aquant_mvp.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
