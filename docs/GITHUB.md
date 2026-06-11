@@ -8,7 +8,8 @@ Local tools checked:
 
 - `git` is available.
 - GitHub CLI `gh` is available and authenticated as `cytxnyu`.
-- The existing local `origin` remote resolves to the user's existing GitHub repository `cytxnyu/Quant`; this document avoids overwriting it.
+- The existing local `origin` remote resolves to the user's existing GitHub repository `cytxnyu/Quant`; it was not overwritten.
+- A dedicated remote named `aquant` was created for this project and pushed to `https://github.com/cytxnyu/aquant-mvp`.
 
 Checked account:
 
@@ -34,13 +35,13 @@ git commit -m "Initial A-share quant research platform"
 
 ## Create A GitHub Repository Manually
 
-Create an empty repository on GitHub, for example:
+This session already created and pushed:
 
 ```text
 https://github.com/cytxnyu/aquant-mvp
 ```
 
-Then connect and push. If this repo already has an `origin` remote you want to preserve, use a second remote name:
+If you need to recreate the setup manually later, preserve any existing `origin` by using a second remote name:
 
 ```powershell
 git branch -M main
