@@ -1,20 +1,26 @@
 # GitHub Workflow
 
-## MCP Status In This Session
+## MCP And Local GitHub Status In This Session
 
 The GitHub MCP tools available in this session can inspect the authenticated user and search/read repository metadata. They do not expose fork, clone, create-repository, push or pull-request write operations in the current tool list.
+
+Local tools checked:
+
+- `git` is available.
+- GitHub CLI `gh` is available and authenticated as `cytxnyu`.
+- The existing local `origin` remote resolves to the user's existing GitHub repository `cytxnyu/Quant`; this document avoids overwriting it.
 
 Checked account:
 
 - GitHub login: `cytxnyu`
 - Profile: `https://github.com/cytxnyu`
 
-Reference searches were done through MCP for:
+Reference checks were done through MCP for:
 
 - `microsoft/qlib`
 - `akfamily/akshare`
 
-No external repository code was copied into this project.
+`akfamily/akshare` was shallow-cloned into `external/akshare` for local reference. `microsoft/qlib` was read through MCP; a local clone attempt timed out and was not retained. No external repository code was copied into this project.
 
 ## Initialize This Project As A Git Repository
 
@@ -34,12 +40,12 @@ Create an empty repository on GitHub, for example:
 https://github.com/cytxnyu/aquant-mvp
 ```
 
-Then connect and push:
+Then connect and push. If this repo already has an `origin` remote you want to preserve, use a second remote name:
 
 ```powershell
 git branch -M main
-git remote add origin https://github.com/cytxnyu/aquant-mvp.git
-git push -u origin main
+git remote add aquant https://github.com/cytxnyu/aquant-mvp.git
+git push -u aquant main
 ```
 
 ## Clone Later

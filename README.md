@@ -24,6 +24,7 @@ src/aquant_mvp
 - `docs/ARCHITECTURE.md`
 - `docs/SCHEMA.md`
 - `docs/GITHUB.md`
+- `docs/REFERENCES.md`
 
 ## 快速运行
 
@@ -144,4 +145,4 @@ sample 数据只用于验证流程，不代表真实收益。真实 A 股研究�
 
 ## 推到 GitHub
 
-当前会话中的 GitHub MCP 可以读取账号和仓库元数据，但没有暴露 fork/clone/create repo/push 写入工具。本项目已经整理成可直接初始化 git 并推送的形态，命令见 `docs/GITHUB.md`。
+当前会话中的 GitHub MCP 可以读取账号和仓库元数据，但没有暴露 fork/clone/create repo/push 写入工具；本地 GitHub CLI 已认证，可用于创建和推送远端。本项目已经整理成可直接发布的形态，命令见 `docs/GITHUB.md`。
