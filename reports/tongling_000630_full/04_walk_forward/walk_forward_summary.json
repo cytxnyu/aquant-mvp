@@ -1,0 +1,12 @@
+{
+  "model_type": "ensemble",
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "symbols": 20,
+  "min_symbols": 200,
+  "rows": 32480,
+  "trust_note": "trusted requires enough symbols and model metrics better than baseline"
+}

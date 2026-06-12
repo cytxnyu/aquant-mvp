@@ -1,0 +1,11 @@
+symbol,passed,rows,missing_ratio,avg_amount_60,reasons,reserved_filters
+000001,True,1043,0.0,324185755.14888877,,"st,suspend,limit_up_down,new_stock,delist,industry"
+600519,True,1043,0.0,14138321532.217104,,"st,suspend,limit_up_down,new_stock,delist,industry"
+000858,True,1043,0.0,20865746136.10166,,"st,suspend,limit_up_down,new_stock,delist,industry"
+601318,True,1043,0.0,9523480626.840113,,"st,suspend,limit_up_down,new_stock,delist,industry"
+600036,True,1043,0.0,4150184205.10937,,"st,suspend,limit_up_down,new_stock,delist,industry"
+000333,True,1043,0.0,3665687134.1413884,,"st,suspend,limit_up_down,new_stock,delist,industry"
+002594,True,1043,0.0,24636317494.172424,,"st,suspend,limit_up_down,new_stock,delist,industry"
+600900,True,1043,0.0,3420981923.972299,,"st,suspend,limit_up_down,new_stock,delist,industry"
+601888,True,1043,0.0,6929547151.637957,,"st,suspend,limit_up_down,new_stock,delist,industry"
+300750,True,1043,0.0,6483201884.4568205,,"st,suspend,limit_up_down,new_stock,delist,industry"

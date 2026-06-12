@@ -1,0 +1,224 @@
+theme,theme_group,symbol,name,reason,seed_rank,seed_weight,source_note
+ai_compute_semiconductor,core_hot,603501,WillSemi,semiconductor sensor,1,1.0,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688981,SMIC,foundry,2,0.5,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688041,Hygon,AI compute chip,3,0.3333333333333333,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688256,Cambricon,AI accelerator,4,0.25,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,002371,NAURA,semiconductor equipment,5,0.2,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300308,Zhongji Innolight,optical module,6,0.16666666666666666,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300502,Eoptolink,optical module,7,0.14285714285714285,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,600584,JCET,advanced packaging,8,0.125,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,002156,Tongfu Microelectronics,advanced packaging,9,0.1111111111111111,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688012,Advanced Micro-Fab,semiconductor equipment,10,0.1,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688008,Montage Technology,memory interface chip,11,0.09090909090909091,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688126,National Silicon,semiconductor wafer,12,0.08333333333333333,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688396,China Resources Micro,power semiconductor,13,0.07692307692307693,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688099,Amlogic,AIoT SoC,14,0.07142857142857142,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688385,Fudan Microelectronics,FPGA and MCU,15,0.06666666666666667,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688608,Bestechnic,wireless audio chip,16,0.0625,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688521,VeriSilicon,chip design service,17,0.058823529411764705,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,603986,GigaDevice,memory and MCU,18,0.05555555555555555,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,603893,Rockchip,AIoT chip,19,0.05263157894736842,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300661,SG Micro,analog chip,20,0.05,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300782,Maxscend,RF chip,21,0.047619047619047616,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,600460,Silan Micro,power semiconductor,22,0.045454545454545456,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,002049,Unigroup Guoxin,security and FPGA chip,23,0.043478260869565216,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688047,Loongson,domestic CPU,24,0.041666666666666664,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688110,Dongxin,memory chip,25,0.04,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688409,Fortune Precision,semiconductor equipment parts,26,0.038461538461538464,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688072,Piotech,thin film equipment,27,0.037037037037037035,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688120,Hwatsing,CMP equipment,28,0.03571428571428571,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688037,Kingsemi,lithography process equipment,29,0.034482758620689655,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688019,Anji Micro,semiconductor material,30,0.03333333333333333,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688200,Huafeng Test,semiconductor test equipment,31,0.03225806451612903,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688234,Tianyue Advanced,SiC substrate,32,0.03125,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688347,Hua Hong,specialty foundry,33,0.030303030303030304,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688525,Siglent,electronic measurement,34,0.029411764705882353,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,688072,Piotech,domestic deposition equipment,35,0.02857142857142857,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300604,Changchuan Technology,IC testing equipment,36,0.027777777777777776,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,300567,Jingce Electronic,semiconductor inspection,37,0.02702702702702703,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,000938,Unisplendour,AI infrastructure,38,0.02631578947368421,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,000977,Inspur Information,AI server,39,0.02564102564102564,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,603019,Sugon,HPC and server,40,0.025,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,002415,Hikvision,AI vision hardware,41,0.024390243902439025,curated_public_hot_seed
+ai_compute_semiconductor,core_hot,002230,iFlytek,AI application platform,42,0.023809523809523808,curated_public_hot_seed
+defense_ship_equipment,core_hot,600150,CSSC Holdings,shipbuilding,1,1.0,curated_public_hot_seed
+defense_ship_equipment,core_hot,601989,China Heavy Industry,shipbuilding,2,0.5,curated_public_hot_seed
+defense_ship_equipment,core_hot,600760,AVIC Shenyang Aircraft,aircraft,3,0.3333333333333333,curated_public_hot_seed
+defense_ship_equipment,core_hot,000768,AVIC Xian Aircraft,aircraft,4,0.25,curated_public_hot_seed
+defense_ship_equipment,core_hot,600893,Aerospace Electronics,defense electronics,5,0.2,curated_public_hot_seed
+defense_ship_equipment,core_hot,002179,AVIC Optoelectronics,connectors,6,0.16666666666666666,curated_public_hot_seed
+defense_ship_equipment,core_hot,600316,Hongdu Aviation,trainer aircraft,7,0.14285714285714285,curated_public_hot_seed
+defense_ship_equipment,core_hot,300474,Jingjia Micro,GPU defense,8,0.125,curated_public_hot_seed
+defense_ship_equipment,core_hot,688122,Western Superconducting,aero material,9,0.1111111111111111,curated_public_hot_seed
+defense_ship_equipment,core_hot,600482,China Ship Defense,ship equipment,10,0.1,curated_public_hot_seed
+defense_ship_equipment,core_hot,600118,China Satellite,satellite,11,0.09090909090909091,curated_public_hot_seed
+defense_ship_equipment,core_hot,000547,Avic Industry-Finance,defense group finance,12,0.08333333333333333,curated_public_hot_seed
+defense_ship_equipment,core_hot,000738,Avicopter,helicopter,13,0.07692307692307693,curated_public_hot_seed
+defense_ship_equipment,core_hot,600038,Avicopter,helicopter,14,0.07142857142857142,curated_public_hot_seed
+defense_ship_equipment,core_hot,000733,Zhenhua Technology,military electronics,15,0.06666666666666667,curated_public_hot_seed
+defense_ship_equipment,core_hot,002025,Aerospace Electric,connector,16,0.0625,curated_public_hot_seed
+defense_ship_equipment,core_hot,002414,Infrared Equipment Seed,infrared seed,17,0.058823529411764705,curated_public_hot_seed
+defense_ship_equipment,core_hot,002389,Aerospace Rainbow,UAV,18,0.05555555555555555,curated_public_hot_seed
+defense_ship_equipment,core_hot,300777,Sinofibers Technology,carbon fiber,19,0.05263157894736842,curated_public_hot_seed
+defense_ship_equipment,core_hot,300699,Guangwei Composites,carbon fiber,20,0.05,curated_public_hot_seed
+defense_ship_equipment,core_hot,600967,Inner Mongolia First Machinery,ground equipment,21,0.047619047619047616,curated_public_hot_seed
+defense_ship_equipment,core_hot,600435,North Navigation,navigation equipment,22,0.045454545454545456,curated_public_hot_seed
+defense_ship_equipment,core_hot,600372,AVIC Airborne,airborne systems,23,0.043478260869565216,curated_public_hot_seed
+defense_ship_equipment,core_hot,600862,AVIC Hi-Tech,aero composite material,24,0.041666666666666664,curated_public_hot_seed
+defense_ship_equipment,core_hot,688066,PIESAT,satellite application,25,0.04,curated_public_hot_seed
+defense_ship_equipment,core_hot,688568,Geovis Technology,satellite data,26,0.038461538461538464,curated_public_hot_seed
+defense_ship_equipment,core_hot,300101,Zhenxin Technology,Beidou chip,27,0.037037037037037035,curated_public_hot_seed
+defense_ship_equipment,core_hot,002151,BDS Navigation,Beidou navigation,28,0.03571428571428571,curated_public_hot_seed
+defense_ship_equipment,core_hot,300627,Huace Navigation,precision navigation,29,0.034482758620689655,curated_public_hot_seed
+defense_ship_equipment,core_hot,002465,Haige Communications,military communication,30,0.03333333333333333,curated_public_hot_seed
+defense_ship_equipment,core_hot,300424,Aviation New Technology,aviation maintenance,31,0.03225806451612903,curated_public_hot_seed
+defense_ship_equipment,core_hot,000901,Aerospace Hi-Tech,aerospace electronic,32,0.03125,curated_public_hot_seed
+defense_ship_equipment,core_hot,600879,Aerospace Electronics Watch,aerospace seed,33,0.030303030303030304,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,600276,Hengrui Medicine,innovative drug,1,1.0,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300760,Mindray Medical,medical device,2,0.5,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,603259,WuXi AppTec,CXO,3,0.3333333333333333,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300759,Pharmaron,CXO,4,0.25,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688235,BeiGene,innovative oncology,5,0.2,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688271,United Imaging,medical imaging,6,0.16666666666666666,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300015,Aier Eye,medical service,7,0.14285714285714285,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300347,Tigermed,clinical CRO,8,0.125,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688617,APT Medical,medical device,9,0.1111111111111111,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688029,Nanwei Medical,endoscope device,10,0.1,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,603882,KingMed Diagnostics,medical testing,11,0.09090909090909091,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300122,Zhifei Biological,vaccine,12,0.08333333333333333,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,000661,Changchun High-Tech,biopharma,13,0.07692307692307693,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,600196,Fosun Pharma,pharma platform,14,0.07142857142857142,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,000963,Huadong Medicine,pharma and aesthetics,15,0.06666666666666667,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,600521,Huahai Pharma,API and generic,16,0.0625,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,600867,Tonghua Dongbao,diabetes drug,17,0.058823529411764705,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300558,Betta Pharmaceuticals,innovative drug,18,0.05555555555555555,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300601,Kangtai Biological,vaccine,19,0.05263157894736842,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688180,Junshi Biosciences,innovative antibody,20,0.05,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688185,CanSino,vaccine,21,0.047619047619047616,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688520,Sinocelltech,biotech,22,0.045454545454545456,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688331,RemeGen,innovative drug,23,0.043478260869565216,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,002821,Asymchem,CDMO,24,0.041666666666666664,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300363,Porton Pharma,CDMO,25,0.04,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300725,Pharmablock,CRO chemistry,26,0.038461538461538464,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300482,Wondfo Biotech,IVD,27,0.037037037037037035,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300003,Lepu Medical,cardiovascular device,28,0.03571428571428571,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,300595,Opm Biosciences,bioprocess,29,0.034482758620689655,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688575,YHLO Biotech,IVD,30,0.03333333333333333,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688301,Medical Equipment Seed,medical equipment seed,31,0.03225806451612903,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688139,Oncology Drug Seed,innovative drug seed,32,0.03125,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688266,Zelgen,innovative drug,33,0.030303030303030304,curated_public_hot_seed
+innovative_drug_medical_device,core_hot,688278,Healthcare Seed,healthcare seed,34,0.029411764705882353,curated_public_hot_seed
+metals_energy_metals,core_hot,601899,Zijin Mining,copper gold lithium,1,1.0,curated_public_hot_seed
+metals_energy_metals,core_hot,603993,CMOC,copper cobalt,2,0.5,curated_public_hot_seed
+metals_energy_metals,core_hot,600547,Shandong Gold,gold,3,0.3333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,600489,Zhongjin Gold,gold,4,0.25,curated_public_hot_seed
+metals_energy_metals,core_hot,600362,Jiangxi Copper,copper,5,0.2,curated_public_hot_seed
+metals_energy_metals,core_hot,000630,Tongling Nonferrous,copper,6,0.16666666666666666,curated_public_hot_seed
+metals_energy_metals,core_hot,601600,Aluminum Corp of China,aluminum,7,0.14285714285714285,curated_public_hot_seed
+metals_energy_metals,core_hot,000807,Yunnan Aluminum,aluminum,8,0.125,curated_public_hot_seed
+metals_energy_metals,core_hot,600111,Northern Rare Earth,rare earth,9,0.1111111111111111,curated_public_hot_seed
+metals_energy_metals,core_hot,002460,Ganfeng Lithium,lithium,10,0.1,curated_public_hot_seed
+metals_energy_metals,core_hot,002466,Tianqi Lithium,lithium,11,0.09090909090909091,curated_public_hot_seed
+metals_energy_metals,core_hot,000831,China Rare Earth,rare earth,12,0.08333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,000878,Yunnan Copper,copper,13,0.07692307692307693,curated_public_hot_seed
+metals_energy_metals,core_hot,000960,Yunnan Tin,tin,14,0.07142857142857142,curated_public_hot_seed
+metals_energy_metals,core_hot,000975,Yintai Gold,gold,15,0.06666666666666667,curated_public_hot_seed
+metals_energy_metals,core_hot,601168,Western Mining,copper lead zinc,16,0.0625,curated_public_hot_seed
+metals_energy_metals,core_hot,600219,Nanshan Aluminum,aluminum,17,0.058823529411764705,curated_public_hot_seed
+metals_energy_metals,core_hot,600988,Chifeng Gold,gold,18,0.05555555555555555,curated_public_hot_seed
+metals_energy_metals,core_hot,002155,Hunan Gold,gold antimony,19,0.05263157894736842,curated_public_hot_seed
+metals_energy_metals,core_hot,002237,Hengbang,gold smelting,20,0.05,curated_public_hot_seed
+metals_energy_metals,core_hot,000426,Xingye Silver Tin,silver tin,21,0.047619047619047616,curated_public_hot_seed
+metals_energy_metals,core_hot,600497,Chihong ZnGe,zinc germanium,22,0.045454545454545456,curated_public_hot_seed
+metals_energy_metals,core_hot,000933,Shenhuo,coal aluminum,23,0.043478260869565216,curated_public_hot_seed
+metals_energy_metals,core_hot,002532,Tianshan Aluminum,aluminum,24,0.041666666666666664,curated_public_hot_seed
+metals_energy_metals,core_hot,000737,North Copper,copper,25,0.04,curated_public_hot_seed
+metals_energy_metals,core_hot,601212,Baiyin Nonferrous,nonferrous metal,26,0.038461538461538464,curated_public_hot_seed
+metals_energy_metals,core_hot,002738,Sinomine Resource,cesium lithium,27,0.037037037037037035,curated_public_hot_seed
+metals_energy_metals,core_hot,002756,Yongxing Materials,lithium stainless steel,28,0.03571428571428571,curated_public_hot_seed
+metals_energy_metals,core_hot,601609,Jintian Copper,copper processing,29,0.034482758620689655,curated_public_hot_seed
+metals_energy_metals,core_hot,600456,BaoTi,titanium,30,0.03333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,002182,Baowu Magnesium,magnesium,31,0.03225806451612903,curated_public_hot_seed
+metals_energy_metals,core_hot,603799,Huayou Cobalt,cobalt nickel lithium material,32,0.03125,curated_public_hot_seed
+metals_energy_metals,core_hot,300618,Hanrui Cobalt,cobalt,33,0.030303030303030304,curated_public_hot_seed
+metals_energy_metals,core_hot,300697,Electric Alloy,copper alloy,34,0.029411764705882353,curated_public_hot_seed
+metals_energy_metals,core_hot,002203,Hailiang,copper pipe,35,0.02857142857142857,curated_public_hot_seed
+metals_energy_metals,core_hot,601677,Mingtai Aluminum,aluminum processing,36,0.027777777777777776,curated_public_hot_seed
+metals_energy_metals,core_hot,603876,Dingsheng New Materials,aluminum foil,37,0.02702702702702703,curated_public_hot_seed
+metals_energy_metals,core_hot,002988,New Material Seed,new material seed,38,0.02631578947368421,curated_public_hot_seed
+metals_energy_metals,core_hot,600711,Silver Lead Zinc Seed,silver lead zinc watchlist,39,0.02564102564102564,curated_public_hot_seed
+metals_energy_metals,core_hot,301219,Tengyuan Cobalt,cobalt copper,40,0.025,curated_public_hot_seed
+metals_energy_metals,core_hot,301026,Battery Metal Seed,battery metal seed,41,0.024390243902439025,curated_public_hot_seed
+power_solid_state_battery,core_hot,300750,CATL,battery,1,1.0,curated_public_hot_seed
+power_solid_state_battery,core_hot,002594,BYD,battery vehicle,2,0.5,curated_public_hot_seed
+power_solid_state_battery,core_hot,002812,Yunnan Energy New Material,separator,3,0.3333333333333333,curated_public_hot_seed
+power_solid_state_battery,core_hot,300014,EVE Energy,battery,4,0.25,curated_public_hot_seed
+power_solid_state_battery,core_hot,002709,Tinci Materials,electrolyte,5,0.2,curated_public_hot_seed
+power_solid_state_battery,core_hot,002074,Gotion High-Tech,battery,6,0.16666666666666666,curated_public_hot_seed
+power_solid_state_battery,core_hot,300073,Dangsheng Technology,cathode,7,0.14285714285714285,curated_public_hot_seed
+power_solid_state_battery,core_hot,603799,Huayou Cobalt,battery metal,8,0.125,curated_public_hot_seed
+power_solid_state_battery,core_hot,688567,Farasis Energy,solid-state battery watchlist,9,0.1111111111111111,curated_public_hot_seed
+power_solid_state_battery,core_hot,300037,Capchem,battery electrolyte,10,0.1,curated_public_hot_seed
+power_solid_state_battery,core_hot,300450,Wuxi Lead,battery equipment,11,0.09090909090909091,curated_public_hot_seed
+power_solid_state_battery,core_hot,300207,Sunwoda,battery pack,12,0.08333333333333333,curated_public_hot_seed
+power_solid_state_battery,core_hot,002850,Kedali,battery structure,13,0.07692307692307693,curated_public_hot_seed
+power_solid_state_battery,core_hot,300568,Senior Technology,separator,14,0.07142857142857142,curated_public_hot_seed
+power_solid_state_battery,core_hot,300390,Canmax,lithium chemical,15,0.06666666666666667,curated_public_hot_seed
+power_solid_state_battery,core_hot,688005,Ronbay Technology,cathode material,16,0.0625,curated_public_hot_seed
+power_solid_state_battery,core_hot,688779,Changyuan Lico,cathode material,17,0.058823529411764705,curated_public_hot_seed
+power_solid_state_battery,core_hot,688778,XTC New Energy,battery material,18,0.05555555555555555,curated_public_hot_seed
+power_solid_state_battery,core_hot,600884,Shanshan,anode material,19,0.05263157894736842,curated_public_hot_seed
+power_solid_state_battery,core_hot,300769,Dynanonic,LFP cathode,20,0.05,curated_public_hot_seed
+power_solid_state_battery,core_hot,002340,GEM,battery recycling precursor,21,0.047619047619047616,curated_public_hot_seed
+power_solid_state_battery,core_hot,300919,CNGR Advanced Material,precursor,22,0.045454545454545456,curated_public_hot_seed
+power_solid_state_battery,core_hot,002497,Yahua Group,lithium salt,23,0.043478260869565216,curated_public_hot_seed
+power_solid_state_battery,core_hot,002192,Rongjie,lithium mining,24,0.041666666666666664,curated_public_hot_seed
+power_solid_state_battery,core_hot,688116,TnTech,carbon nanotube,25,0.04,curated_public_hot_seed
+power_solid_state_battery,core_hot,603659,Putailai,anode coating separator,26,0.038461538461538464,curated_public_hot_seed
+power_solid_state_battery,core_hot,688006,Hangke Technology,battery equipment,27,0.037037037037037035,curated_public_hot_seed
+power_solid_state_battery,core_hot,688388,Jiayuan Technology,copper foil,28,0.03571428571428571,curated_public_hot_seed
+power_solid_state_battery,core_hot,688707,Zhenhua New Material,cathode,29,0.034482758620689655,curated_public_hot_seed
+power_solid_state_battery,core_hot,002407,Do-Fluoride,electrolyte and fluorine,30,0.03333333333333333,curated_public_hot_seed
+power_solid_state_battery,core_hot,002080,Sinoma Science,lithium separator,31,0.03225806451612903,curated_public_hot_seed
+power_solid_state_battery,core_hot,600110,NuoDe New Materials,copper foil,32,0.03125,curated_public_hot_seed
+power_solid_state_battery,core_hot,002611,Dongfang Precision,battery equipment,33,0.030303030303030304,curated_public_hot_seed
+power_solid_state_battery,core_hot,300438,Penghui Energy,energy storage battery,34,0.029411764705882353,curated_public_hot_seed
+power_solid_state_battery,core_hot,688063,Pylontech,energy storage battery,35,0.02857142857142857,curated_public_hot_seed
+power_solid_state_battery,core_hot,301358,Hunan Yuneng,LFP cathode,36,0.027777777777777776,curated_public_hot_seed
+power_solid_state_battery,core_hot,301349,Sichuan Energy,lithium chain seed,37,0.02702702702702703,curated_public_hot_seed
+power_solid_state_battery,core_hot,603212,Battery Material Seed,battery material seed,38,0.02631578947368421,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300124,Inovance,industrial automation,1,1.0,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002747,Estun,robotics,2,0.5,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,688017,Green Harmonic,robot reducer,3,0.3333333333333333,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002050,Sanhua Intelligent Controls,thermal management actuator,4,0.25,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002600,Lingyi iTech,precision manufacturing,5,0.2,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603662,Keli Sensing,sensor,6,0.16666666666666666,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002472,Shuanghuan Driveline,gear transmission,7,0.14285714285714285,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,688305,KSEC Intelligent,motion control,8,0.125,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,000988,Huagong Tech,laser equipment,9,0.1111111111111111,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300024,Siasun Robot,industrial robot,10,0.1,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002527,Xinshida,robot controller,11,0.09090909090909091,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002008,Han's Laser,laser automation,12,0.08333333333333333,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300607,Topstar,industrial automation,13,0.07692307692307693,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603283,Saiteng,precision automation,14,0.07142857142857142,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300276,Automation Equipment Seed,factory automation seed,15,0.06666666666666667,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300161,Huazhong CNC,industrial CNC,16,0.0625,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,688160,Kinco Automation,servo drive,17,0.058823529411764705,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,688698,Weihong,CNC control,18,0.05555555555555555,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603416,Xinjie Electric,PLC and servo,19,0.05263157894736842,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,601100,Hengli Hydraulic,hydraulic component,20,0.05,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603338,Zhejiang Dingli,aerial work platform,21,0.047619047619047616,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,600031,Sany Heavy Industry,construction machinery,22,0.045454545454545456,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,000425,XCMG Machinery,construction machinery,23,0.043478260869565216,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,000157,Zoomlion,construction machinery,24,0.041666666666666664,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,600761,Anhui Heli,forklift,25,0.04,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603611,Noblelift,smart warehousing equipment,26,0.038461538461538464,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300660,Jiangsu Leili,micro motor,27,0.037037037037037035,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,002698,Bozhon Precision,automation equipment,28,0.03571428571428571,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300580,Bethel Automotive,intelligent manufacturing,29,0.034482758620689655,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,603728,Mingzhi Technology,precision casting equipment,30,0.03333333333333333,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,300718,Changsheng Bearing,sliding bearing,31,0.03225806451612903,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,301368,Fengli Intelligent,micro transmission,32,0.03125,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,301112,Crrc Times Electric,industrial drive,33,0.030303030303030304,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,600835,Shanghai Mechanical,elevator equipment,34,0.029411764705882353,curated_public_hot_seed
+robotics_highend_manufacturing,core_hot,601369,Shaanxi Construction Machinery,equipment cycle,35,0.02857142857142857,curated_public_hot_seed

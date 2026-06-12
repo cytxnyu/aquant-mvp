@@ -1,0 +1,39 @@
+{
+  "latest_date": "2026-06-10",
+  "horizon_days": 5,
+  "method": "lightgbm",
+  "model_quality": {
+    "train_rows": 22893,
+    "valid_rows": 5722,
+    "valid_rank_ic": 0.045080305936221615,
+    "valid_mae": 0.03559423243545941
+  },
+  "top_symbols": [
+    {
+      "symbol": "600489",
+      "prediction_rank": 1,
+      "signal": "候选"
+    },
+    {
+      "symbol": "600547",
+      "prediction_rank": 2,
+      "signal": "候选"
+    },
+    {
+      "symbol": "601899",
+      "prediction_rank": 3,
+      "signal": "候选"
+    },
+    {
+      "symbol": "601600",
+      "prediction_rank": 4,
+      "signal": "候选"
+    },
+    {
+      "symbol": "000960",
+      "prediction_rank": 5,
+      "signal": "候选"
+    }
+  ],
+  "note": "Predictions are research signals, not investment advice."
+}

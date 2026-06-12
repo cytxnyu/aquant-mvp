@@ -1,0 +1,15 @@
+{
+  "initial_cash": 1000000.0,
+  "final_equity": 3945943.4586826614,
+  "total_return": 2.9459434586826614,
+  "annual_return": 0.24860455267019121,
+  "annual_volatility": 0.37813178295152694,
+  "max_drawdown": -0.46547203239541246,
+  "sharpe": 0.7770319256342532,
+  "calmar": 0.5340912780319417,
+  "win_rate": 0.5764555342290467,
+  "avg_turnover": 0.5904167259509331,
+  "total_turnover": 194.24710283785697,
+  "trade_count": 2869.0,
+  "rebalance_count": 329.0
+}

@@ -31,6 +31,14 @@ class DataConfig:
     end_date: str = "2025-12-31"
     adjust: str = "qfq"
     cache_dir: Path = Path("data/cache/daily")
+    vendor: str = "akshare"
+
+
+@dataclass(frozen=True)
+class StorageConfig:
+    engine: str = "duckdb"
+    root_dir: Path = Path("data/warehouse")
+    file_format: str = "auto"
 
 
 @dataclass(frozen=True)
@@ -73,12 +81,42 @@ class AnalysisConfig:
 
 
 @dataclass(frozen=True)
+class ModelConfig:
+    model_type: str = "ensemble"
+    horizons: list[int] = field(default_factory=lambda: [1, 5, 20])
+    embargo_days: int = 5
+    registry_dir: Path = Path("models/registry")
+
+
+@dataclass(frozen=True)
+class RiskConfig:
+    max_capital: float = 1_000_000.0
+    max_single_weight: float = 0.20
+    max_order_value: float = 200_000.0
+    max_daily_loss: float = 0.03
+    max_drawdown: float = 0.10
+    blacklist: list[str] = field(default_factory=list)
+    allow_live_orders: bool = False
+
+
+@dataclass(frozen=True)
+class BrokerConfig:
+    mode: str = "none"
+    account_id: str = ""
+    qmt_path: Path = Path("")
+
+
+@dataclass(frozen=True)
 class AppConfig:
     data: DataConfig = field(default_factory=DataConfig)
+    storage: StorageConfig = field(default_factory=StorageConfig)
     universe: UniverseConfig = field(default_factory=UniverseConfig)
     strategy: StrategyConfig = field(default_factory=StrategyConfig)
     backtest: BacktestConfig = field(default_factory=BacktestConfig)
     analysis: AnalysisConfig = field(default_factory=AnalysisConfig)
+    model: ModelConfig = field(default_factory=ModelConfig)
+    risk: RiskConfig = field(default_factory=RiskConfig)
+    broker: BrokerConfig = field(default_factory=BrokerConfig)
     report: ReportConfig = field(default_factory=ReportConfig)
 
 
@@ -96,10 +134,14 @@ def _load_raw_config(path: Path) -> dict[str, Any]:
 def load_config(path: str | Path) -> AppConfig:
     raw = _load_raw_config(Path(path))
     data_raw = raw.get("data", {})
+    storage_raw = raw.get("storage", {})
     universe_raw = raw.get("universe", {})
     strategy_raw = raw.get("strategy", {})
     backtest_raw = raw.get("backtest", {})
     analysis_raw = raw.get("analysis", {})
+    model_raw = raw.get("model", {})
+    risk_raw = raw.get("risk", {})
+    broker_raw = raw.get("broker", {})
     report_raw = raw.get("report", {})
 
     return AppConfig(
@@ -110,6 +152,12 @@ def load_config(path: str | Path) -> AppConfig:
             end_date=data_raw.get("end_date", "2025-12-31"),
             adjust=data_raw.get("adjust", "qfq"),
             cache_dir=Path(data_raw.get("cache_dir", "data/cache/daily")),
+            vendor=data_raw.get("vendor", "akshare"),
+        ),
+        storage=StorageConfig(
+            engine=storage_raw.get("engine", "duckdb"),
+            root_dir=Path(storage_raw.get("root_dir", "data/warehouse")),
+            file_format=storage_raw.get("file_format", "auto"),
         ),
         universe=UniverseConfig(
             min_history_days=int(universe_raw.get("min_history_days", 120)),
@@ -139,6 +187,26 @@ def load_config(path: str | Path) -> AppConfig:
         analysis=AnalysisConfig(
             label_horizons=[int(horizon) for horizon in analysis_raw.get("label_horizons", [5, 20])],
             quantiles=int(analysis_raw.get("quantiles", 5)),
+        ),
+        model=ModelConfig(
+            model_type=model_raw.get("type", model_raw.get("model_type", "ensemble")),
+            horizons=[int(horizon) for horizon in model_raw.get("horizons", [1, 5, 20])],
+            embargo_days=int(model_raw.get("embargo_days", 5)),
+            registry_dir=Path(model_raw.get("registry_dir", "models/registry")),
+        ),
+        risk=RiskConfig(
+            max_capital=float(risk_raw.get("max_capital", 1_000_000.0)),
+            max_single_weight=float(risk_raw.get("max_single_weight", 0.20)),
+            max_order_value=float(risk_raw.get("max_order_value", 200_000.0)),
+            max_daily_loss=float(risk_raw.get("max_daily_loss", 0.03)),
+            max_drawdown=float(risk_raw.get("max_drawdown", 0.10)),
+            blacklist=[str(symbol).zfill(6) for symbol in risk_raw.get("blacklist", [])],
+            allow_live_orders=bool(risk_raw.get("allow_live_orders", False)),
+        ),
+        broker=BrokerConfig(
+            mode=broker_raw.get("mode", "none"),
+            account_id=str(broker_raw.get("account_id", "")),
+            qmt_path=Path(broker_raw.get("qmt_path", "")),
         ),
         report=ReportConfig(output_dir=Path(report_raw.get("output_dir", "reports"))),
     )

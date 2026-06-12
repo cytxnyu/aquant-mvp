@@ -1,0 +1,40 @@
+{
+  "source": "baostock",
+  "requested_symbols": 20,
+  "loaded_symbols": 20,
+  "failed_symbols": 0,
+  "daily_bar": {
+    "table": "daily_bar",
+    "path": "data\\warehouse\\daily_bar.parquet",
+    "rows": "31128",
+    "file_format": "parquet"
+  },
+  "source_audit": {
+    "table": "source_audit",
+    "path": "data\\warehouse\\source_audit.parquet",
+    "rows": "20",
+    "file_format": "parquet"
+  },
+  "warnings": [
+    "601899: loaded cached baostock daily bars.",
+    "603993: loaded cached baostock daily bars.",
+    "600547: loaded cached baostock daily bars.",
+    "600489: loaded cached baostock daily bars.",
+    "600988: loaded cached baostock daily bars.",
+    "600362: loaded cached baostock daily bars.",
+    "000630: loaded cached baostock daily bars.",
+    "000878: loaded cached baostock daily bars.",
+    "601600: loaded cached baostock daily bars.",
+    "000807: loaded cached baostock daily bars.",
+    "600219: loaded cached baostock daily bars.",
+    "000933: loaded cached baostock daily bars.",
+    "601168: loaded cached baostock daily bars.",
+    "600497: loaded cached baostock daily bars.",
+    "601958: loaded cached baostock daily bars.",
+    "000960: loaded cached baostock daily bars.",
+    "600111: loaded cached baostock daily bars.",
+    "000831: loaded cached baostock daily bars.",
+    "002460: loaded cached baostock daily bars.",
+    "002466: loaded cached baostock daily bars."
+  ]
+}

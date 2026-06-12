@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import time
 import warnings
 
 import numpy as np
@@ -27,6 +28,9 @@ def load_daily_bars(config: DataConfig) -> tuple[dict[str, pd.DataFrame], LoadRe
         bars = _load_sample_bars(config)
         return bars, LoadReport(source="sample", symbols_loaded=sorted(bars), warnings=[])
 
+    if source in {"free_real", "research", "baostock", "tushare"}:
+        return _load_free_vendor_bars(config, source)
+
     if source not in {"akshare", "auto"}:
         raise ValueError(f"Unsupported data source: {config.source}")
 
@@ -36,6 +40,8 @@ def load_daily_bars(config: DataConfig) -> tuple[dict[str, pd.DataFrame], LoadRe
         try:
             loaded[symbol] = _load_akshare_symbol(config, symbol)
         except Exception as exc:  # noqa: BLE001 - fallback keeps the MVP runnable.
+            if source == "akshare":
+                raise
             message = f"{symbol}: AKShare load failed ({exc}); using sample data for this symbol."
             notes.append(message)
             warnings.warn(message, RuntimeWarning, stacklevel=2)
@@ -52,6 +58,52 @@ def load_daily_bars(config: DataConfig) -> tuple[dict[str, pd.DataFrame], LoadRe
     return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=notes)
 
 
+def _load_free_vendor_bars(config: DataConfig, source: str) -> tuple[dict[str, pd.DataFrame], LoadReport]:
+    from aquant_mvp.vendors import FreeDataRouter, VendorUnavailable
+
+    if source == "baostock":
+        vendors = ["baostock"]
+    elif source == "tushare":
+        vendors = ["tushare"]
+    else:
+        vendors = ["akshare", "baostock", "tushare"]
+
+    router = FreeDataRouter(vendors)
+    loaded: dict[str, pd.DataFrame] = {}
+    notes: list[str] = []
+    for symbol in config.symbols:
+        cache_path = _cache_path(config.cache_dir / source, symbol, config.start_date, config.end_date, config.adjust)
+        if cache_path.exists():
+            loaded[symbol] = _read_cached(cache_path)
+            notes.append(f"{symbol}: loaded cached {source} daily bars.")
+            continue
+        try:
+            result = router.fetch_daily_bars(symbol, config.start_date, config.end_date, config.adjust)
+            loaded[symbol] = _finalize_bars(result.data)
+            _write_cached(cache_path, loaded[symbol])
+            notes.append(f"{symbol}: loaded from {result.vendor}.")
+            notes.extend(f"{symbol}: {warning}" for warning in result.warnings)
+        except VendorUnavailable as exc:
+            if source == "research":
+                message = f"{symbol}: free vendor load failed ({exc}); using sample data for research only."
+                notes.append(message)
+                warnings.warn(message, RuntimeWarning, stacklevel=2)
+                sample_config = DataConfig(
+                    source="sample",
+                    symbols=[symbol],
+                    start_date=config.start_date,
+                    end_date=config.end_date,
+                    adjust=config.adjust,
+                    cache_dir=config.cache_dir,
+                    vendor=config.vendor,
+                )
+                loaded[symbol] = _load_sample_bars(sample_config)[symbol]
+                continue
+            raise RuntimeError(f"{symbol}: free_real data load failed and sample fallback is forbidden: {exc}") from exc
+
+    return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=notes)
+
+
 def _load_akshare_symbol(config: DataConfig, symbol: str) -> pd.DataFrame:
     cache_path = _cache_path(config.cache_dir, symbol, config.start_date, config.end_date, config.adjust)
     if cache_path.exists():
@@ -62,13 +114,23 @@ def _load_akshare_symbol(config: DataConfig, symbol: str) -> pd.DataFrame:
     except ImportError as exc:
         raise RuntimeError("AKShare is not installed. Run `pip install -e .[data]` or use source=sample.") from exc
 
-    raw = ak.stock_zh_a_hist(
-        symbol=symbol,
-        period="daily",
-        start_date=_compact_date(config.start_date),
-        end_date=_compact_date(config.end_date),
-        adjust=config.adjust,
-    )
+    raw = None
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            raw = ak.stock_zh_a_hist(
+                symbol=symbol,
+                period="daily",
+                start_date=_compact_date(config.start_date),
+                end_date=_compact_date(config.end_date),
+                adjust=config.adjust,
+            )
+            break
+        except Exception as exc:  # noqa: BLE001 - keep provider-specific network errors contained.
+            last_error = exc
+            time.sleep(0.8 * (attempt + 1))
+    if raw is None:
+        raise RuntimeError(f"AKShare request failed after retries: {last_error}")
     frame = _normalize_akshare(raw, symbol)
     if frame.empty:
         raise RuntimeError("AKShare returned no rows")
@@ -129,22 +191,50 @@ def _make_sample_symbol(symbol: str, start_date: str, end_date: str) -> pd.DataF
 
 
 def _normalize_akshare(raw: pd.DataFrame, symbol: str) -> pd.DataFrame:
-    rename_map = {
-        "日期": "date",
-        "开盘": "open",
-        "最高": "high",
-        "最低": "low",
-        "收盘": "close",
-        "成交量": "volume",
-        "成交额": "amount",
-        "换手率": "turnover",
-    }
-    frame = raw.rename(columns=rename_map).copy()
+    frame = _normalize_akshare_columns(raw)
     frame["symbol"] = symbol
     missing = [name for name in REQUIRED_COLUMNS if name not in frame.columns]
     if missing:
         raise RuntimeError(f"AKShare schema missing columns: {missing}")
     return _finalize_bars(frame[REQUIRED_COLUMNS])
+
+
+def _normalize_akshare_columns(raw: pd.DataFrame) -> pd.DataFrame:
+    aliases = {
+        "date": "date",
+        "open": "open",
+        "high": "high",
+        "low": "low",
+        "close": "close",
+        "volume": "volume",
+        "amount": "amount",
+        "turnover": "turnover",
+        "\u65e5\u671f": "date",
+        "\u5f00\u76d8": "open",
+        "\u6700\u9ad8": "high",
+        "\u6700\u4f4e": "low",
+        "\u6536\u76d8": "close",
+        "\u6210\u4ea4\u91cf": "volume",
+        "\u6210\u4ea4\u989d": "amount",
+        "\u6362\u624b\u7387": "turnover",
+    }
+    rename_map = {column: aliases.get(str(column).strip().lower(), aliases.get(str(column).strip(), str(column).strip())) for column in raw.columns}
+    frame = raw.rename(columns=rename_map).copy()
+    missing = [name for name in REQUIRED_COLUMNS if name not in frame.columns and name != "symbol"]
+    if missing and len(raw.columns) >= 12:
+        columns = list(raw.columns)
+        positional = {
+            columns[0]: "date",
+            columns[2]: "open",
+            columns[3]: "close",
+            columns[4]: "high",
+            columns[5]: "low",
+            columns[6]: "volume",
+            columns[7]: "amount",
+            columns[11]: "turnover",
+        }
+        frame = raw.rename(columns=positional).copy()
+    return frame
 
 
 def _finalize_bars(frame: pd.DataFrame) -> pd.DataFrame:
@@ -154,6 +244,8 @@ def _finalize_bars(frame: pd.DataFrame) -> pd.DataFrame:
     for column in ["open", "high", "low", "close", "volume", "amount", "turnover"]:
         out[column] = pd.to_numeric(out[column], errors="coerce")
     out = out.dropna(subset=["date", "open", "high", "low", "close"])
+    out = out[(out[["open", "high", "low", "close"]] > 0).all(axis=1)]
+    out = out[out["amount"].fillna(0) > 0]
     out = out.sort_values("date").drop_duplicates(subset=["date", "symbol"], keep="last")
     out = out.reset_index(drop=True)
     return out[REQUIRED_COLUMNS]

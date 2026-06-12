@@ -1,0 +1,64 @@
+{
+  "data": {
+    "source": "free_real",
+    "vendor": "akshare",
+    "symbols": ["601899", "603993", "600547", "300750", "688981", "300308", "600150", "600276"],
+    "start_date": "2021-01-01",
+    "end_date": "2026-06-10",
+    "adjust": "qfq",
+    "cache_dir": "data/cache/daily"
+  },
+  "storage": {
+    "engine": "duckdb",
+    "root_dir": "data/warehouse",
+    "file_format": "auto"
+  },
+  "universe": {
+    "min_history_days": 180,
+    "min_amount": 50000000,
+    "max_missing_ratio": 0.3,
+    "exclude_symbols": []
+  },
+  "strategy": {
+    "rebalance": "W-FRI",
+    "top_n": 8,
+    "min_amount": 50000000,
+    "max_single_weight": 0.18,
+    "max_turnover": 0.8
+  },
+  "backtest": {
+    "initial_cash": 1000000,
+    "fee_rate": 0.0003,
+    "tax_rate": 0.001,
+    "slippage_rate": 0.0008,
+    "lot_size": 100,
+    "min_trade_value": 1000
+  },
+  "analysis": {
+    "label_horizons": [5, 20],
+    "quantiles": 5
+  },
+  "model": {
+    "type": "ensemble",
+    "horizons": [1, 5, 20],
+    "embargo_days": 5,
+    "registry_dir": "models/registry"
+  },
+  "risk": {
+    "max_capital": 1000000,
+    "max_single_weight": 0.2,
+    "max_order_value": 200000,
+    "max_daily_loss": 0.03,
+    "max_drawdown": 0.1,
+    "blacklist": [],
+    "allow_live_orders": false
+  },
+  "broker": {
+    "mode": "paper",
+    "account_id": "",
+    "qmt_path": ""
+  },
+  "report": {
+    "output_dir": "reports"
+  }
+}

@@ -10,6 +10,7 @@ from aquant_mvp.config import AppConfig
 from aquant_mvp.data import check_daily_bars, load_daily_bars
 from aquant_mvp.factors import FACTOR_COLUMNS, compute_factor_panel
 from aquant_mvp.labels import compute_return_labels
+from aquant_mvp.prediction import build_latest_predictions
 from aquant_mvp.reporting import save_run_outputs
 from aquant_mvp.strategy import build_rebalance_targets, score_factors
 from aquant_mvp.universe import filter_universe
@@ -34,6 +35,13 @@ def run_pipeline(config: AppConfig, source: str | None = None, output_dir: Path 
         quantiles=config.analysis.quantiles,
     )
     scores = score_factors(factor_panel, config.strategy.factor_weights)
+    predictions = build_latest_predictions(
+        factor_panel,
+        labels,
+        scores,
+        FACTOR_COLUMNS,
+        horizon=config.analysis.label_horizons[0],
+    )
     targets = build_rebalance_targets(scores, config.strategy)
     result = run_backtest(filtered_bars, targets, config.backtest)
 
@@ -48,6 +56,7 @@ def run_pipeline(config: AppConfig, source: str | None = None, output_dir: Path 
         factors=factor_panel,
         labels=labels,
         factor_analysis=factor_analysis,
+        predictions=predictions,
         scores=scores,
         targets=targets,
         result=result,
@@ -60,6 +69,7 @@ def run_pipeline(config: AppConfig, source: str | None = None, output_dir: Path 
         "factors": factor_panel,
         "labels": labels,
         "factor_analysis": factor_analysis,
+        "predictions": predictions,
         "scores": scores,
         "targets": targets,
         "result": result,

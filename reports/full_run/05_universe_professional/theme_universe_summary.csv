@@ -1,0 +1,15 @@
+theme,theme_group,rows,unique_symbols,top_seed_weight
+advanced_packaging_chiplet_pcb,professional_hot,9,9,1.0
+central_soe_high_dividend,professional_hot,12,12,1.0
+commercial_space_satellite_internet,professional_hot,10,10,1.0
+cpo_optical_module_datacenter,professional_hot,10,10,1.0
+cxo_biotech_innovative_drug,professional_hot,11,11,1.0
+data_element_fintech_ai_app,professional_hot,11,11,1.0
+humanoid_robot_core_parts,professional_hot,10,10,1.0
+industrial_mother_machine_laser,professional_hot,10,10,1.0
+medical_device_ivd_imaging,professional_hot,9,9,1.0
+rare_earth_magnetic_materials,professional_hot,8,8,1.0
+semiconductor_equipment_materials,professional_hot,14,14,1.0
+shipbuilding_ocean_shipping,professional_hot,10,10,1.0
+solid_state_battery_materials,professional_hot,11,11,1.0
+uhv_smart_grid_power_equipment,professional_hot,10,10,1.0

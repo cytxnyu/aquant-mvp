@@ -1,0 +1,45 @@
+{
+  "source": "baostock",
+  "requested_symbols": 20,
+  "loaded_symbols": 20,
+  "failed_symbols": 0,
+  "daily_bar": {
+    "table": "daily_bar",
+    "path": "data\\warehouse\\daily_bar.parquet",
+    "rows": "31160",
+    "file_format": "parquet"
+  },
+  "source_audit": {
+    "table": "source_audit",
+    "path": "data\\warehouse\\source_audit.parquet",
+    "rows": "20",
+    "file_format": "parquet"
+  },
+  "warnings": [
+    "601899: loaded from baostock.",
+    "603993: loaded from baostock.",
+    "600547: loaded from baostock.",
+    "600547: BaoStock contains non-trading/suspended rows; normalized output keeps valid prices only.",
+    "600489: loaded from baostock.",
+    "600988: loaded from baostock.",
+    "600988: BaoStock contains non-trading/suspended rows; normalized output keeps valid prices only.",
+    "600362: loaded from baostock.",
+    "000630: loaded from baostock.",
+    "000630: BaoStock contains non-trading/suspended rows; normalized output keeps valid prices only.",
+    "000878: loaded from baostock.",
+    "000878: BaoStock contains non-trading/suspended rows; normalized output keeps valid prices only.",
+    "601600: loaded from baostock.",
+    "000807: loaded from baostock.",
+    "600219: loaded from baostock.",
+    "000933: loaded from baostock.",
+    "000933: BaoStock contains non-trading/suspended rows; normalized output keeps valid prices only.",
+    "601168: loaded from baostock.",
+    "600497: loaded from baostock.",
+    "601958: loaded from baostock.",
+    "000960: loaded from baostock.",
+    "600111: loaded from baostock.",
+    "000831: loaded from baostock.",
+    "002460: loaded from baostock.",
+    "002466: loaded from baostock."
+  ]
+}

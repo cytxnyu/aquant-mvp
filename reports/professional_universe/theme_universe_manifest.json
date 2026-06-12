@@ -1,0 +1,13 @@
+{
+  "requested_themes": "professional",
+  "theme_count": 14,
+  "rows": 145,
+  "unique_symbols": 145,
+  "duplicate_theme_rows": 0,
+  "multi_theme_symbols": 0,
+  "minimum_symbols_for_trusted_prediction": 200,
+  "notes": [
+    "This is a curated hot-sector seed universe, not an official industry classifier.",
+    "Use --universe all-a for maximum market coverage when free source availability allows it."
+  ]
+}

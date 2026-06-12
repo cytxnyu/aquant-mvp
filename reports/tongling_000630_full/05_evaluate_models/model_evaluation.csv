@@ -1,0 +1,15 @@
+model_id,model_type,horizon_days,model_family,trust_status,rank_ic,direction_accuracy,brier,beats_baseline
+factor_score_h1_20260611211216,factor_score,1,factor_score_baseline,,0.022570445920673105,0.5042226487523992,,
+factor_score_h5_20260611211217,factor_score,5,factor_score_baseline,,0.05628653114646189,0.5199421965317919,,
+factor_score_h20_20260611211217,factor_score,20,factor_score_baseline,,0.11245118217839661,0.5362658846529814,,
+lightgbm_regressor_h5_20260611212806,lightgbm_regressor,5,lightgbm,,-0.013284184998199227,,,
+walk_forward_factor_score_h1,factor_score,1,walk_forward_validation,data_insufficient,0.0901284136333939,0.5411764705882353,0.24991824337142265,True
+ensemble_h1_20260612105457,ensemble,1,lightgbm,,-0.014209448442527988,,,
+ensemble_h5_20260612105508,ensemble,5,lightgbm,,-0.013284184998199227,,,
+ensemble_h20_20260612105508,ensemble,20,lightgbm,,0.006976726238698991,,,
+walk_forward_ensemble_h1,ensemble,1,walk_forward_validation,data_insufficient,-0.09210578038577963,0.4588235294117647,0.2587706847987761,False
+walk_forward_ensemble_h5,ensemble,5,walk_forward_validation,data_insufficient,-0.017287086729993538,0.44333333333333336,0.25603221716482416,False
+walk_forward_ensemble_h20,ensemble,20,walk_forward_validation,data_insufficient,0.2845441946891505,0.6133333333333333,0.21961192593154796,True
+walk_forward_ensemble_h1,ensemble,1,walk_forward_validation,data_insufficient,0.03087440490254182,0.509471766848816,0.2518599341752518,True
+walk_forward_ensemble_h5,ensemble,5,walk_forward_validation,data_insufficient,0.043439488992952885,0.5082568807339449,0.2577108773605422,True
+walk_forward_ensemble_h20,ensemble,20,walk_forward_validation,data_insufficient,0.06971314556343494,0.4882075471698113,0.2791736297976262,True

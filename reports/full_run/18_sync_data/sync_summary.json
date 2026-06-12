@@ -1,0 +1,14 @@
+{
+  "load_report": {
+    "source": "sample",
+    "symbols_loaded": "['000001', '000333', '000858', '002594', '300750', '600036', '600519', '600900', '601318', '601888']",
+    "warnings": "[]"
+  },
+  "warehouse": {
+    "table": "daily_bar",
+    "path": "data\\warehouse\\daily_bar.parquet",
+    "rows": "10430",
+    "file_format": "parquet"
+  },
+  "issue_count": 0
+}

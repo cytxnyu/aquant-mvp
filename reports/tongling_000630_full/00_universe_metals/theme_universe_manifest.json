@@ -1,0 +1,13 @@
+{
+  "requested_themes": "metals_energy_metals",
+  "theme_count": 1,
+  "rows": 41,
+  "unique_symbols": 41,
+  "duplicate_theme_rows": 0,
+  "multi_theme_symbols": 0,
+  "minimum_symbols_for_trusted_prediction": 200,
+  "notes": [
+    "This is a curated hot-sector seed universe, not an official industry classifier.",
+    "Use --universe all-a for maximum market coverage when free source availability allows it."
+  ]
+}

@@ -24,6 +24,7 @@ src/aquant_mvp
 - `docs/ARCHITECTURE.md`
 - `docs/SCHEMA.md`
 - `docs/GITHUB.md`
+- `docs/METALS_POOL.md`
 - `docs/REFERENCES.md`
 
 ## 快速运行
@@ -50,6 +51,18 @@ python run_mvp.py check-data --source sample --output-dir reports\data_check
 python run_mvp.py analyze-factors --source sample
 ```
 
+运行金属股票池最新预测：
+
+```powershell
+python run_mvp.py predict --config configs\metals.json --source auto --symbol 601899 --output-dir reports\metals_predict
+```
+
+当前预测默认使用历史因子分数校准；如果安装可选模型依赖，系统会自动尝试 LightGBM：
+
+```powershell
+pip install -e .[model]
+```
+
 ## 使用 AKShare
 
 安装可选依赖：
@@ -69,6 +82,8 @@ python run_mvp.py run --source akshare
 ```powershell
 python run_mvp.py run --source auto
 ```
+
+区别：`--source akshare` 是严格真实数据，任一股票拉取失败就报错；`--source auto` 会逐只股票回退到 sample，并在 `load_report.json` 写入 warning。
 
 ## 当前因子
 
@@ -115,6 +130,7 @@ python run_mvp.py run --source auto
 - `factor_ic_summary.csv`、`factor_ic_series.csv`：因子 IC
 - `factor_quantile_returns.csv`、`factor_coverage.csv`：分组收益和覆盖率
 - `factor_analysis.json`：因子分析摘要 JSON
+- `predictions.csv`、`prediction_summary.json`：最新预测/评分结果
 - `scores.csv`：股票打分
 - `rebalance_targets.csv`：调仓目标权重
 - `equity_curve.csv`、`trades.csv`、`holdings.csv`、`rebalances.csv`
@@ -152,3 +168,42 @@ sample 数据只用于验证流程，不代表真实收益。真实 A 股研究�
 ```text
 https://github.com/cytxnyu/aquant-mvp
 ```
+
+## 进阶：免费源个股走势预测
+
+本阶段新增的是概率化个股走势预测，不是“保证涨跌”的结论。`predict-stock` 会输出 `1/5/20` 日上涨概率、预期收益、预期超额收益、方向标签、K 线趋势标签、置信度、收益分位、风险标记、因子贡献、模型版本和数据版本。
+
+```powershell
+python run_mvp.py build-universe --themes hot --output-dir reports\hot_universe
+python run_mvp.py sync-data --config configs\prod.example.json --source free_real --output-dir reports\sync_data
+python run_mvp.py train-model --config configs\prod.example.json --model ensemble --horizons 1,5,20 --output-dir reports\model_train
+python run_mvp.py predict-stock --config configs\prod.example.json --source free_real --symbol 601899 --horizons 1,5,20 --output-dir reports\stock_forecast
+python run_mvp.py backtest-stock --config configs\prod.example.json --source free_real --symbol 601899 --horizons 1,5,20 --output-dir reports\stock_backtest
+python run_mvp.py paper-trade --config configs\prod.example.json --source free_real --output-dir reports\paper_trade
+```
+
+免费数据源优先使用 AKShare，BaoStock 和 Tushare free token 作为补充；`free_real` 禁止混入 sample 数据。没有网络、没有 token 或免费接口字段缺失时，系统会明确报错或记录降级原因。QMT 只保留只读/对账接口和模拟盘链路，真实下单在代码层默认拒绝。
+
+演示和测试可以显式使用 sample：
+
+```powershell
+python run_mvp.py predict-stock --config configs\mvp.json --source sample --symbol 600519 --horizons 1,5,20 --allow-sample
+```
+
+## 免费源极限增强工作流
+
+新增 `free_max` 方向的命令，用来把免费数据源的覆盖率、时点一致性和模型样本外表现全部显式化。真实研究建议先从 `--universe hot` 或 `--max-symbols` 小批量验证，再扩大到 `all-a`。
+
+```powershell
+python run_mvp.py discover-sources --domestic-only --output-dir reports\source_discovery
+python run_mvp.py sync-free-all --config configs\prod.example.json --source free_real --start 2010-01-01 --universe hot --output-dir reports\free_max_sync
+python run_mvp.py audit-data --config configs\prod.example.json --strict-pit --output-dir reports\data_audit
+python run_mvp.py build-feature-store --config configs\prod.example.json --source free_real --point-in-time --output-dir reports\feature_store
+python run_mvp.py train-walk-forward --config configs\prod.example.json --source free_real --model ensemble --horizons 1,5,20 --output-dir reports\walk_forward
+python run_mvp.py evaluate-models --config configs\prod.example.json --by-year --by-industry --output-dir reports\model_evaluation
+python run_mvp.py explain-stock --config configs\prod.example.json --source free_real --symbol 601899 --horizons 1,5,20 --output-dir reports\stock_explain
+python run_mvp.py qmt-readonly-sync --config configs\prod.example.json --output-dir reports\qmt_readonly
+python run_mvp.py paper-trade --config configs\prod.example.json --source free_real --days 20 --no-live --output-dir reports\paper_trade
+```
+
+`--trusted-only` 会要求个股预测产生 `trusted` 信号；如果当前数据覆盖率不足、股票池太小或模型没有优于基线，命令会明确返回非零状态，而不是假装高置信。

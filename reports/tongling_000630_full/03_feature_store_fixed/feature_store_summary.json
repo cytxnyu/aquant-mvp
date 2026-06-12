@@ -1,0 +1,10 @@
+{
+  "source": "baostock",
+  "feature_version": "8c51bc5022cb",
+  "rows": 31128,
+  "symbols": 20,
+  "start_date": "2020-01-02",
+  "end_date": "2026-06-10",
+  "feature_count": 103,
+  "low_coverage_features": []
+}

@@ -19,13 +19,20 @@ classifiers = [
     "Topic :: Office/Business :: Financial :: Investment",
 ]
 dependencies = [
-    "numpy>=1.24",
-    "pandas>=2.0",
+    "numpy>=1.24,<2",
+    "pandas>=2.0,<3",
     "matplotlib>=3.7",
 ]
 
 [project.optional-dependencies]
-data = ["akshare>=1.14.0"]
+data = ["akshare>=1.14.0", "baostock>=0.8.9", "tushare>=1.2.89"]
+warehouse = ["duckdb>=0.10", "pyarrow>=14.0"]
+model = ["lightgbm>=4.0"]
+model-extra = ["xgboost>=2.0", "catboost>=1.2", "scikit-learn>=1.4", "shap>=0.44,<0.46", "optuna>=3.5"]
+research-base = ["pyqlib>=0.9.0", "rqalpha>=5.0", "backtrader>=1.9.78.123", "vectorbt>=0.26"]
+paid-data = ["rqdatac>=3.5"]
+broker-base = ["vnpy>=3.9,<4", "xtquant>=250516.1.1"]
+factor-tools = ["ta-lib>=0.6.8"]
 dev = ["pytest>=8.0"]
 
 [project.scripts]

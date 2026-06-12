@@ -1,0 +1,42 @@
+theme,theme_group,symbol,name,reason,seed_rank,seed_weight,source_note
+metals_energy_metals,core_hot,601899,Zijin Mining,copper gold lithium,1,1.0,curated_public_hot_seed
+metals_energy_metals,core_hot,603993,CMOC,copper cobalt,2,0.5,curated_public_hot_seed
+metals_energy_metals,core_hot,600547,Shandong Gold,gold,3,0.3333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,600489,Zhongjin Gold,gold,4,0.25,curated_public_hot_seed
+metals_energy_metals,core_hot,600362,Jiangxi Copper,copper,5,0.2,curated_public_hot_seed
+metals_energy_metals,core_hot,000630,Tongling Nonferrous,copper,6,0.16666666666666666,curated_public_hot_seed
+metals_energy_metals,core_hot,601600,Aluminum Corp of China,aluminum,7,0.14285714285714285,curated_public_hot_seed
+metals_energy_metals,core_hot,000807,Yunnan Aluminum,aluminum,8,0.125,curated_public_hot_seed
+metals_energy_metals,core_hot,600111,Northern Rare Earth,rare earth,9,0.1111111111111111,curated_public_hot_seed
+metals_energy_metals,core_hot,002460,Ganfeng Lithium,lithium,10,0.1,curated_public_hot_seed
+metals_energy_metals,core_hot,002466,Tianqi Lithium,lithium,11,0.09090909090909091,curated_public_hot_seed
+metals_energy_metals,core_hot,000831,China Rare Earth,rare earth,12,0.08333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,000878,Yunnan Copper,copper,13,0.07692307692307693,curated_public_hot_seed
+metals_energy_metals,core_hot,000960,Yunnan Tin,tin,14,0.07142857142857142,curated_public_hot_seed
+metals_energy_metals,core_hot,000975,Yintai Gold,gold,15,0.06666666666666667,curated_public_hot_seed
+metals_energy_metals,core_hot,601168,Western Mining,copper lead zinc,16,0.0625,curated_public_hot_seed
+metals_energy_metals,core_hot,600219,Nanshan Aluminum,aluminum,17,0.058823529411764705,curated_public_hot_seed
+metals_energy_metals,core_hot,600988,Chifeng Gold,gold,18,0.05555555555555555,curated_public_hot_seed
+metals_energy_metals,core_hot,002155,Hunan Gold,gold antimony,19,0.05263157894736842,curated_public_hot_seed
+metals_energy_metals,core_hot,002237,Hengbang,gold smelting,20,0.05,curated_public_hot_seed
+metals_energy_metals,core_hot,000426,Xingye Silver Tin,silver tin,21,0.047619047619047616,curated_public_hot_seed
+metals_energy_metals,core_hot,600497,Chihong ZnGe,zinc germanium,22,0.045454545454545456,curated_public_hot_seed
+metals_energy_metals,core_hot,000933,Shenhuo,coal aluminum,23,0.043478260869565216,curated_public_hot_seed
+metals_energy_metals,core_hot,002532,Tianshan Aluminum,aluminum,24,0.041666666666666664,curated_public_hot_seed
+metals_energy_metals,core_hot,000737,North Copper,copper,25,0.04,curated_public_hot_seed
+metals_energy_metals,core_hot,601212,Baiyin Nonferrous,nonferrous metal,26,0.038461538461538464,curated_public_hot_seed
+metals_energy_metals,core_hot,002738,Sinomine Resource,cesium lithium,27,0.037037037037037035,curated_public_hot_seed
+metals_energy_metals,core_hot,002756,Yongxing Materials,lithium stainless steel,28,0.03571428571428571,curated_public_hot_seed
+metals_energy_metals,core_hot,601609,Jintian Copper,copper processing,29,0.034482758620689655,curated_public_hot_seed
+metals_energy_metals,core_hot,600456,BaoTi,titanium,30,0.03333333333333333,curated_public_hot_seed
+metals_energy_metals,core_hot,002182,Baowu Magnesium,magnesium,31,0.03225806451612903,curated_public_hot_seed
+metals_energy_metals,core_hot,603799,Huayou Cobalt,cobalt nickel lithium material,32,0.03125,curated_public_hot_seed
+metals_energy_metals,core_hot,300618,Hanrui Cobalt,cobalt,33,0.030303030303030304,curated_public_hot_seed
+metals_energy_metals,core_hot,300697,Electric Alloy,copper alloy,34,0.029411764705882353,curated_public_hot_seed
+metals_energy_metals,core_hot,002203,Hailiang,copper pipe,35,0.02857142857142857,curated_public_hot_seed
+metals_energy_metals,core_hot,601677,Mingtai Aluminum,aluminum processing,36,0.027777777777777776,curated_public_hot_seed
+metals_energy_metals,core_hot,603876,Dingsheng New Materials,aluminum foil,37,0.02702702702702703,curated_public_hot_seed
+metals_energy_metals,core_hot,002988,New Material Seed,new material seed,38,0.02631578947368421,curated_public_hot_seed
+metals_energy_metals,core_hot,600711,Silver Lead Zinc Seed,silver lead zinc watchlist,39,0.02564102564102564,curated_public_hot_seed
+metals_energy_metals,core_hot,301219,Tengyuan Cobalt,cobalt copper,40,0.025,curated_public_hot_seed
+metals_energy_metals,core_hot,301026,Battery Metal Seed,battery metal seed,41,0.024390243902439025,curated_public_hot_seed

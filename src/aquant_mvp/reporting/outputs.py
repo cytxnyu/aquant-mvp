@@ -13,6 +13,7 @@ from aquant_mvp.backtest import BacktestResult
 from aquant_mvp.config import AppConfig
 from aquant_mvp.data import DataQualityReport
 from aquant_mvp.data.providers import LoadReport
+from aquant_mvp.prediction import PredictionResult
 from aquant_mvp.universe import UniverseReport
 
 
@@ -25,6 +26,7 @@ def save_run_outputs(
     factors: pd.DataFrame,
     labels: pd.DataFrame,
     factor_analysis: FactorAnalysisResult,
+    predictions: PredictionResult,
     scores: pd.DataFrame,
     targets: pd.DataFrame,
     result: BacktestResult,
@@ -50,6 +52,8 @@ def save_run_outputs(
         "factor_quantile_returns": output_dir / "factor_quantile_returns.csv",
         "factor_coverage": output_dir / "factor_coverage.csv",
         "factor_analysis_json": output_dir / "factor_analysis.json",
+        "predictions": output_dir / "predictions.csv",
+        "prediction_summary": output_dir / "prediction_summary.json",
         "scores": output_dir / "scores.csv",
         "targets": output_dir / "rebalance_targets.csv",
         "equity_plot": output_dir / "equity_curve.png",
@@ -86,6 +90,11 @@ def save_run_outputs(
         ),
         encoding="utf-8",
     )
+    predictions.predictions.to_csv(paths["predictions"], index=False)
+    paths["prediction_summary"].write_text(
+        json.dumps(predictions.summary, ensure_ascii=False, indent=2, default=str),
+        encoding="utf-8",
+    )
     scores.reset_index().to_csv(paths["scores"], index=False)
     targets.to_csv(paths["targets"])
 
@@ -97,7 +106,7 @@ def save_run_outputs(
     _save_drawdown_plot(result.equity_curve, paths["drawdown_plot"])
     _save_factor_ic_plot(factor_analysis.ic_summary, paths["factor_ic_plot"])
     _save_quantile_returns_plot(factor_analysis.quantile_returns, paths["quantile_returns_plot"])
-    _write_summary(paths["summary"], config, load_report, universe_report, data_quality, metrics, paths)
+    _write_summary(paths["summary"], config, load_report, universe_report, data_quality, metrics, predictions, paths)
     _write_manifest(
         paths["manifest"],
         output_dir,
@@ -106,6 +115,7 @@ def save_run_outputs(
         universe_report,
         data_quality,
         metrics,
+        predictions,
         paths,
     )
 
@@ -113,9 +123,8 @@ def save_run_outputs(
 
 
 def _save_equity_plot(equity_curve: pd.DataFrame, path: Path) -> None:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
+    plt = _get_pyplot()
+    if plt is None:
         return
 
     fig, ax = plt.subplots(figsize=(10, 4.8))
@@ -130,9 +139,8 @@ def _save_equity_plot(equity_curve: pd.DataFrame, path: Path) -> None:
 
 
 def _save_drawdown_plot(equity_curve: pd.DataFrame, path: Path) -> None:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
+    plt = _get_pyplot()
+    if plt is None:
         return
     if "drawdown" not in equity_curve.columns:
         return
@@ -148,9 +156,8 @@ def _save_drawdown_plot(equity_curve: pd.DataFrame, path: Path) -> None:
 
 
 def _save_factor_ic_plot(ic_summary: pd.DataFrame, path: Path) -> None:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
+    plt = _get_pyplot()
+    if plt is None:
         return
     if ic_summary.empty:
         return
@@ -166,9 +173,8 @@ def _save_factor_ic_plot(ic_summary: pd.DataFrame, path: Path) -> None:
 
 
 def _save_quantile_returns_plot(quantile_returns: pd.DataFrame, path: Path) -> None:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
+    plt = _get_pyplot()
+    if plt is None:
         return
     if quantile_returns.empty:
         return
@@ -184,6 +190,17 @@ def _save_quantile_returns_plot(quantile_returns: pd.DataFrame, path: Path) -> N
     plt.close(fig)
 
 
+def _get_pyplot():
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg", force=True)
+        import matplotlib.pyplot as plt
+    except Exception:
+        return None
+    return plt
+
+
 def _write_summary(
     path: Path,
     config: AppConfig,
@@ -191,10 +208,15 @@ def _write_summary(
     universe_report: UniverseReport,
     data_quality: DataQualityReport,
     metrics: dict[str, float],
+    predictions: PredictionResult,
     paths: dict[str, Path],
 ) -> None:
     metric_lines = "\n".join(f"- `{key}`: {value:.6f}" for key, value in metrics.items())
     output_lines = "\n".join(f"- `{key}`: `{value.name}`" for key, value in paths.items() if key != "summary")
+    prediction_lines = "\n".join(
+        f"- `{row.symbol}`: rank {int(row.prediction_rank)}, signal {row.signal}, predicted excess {row.predicted_excess_return:.4%}"
+        for row in predictions.predictions.head(5).itertuples()
+    )
     text = f"""# AQuant Run Summary
 
 ## Run Config
@@ -215,6 +237,13 @@ def _write_summary(
 
 {metric_lines}
 
+## Latest Predictions
+
+- Method: `{predictions.summary.get('method')}`
+- Horizon: {predictions.summary.get('horizon_days')} trading days
+
+{prediction_lines}
+
 ## Outputs
 
 {output_lines}
@@ -234,6 +263,7 @@ def _write_manifest(
     universe_report: UniverseReport,
     data_quality: DataQualityReport,
     metrics: dict[str, float],
+    predictions: PredictionResult,
     paths: dict[str, Path],
 ) -> None:
     files = []
@@ -254,6 +284,7 @@ def _write_manifest(
         "selected_symbols": universe_report.selected_symbols,
         "data_quality_issue_count": data_quality.issue_count,
         "metrics": metrics,
+        "prediction_summary": predictions.summary,
         "config": _jsonable(config),
         "files": files,
     }

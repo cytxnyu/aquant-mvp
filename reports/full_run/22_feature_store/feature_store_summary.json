@@ -1,0 +1,10 @@
+{
+  "source": "sample",
+  "feature_version": "107bc828fdb7",
+  "rows": 10430,
+  "symbols": 10,
+  "start_date": "2022-01-03",
+  "end_date": "2025-12-31",
+  "feature_count": 103,
+  "low_coverage_features": []
+}

@@ -1,0 +1,318 @@
+{
+  "generated_at": "2026-06-12T10:43:34",
+  "project": "aquant-mvp",
+  "run_dir": "reports\\full_run\\profile_outputs_after",
+  "data_source": "sample",
+  "date_range": {
+    "start": "2022-01-01",
+    "end": "2025-12-31"
+  },
+  "loaded_symbols": [
+    "000001",
+    "000333",
+    "000858",
+    "002594",
+    "300750",
+    "600036",
+    "600519",
+    "600900",
+    "601318",
+    "601888"
+  ],
+  "selected_symbols": [
+    "000001",
+    "000333",
+    "000858",
+    "002594",
+    "300750",
+    "600036",
+    "600519",
+    "600900",
+    "601318",
+    "601888"
+  ],
+  "data_quality_issue_count": 0,
+  "metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1506241.187089051,
+    "total_return": 0.5062411870890509,
+    "annual_return": 0.10403089312349745,
+    "annual_volatility": 0.1384922296342946,
+    "max_drawdown": -0.1747359841968006,
+    "sharpe": 0.7839705506061696,
+    "calmar": 0.5953604439388407,
+    "win_rate": 0.7103718199608611,
+    "avg_turnover": 0.4234646809850207,
+    "total_turnover": 88.08065364488431,
+    "trade_count": 993.0,
+    "rebalance_count": 208.0
+  },
+  "prediction_summary": {
+    "latest_date": "2025-12-31",
+    "horizon_days": 5,
+    "method": "lightgbm",
+    "model_quality": {
+      "train_rows": 7340,
+      "valid_rows": 1840,
+      "valid_rank_ic": -0.01955139413580362,
+      "valid_mae": 0.03316795828961138
+    },
+    "top_symbols": [
+      {
+        "symbol": "000333",
+        "prediction_rank": 1,
+        "signal": "看多"
+      },
+      {
+        "symbol": "600519",
+        "prediction_rank": 2,
+        "signal": "看多"
+      },
+      {
+        "symbol": "601888",
+        "prediction_rank": 3,
+        "signal": "看多"
+      },
+      {
+        "symbol": "600900",
+        "prediction_rank": 4,
+        "signal": "观察"
+      },
+      {
+        "symbol": "002594",
+        "prediction_rank": 5,
+        "signal": "观察"
+      }
+    ],
+    "note": "Predictions are research signals, not investment advice."
+  },
+  "config": {
+    "data": {
+      "source": "sample",
+      "symbols": [
+        "000001",
+        "600519",
+        "000858",
+        "601318",
+        "600036",
+        "000333",
+        "002594",
+        "600900",
+        "601888",
+        "300750"
+      ],
+      "start_date": "2022-01-01",
+      "end_date": "2025-12-31",
+      "adjust": "qfq",
+      "cache_dir": "data\\cache\\daily",
+      "vendor": "akshare"
+    },
+    "storage": {
+      "engine": "duckdb",
+      "root_dir": "data\\warehouse",
+      "file_format": "auto"
+    },
+    "universe": {
+      "min_history_days": 120,
+      "min_amount": 0.0,
+      "max_missing_ratio": 0.2,
+      "exclude_symbols": []
+    },
+    "strategy": {
+      "rebalance": "W-FRI",
+      "top_n": 5,
+      "min_amount": 0.0,
+      "max_single_weight": 0.3,
+      "max_turnover": 1.0,
+      "factor_weights": {
+        "momentum_20": 0.3,
+        "momentum_60": 0.2,
+        "reversal_5": 0.15,
+        "reversal_10": 0.1,
+        "volatility_20": -0.15,
+        "volatility_60": -0.1,
+        "amount_mean_20": 0.1,
+        "turnover_mean_20": 0.08,
+        "volume_ratio_5_20": 0.08,
+        "price_position_60": 0.08,
+        "ma_bias_20": 0.06,
+        "max_drawdown_60": -0.1,
+        "downside_volatility_20": -0.08
+      }
+    },
+    "backtest": {
+      "initial_cash": 1000000.0,
+      "fee_rate": 0.0003,
+      "tax_rate": 0.001,
+      "slippage_rate": 0.0005,
+      "lot_size": 100,
+      "min_trade_value": 1000.0
+    },
+    "analysis": {
+      "label_horizons": [
+        5,
+        20
+      ],
+      "quantiles": 5
+    },
+    "model": {
+      "model_type": "ensemble",
+      "horizons": [
+        1,
+        5,
+        20
+      ],
+      "embargo_days": 5,
+      "registry_dir": "models\\registry"
+    },
+    "risk": {
+      "max_capital": 1000000.0,
+      "max_single_weight": 0.2,
+      "max_order_value": 200000.0,
+      "max_daily_loss": 0.03,
+      "max_drawdown": 0.1,
+      "blacklist": [],
+      "allow_live_orders": false
+    },
+    "broker": {
+      "mode": "none",
+      "account_id": "",
+      "qmt_path": "."
+    },
+    "report": {
+      "output_dir": "reports"
+    }
+  },
+  "files": [
+    {
+      "key": "config",
+      "file": "config.json",
+      "bytes": 2031
+    },
+    {
+      "key": "data_quality_issues",
+      "file": "data_quality_issues.csv",
+      "bytes": 20
+    },
+    {
+      "key": "data_quality_summary",
+      "file": "data_quality_summary.csv",
+      "bytes": 629
+    },
+    {
+      "key": "drawdown_plot",
+      "file": "drawdown.png",
+      "bytes": 80230
+    },
+    {
+      "key": "equity_curve",
+      "file": "equity_curve.csv",
+      "bytes": 128970
+    },
+    {
+      "key": "equity_plot",
+      "file": "equity_curve.png",
+      "bytes": 74513
+    },
+    {
+      "key": "factor_analysis_json",
+      "file": "factor_analysis.json",
+      "bytes": 29759
+    },
+    {
+      "key": "factor_coverage",
+      "file": "factor_coverage.csv",
+      "bytes": 3710
+    },
+    {
+      "key": "factor_ic_plot",
+      "file": "factor_ic.png",
+      "bytes": 261244
+    },
+    {
+      "key": "factor_ic_series",
+      "file": "factor_ic_series.csv",
+      "bytes": 6801656
+    },
+    {
+      "key": "factor_ic_summary",
+      "file": "factor_ic_summary.csv",
+      "bytes": 8491
+    },
+    {
+      "key": "factor_quantile_returns",
+      "file": "factor_quantile_returns.csv",
+      "bytes": 26690382
+    },
+    {
+      "key": "factors",
+      "file": "factors.csv",
+      "bytes": 20011765
+    },
+    {
+      "key": "holdings",
+      "file": "holdings.csv",
+      "bytes": 422921
+    },
+    {
+      "key": "labels",
+      "file": "labels.csv",
+      "bytes": 1058403
+    },
+    {
+      "key": "load_report",
+      "file": "load_report.json",
+      "bytes": 223
+    },
+    {
+      "key": "metrics",
+      "file": "metrics.json",
+      "bytes": 469
+    },
+    {
+      "key": "prediction_summary",
+      "file": "prediction_summary.json",
+      "bytes": 823
+    },
+    {
+      "key": "predictions",
+      "file": "predictions.csv",
+      "bytes": 2261
+    },
+    {
+      "key": "quantile_returns_plot",
+      "file": "quantile_returns.png",
+      "bytes": 31776
+    },
+    {
+      "key": "rebalances",
+      "file": "rebalances.csv",
+      "bytes": 23567
+    },
+    {
+      "key": "scores",
+      "file": "scores.csv",
+      "bytes": 734220
+    },
+    {
+      "key": "summary",
+      "file": "summary.md",
+      "bytes": 2361
+    },
+    {
+      "key": "targets",
+      "file": "rebalance_targets.csv",
+      "bytes": 11336
+    },
+    {
+      "key": "trades",
+      "file": "trades.csv",
+      "bytes": 141719
+    },
+    {
+      "key": "universe",
+      "file": "universe.csv",
+      "bytes": 1017
+    }
+  ]
+}

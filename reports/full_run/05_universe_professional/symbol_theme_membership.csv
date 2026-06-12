@@ -1,0 +1,146 @@
+symbol,name,theme_count,themes,reasons
+000034,Digital China,1,data_element_fintech_ai_app,cloud data service
+000831,China Rare Earth,1,rare_earth_magnetic_materials,rare earth oxide
+000970,Zhongke Sanhuan,1,rare_earth_magnetic_materials,NdFeB magnet
+000977,Inspur Information,1,cpo_optical_module_datacenter,AI server
+000988,Huagong Tech,1,industrial_mother_machine_laser,laser equipment
+001872,China Merchants Port,1,shipbuilding_ocean_shipping,port
+002008,Han's Laser,1,industrial_mother_machine_laser,laser automation
+002028,Sieyuan Electric,1,uhv_smart_grid_power_equipment,power equipment
+002050,Sanhua Intelligent Controls,1,humanoid_robot_core_parts,thermal and actuator component
+002056,Hengdian DMEGC,1,rare_earth_magnetic_materials,magnetic material
+002151,BDS Navigation,1,commercial_space_satellite_internet,Beidou navigation
+002156,Tongfu Microelectronics,1,advanced_packaging_chiplet_pcb,advanced packaging
+002192,Rongjie,1,solid_state_battery_materials,lithium resource
+002230,iFlytek,1,data_element_fintech_ai_app,AI platform
+002281,Accelink,1,cpo_optical_module_datacenter,optical device
+002335,Kehua Data,1,uhv_smart_grid_power_equipment,UPS and power electronics
+002371,NAURA,1,semiconductor_equipment_materials,etching deposition and cleaning equipment
+002463,WUS Printed Circuit,1,advanced_packaging_chiplet_pcb,AI server PCB
+002465,Haige Communications,1,commercial_space_satellite_internet,satellite communication
+002472,Shuanghuan Driveline,1,humanoid_robot_core_parts,gear transmission
+002497,Yahua Group,1,solid_state_battery_materials,lithium salt
+002527,Xinshida,1,humanoid_robot_core_parts,robot controller
+002600,Lingyi iTech,1,rare_earth_magnetic_materials,precision magnetic component
+002709,Tinci Materials,1,solid_state_battery_materials,electrolyte
+002747,Estun,1,humanoid_robot_core_parts,robot body and servo
+002821,Asymchem,1,cxo_biotech_innovative_drug,CDMO
+002916,Shennan Circuits,1,advanced_packaging_chiplet_pcb,IC substrate and PCB
+002938,Avary Holding,1,advanced_packaging_chiplet_pcb,high-end PCB
+300001,TGOOD,1,uhv_smart_grid_power_equipment,charging and grid equipment
+300003,Lepu Medical,1,medical_device_ivd_imaging,cardiovascular device
+300033,Hithink RoyalFlush,1,data_element_fintech_ai_app,financial data
+300045,Hwa Create,1,commercial_space_satellite_internet,satellite navigation
+300059,East Money,1,data_element_fintech_ai_app,internet finance
+300073,Dangsheng Technology,1,solid_state_battery_materials,cathode material
+300101,Zhenxin Technology,1,commercial_space_satellite_internet,navigation chip
+300124,Inovance,1,humanoid_robot_core_parts,servo and control
+300161,Huazhong CNC,1,industrial_mother_machine_laser,CNC system
+300188,Meiya Pico,1,data_element_fintech_ai_app,data security
+300212,E-Hualu,1,data_element_fintech_ai_app,data asset
+300224,Zhenghai Magnetic,1,rare_earth_magnetic_materials,rare earth magnet
+300308,Zhongji Innolight,1,cpo_optical_module_datacenter,800G optical module
+300347,Tigermed,1,cxo_biotech_innovative_drug,clinical CRO
+300363,Porton Pharma,1,cxo_biotech_innovative_drug,CDMO
+300364,Chinese Online,1,data_element_fintech_ai_app,digital content and data
+300390,Canmax,1,solid_state_battery_materials,lithium chemical
+300394,TFC Communication,1,cpo_optical_module_datacenter,optical passive component
+300418,Kunlun Tech,1,data_element_fintech_ai_app,AI application
+300476,Victory Giant,1,advanced_packaging_chiplet_pcb,AI server PCB
+300482,Wondfo Biotech,1,medical_device_ivd_imaging,IVD
+300491,Tonghe Technology,1,uhv_smart_grid_power_equipment,charging module
+300502,Eoptolink,1,cpo_optical_module_datacenter,high-speed optical module
+300567,Jingce Electronic,1,semiconductor_equipment_materials,inspection equipment
+300570,T&S Communications,1,cpo_optical_module_datacenter,optical connector
+300595,Opm Biosciences,1,medical_device_ivd_imaging,bioprocess equipment
+300604,Changchuan Technology,1,semiconductor_equipment_materials,IC test equipment
+300607,Topstar,1,industrial_mother_machine_laser,industrial automation
+300627,Huace Navigation,1,commercial_space_satellite_internet,precision navigation
+300660,Jiangsu Leili,1,humanoid_robot_core_parts,micro motor
+300725,Pharmablock,1,cxo_biotech_innovative_drug,chemistry CRO
+300748,Jintian Copper,1,rare_earth_magnetic_materials,copper and magnetic chain seed
+300750,CATL,1,solid_state_battery_materials,solid-state battery leader watchlist
+300759,Pharmaron,1,cxo_biotech_innovative_drug,CXO platform
+300760,Mindray Medical,1,medical_device_ivd_imaging,medical device
+301358,Hunan Yuneng,1,solid_state_battery_materials,LFP cathode
+301368,Fengli Intelligent,1,humanoid_robot_core_parts,micro transmission
+600018,SIPG,1,shipbuilding_ocean_shipping,port
+600026,COSCO Shipping Energy,1,shipbuilding_ocean_shipping,tanker shipping
+600028,Sinopec,1,central_soe_high_dividend,oil dividend
+600031,Sany Heavy Industry,1,industrial_mother_machine_laser,high-end equipment
+600089,TBEA,1,uhv_smart_grid_power_equipment,transformer and UHV
+600111,Northern Rare Earth,1,rare_earth_magnetic_materials,rare earth resource
+600118,China Satellite,1,commercial_space_satellite_internet,satellite platform
+600150,CSSC Holdings,1,shipbuilding_ocean_shipping,shipbuilding
+600183,Shengyi Technology,1,advanced_packaging_chiplet_pcb,copper clad laminate
+600276,Hengrui Medicine,1,cxo_biotech_innovative_drug,innovative drug
+600312,Pinggao Electric,1,uhv_smart_grid_power_equipment,UHV switchgear
+600392,Shenghe Resources,1,rare_earth_magnetic_materials,rare earth resource
+600406,NARI Technology,1,uhv_smart_grid_power_equipment,grid automation
+600428,COSCO Shipping Specialized,1,shipbuilding_ocean_shipping,special shipping
+600482,China Ship Defense,1,shipbuilding_ocean_shipping,ship equipment
+600487,Hengtong Optic-Electric,1,cpo_optical_module_datacenter,optical cable
+600522,Zhongtian Technology,1,cpo_optical_module_datacenter,optical cable
+600584,JCET,1,advanced_packaging_chiplet_pcb,advanced packaging
+600845,Baosight Software,1,data_element_fintech_ai_app,industrial data
+600900,Yangtze Power,1,central_soe_high_dividend,hydropower dividend
+600938,CNOOC,1,central_soe_high_dividend,oil dividend
+600941,China Mobile,1,central_soe_high_dividend,telecom dividend
+601018,Ningbo Zhoushan Port,1,shipbuilding_ocean_shipping,port
+601088,China Shenhua,1,central_soe_high_dividend,coal dividend
+601100,Hengli Hydraulic,1,industrial_mother_machine_laser,hydraulic component
+601179,China XD Electric,1,uhv_smart_grid_power_equipment,UHV equipment
+601288,Agricultural Bank of China,1,central_soe_high_dividend,bank dividend
+601360,Qihoo 360,1,data_element_fintech_ai_app,security AI
+601398,ICBC,1,central_soe_high_dividend,bank dividend
+601728,China Telecom,1,central_soe_high_dividend,telecom dividend
+601816,Beijing-Shanghai High Speed Railway,1,central_soe_high_dividend,transport dividend
+601857,PetroChina,1,central_soe_high_dividend,oil dividend
+601872,China Merchants Energy Shipping,1,shipbuilding_ocean_shipping,energy shipping
+601877,Chint Electrics,1,uhv_smart_grid_power_equipment,low-voltage electrical
+601919,COSCO Shipping Holdings,1,shipbuilding_ocean_shipping,container shipping
+601939,China Construction Bank,1,central_soe_high_dividend,bank dividend
+601988,Bank of China,1,central_soe_high_dividend,bank dividend
+601989,China Heavy Industry,1,shipbuilding_ocean_shipping,shipbuilding
+603019,Sugon,1,cpo_optical_module_datacenter,HPC data center
+603228,Kinwong,1,advanced_packaging_chiplet_pcb,high-end PCB
+603259,WuXi AppTec,1,cxo_biotech_innovative_drug,CXO platform
+603283,Saiteng,1,industrial_mother_machine_laser,precision equipment
+603338,Zhejiang Dingli,1,industrial_mother_machine_laser,industrial equipment
+603416,Xinjie Electric,1,humanoid_robot_core_parts,PLC and servo
+603659,Putailai,1,solid_state_battery_materials,anode and coating
+603662,Keli Sensing,1,humanoid_robot_core_parts,force sensor
+603882,KingMed Diagnostics,1,medical_device_ivd_imaging,medical testing
+688012,Advanced Micro-Fab,1,semiconductor_equipment_materials,etching equipment
+688017,Green Harmonic,1,humanoid_robot_core_parts,harmonic reducer
+688019,Anji Micro,1,semiconductor_equipment_materials,CMP slurry and photoresist material
+688029,Nanwei Medical,1,medical_device_ivd_imaging,endoscope device
+688037,Kingsemi,1,semiconductor_equipment_materials,photoresist process equipment
+688066,PIESAT,1,commercial_space_satellite_internet,satellite remote sensing
+688072,Piotech,1,semiconductor_equipment_materials,thin film deposition equipment
+688111,Kingsoft Office,1,data_element_fintech_ai_app,office AI
+688116,TnTech,1,solid_state_battery_materials,carbon nanotube
+688120,Hwatsing,1,semiconductor_equipment_materials,CMP equipment
+688126,National Silicon,1,semiconductor_equipment_materials,large silicon wafer
+688180,Junshi Biosciences,1,cxo_biotech_innovative_drug,antibody drug
+688183,Shengyi Electronics,1,advanced_packaging_chiplet_pcb,server PCB
+688200,Huafeng Test,1,semiconductor_equipment_materials,semiconductor test equipment
+688234,Tianyue Advanced,1,semiconductor_equipment_materials,SiC substrate
+688235,BeiGene,1,cxo_biotech_innovative_drug,oncology drug
+688239,Aerospace Nanhu,1,commercial_space_satellite_internet,radar
+688266,Zelgen,1,cxo_biotech_innovative_drug,innovative drug
+688271,United Imaging,1,medical_device_ivd_imaging,medical imaging
+688305,KSEC Intelligent,1,industrial_mother_machine_laser,motion control
+688331,RemeGen,1,cxo_biotech_innovative_drug,ADC and biologic
+688333,Xi'an Bright Laser,1,commercial_space_satellite_internet,aerospace additive manufacturing
+688388,Jiayuan Technology,1,solid_state_battery_materials,copper foil
+688390,GoodWe,1,uhv_smart_grid_power_equipment,inverter
+688396,China Resources Micro,1,semiconductor_equipment_materials,power semiconductor
+688409,Fortune Precision,1,semiconductor_equipment_materials,semiconductor equipment parts
+688498,Yuanjie Semiconductor,1,cpo_optical_module_datacenter,laser chip
+688525,Siglent,1,semiconductor_equipment_materials,electronic test instrument
+688567,Farasis Energy,1,solid_state_battery_materials,solid-state battery watchlist
+688568,Geovis Technology,1,commercial_space_satellite_internet,satellite data
+688575,YHLO Biotech,1,medical_device_ivd_imaging,IVD
+688617,APT Medical,1,medical_device_ivd_imaging,electrophysiology device
+688698,Weihong,1,industrial_mother_machine_laser,motion control

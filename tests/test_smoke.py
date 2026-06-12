@@ -29,5 +29,10 @@ def test_sample_pipeline_runs(tmp_path: Path) -> None:
     assert (payload["run_dir"] / "summary.md").exists()
     assert (payload["run_dir"] / "factor_ic_summary.csv").exists()
     assert (payload["run_dir"] / "factor_analysis.json").exists()
+    assert (payload["run_dir"] / "predictions.csv").exists()
+    assert (payload["run_dir"] / "prediction_summary.json").exists()
     assert (payload["run_dir"] / "equity_curve.png").exists()
     assert (payload["run_dir"] / "drawdown.png").exists()
+    predictions = payload["predictions"].predictions
+    assert not predictions.empty
+    assert predictions["prediction_rank"].is_unique
