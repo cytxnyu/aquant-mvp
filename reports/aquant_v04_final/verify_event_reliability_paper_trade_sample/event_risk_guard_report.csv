@@ -1,0 +1,14 @@
+date,symbol,original_weight,adjusted_weight,weight_delta,action,reason,event_risk_count,negative_event_count,event_impact_score,event_weighted_impact_score,event_confidence_mean,event_reliability_mean,latest_event_type,latest_event_title
+2025-12-19,002594,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold;negative_event_count,1,1,-0.55,-0.15620000000000003,0.7100000000000001,0.4,public_opinion_risk,风险: 002594 出现舆情风险提示，需降低事件置信度。
+2025-12-19,300750,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold;negative_event_count,1,1,-0.09585063458456072,-0.03109698814022701,0.67,0.4,commodity_shock,行业: 有色金属与新能源产业链价格波动，对相关股票形成商品价格冲击。
+2025-12-19,601888,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold;negative_event_count,1,1,-0.55,-0.15620000000000003,0.7100000000000001,0.4000000000000001,public_opinion_risk,风险: 601888 出现舆情风险提示，需降低事件置信度。
+2025-12-26,000001,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold;negative_event_count,1,1,-0.55,-0.15620000000000003,0.7100000000000001,0.4,public_opinion_risk,风险: 000001 出现舆情风险提示，需降低事件置信度。
+2025-12-26,000858,0.2,0.0,-0.2,block_new_buy,event_risk_count_threshold;negative_event_count,1,1,-0.09585063458456072,-0.03109698814022701,0.67,0.4,commodity_shock,行业: 有色金属与新能源产业链价格波动，对相关股票形成商品价格冲击。
+2025-12-26,002594,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 002594 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-26,300750,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 300750 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-26,600519,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold;negative_event_count,1,1,-0.55,-0.15620000000000003,0.7100000000000001,0.4000000000000001,public_opinion_risk,风险: 600519 出现舆情风险提示，需降低事件置信度。
+2025-12-31,000001,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 000001 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-31,000858,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 000858 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-31,002594,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 002594 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-31,300750,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 300750 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+2025-12-31,600519,0.2,0.1,-0.1,reduce_weight,event_risk_count_threshold,1,1,0.21528094414203244,0.0591313161925375,0.6833333333333335,0.39999999999999997,order_contract,公告: 600519 发布经营进展公告，订单合同和产能信息需要继续跟踪。

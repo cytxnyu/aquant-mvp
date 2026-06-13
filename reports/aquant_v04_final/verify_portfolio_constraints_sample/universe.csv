@@ -1,0 +1,4 @@
+symbol,passed,rows,missing_ratio,avg_amount_60,reasons,reserved_filters
+000630,True,1043,0.0,3699353444.031228,,"st,suspend,limit_up_down,new_stock,delist,industry"
+601899,True,1043,0.0,6806585077.847363,,"st,suspend,limit_up_down,new_stock,delist,industry"
+600362,True,1043,0.0,8248765025.96749,,"st,suspend,limit_up_down,new_stock,delist,industry"

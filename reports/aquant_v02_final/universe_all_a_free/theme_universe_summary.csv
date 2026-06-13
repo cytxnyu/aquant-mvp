@@ -1,0 +1,14 @@
+theme,theme_group,rows,unique_symbols,top_seed_weight
+agriculture_food_beverage,all_a_free,96,96,0.03125
+ai_compute_semiconductor,all_a_free,703,703,0.0625
+central_soe_high_dividend,all_a_free,70,70,0.14285714285714285
+construction_infrastructure,all_a_free,63,63,0.011235955056179775
+consumer_electronics_pcb,all_a_free,87,87,0.007246376811594203
+data_element_fintech_ai_app,all_a_free,115,115,1.0
+defense_ship_equipment,all_a_free,43,43,0.009708737864077669
+environmental_water_gas,all_a_free,51,51,0.008130081300813009
+innovative_drug_medical_device,all_a_free,327,327,0.05
+mega_hot_free_market_extension,all_a_free,3681,3681,0.5
+metals_energy_metals,all_a_free,89,89,0.013888888888888888
+power_solid_state_battery,all_a_free,140,140,0.05263157894736842
+robotics_highend_manufacturing,all_a_free,62,62,0.013513513513513514

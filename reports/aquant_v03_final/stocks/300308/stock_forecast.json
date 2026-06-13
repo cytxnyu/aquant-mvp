@@ -1,0 +1,60 @@
+{
+  "symbol": "300308",
+  "latest_date": "2025-12-31",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "source": "baostock",
+  "model_type": "ensemble",
+  "data_version": "2487a4dbd0a6",
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "lightgbm",
+      "train_rows": 7593,
+      "valid_rows": 1914,
+      "valid_accuracy": 0.5313479623824452,
+      "valid_brier": 0.252105194754863,
+      "valid_auc": 0.5371243885394829,
+      "valid_return_ic": 0.03794794816172078,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_5d": {
+      "method": "lightgbm",
+      "train_rows": 7563,
+      "valid_rows": 1904,
+      "valid_accuracy": 0.4852941176470588,
+      "valid_brier": 0.2878323711916985,
+      "valid_auc": 0.47377204740607043,
+      "valid_return_ic": -0.015452916291009252,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_20d": {
+      "method": "lightgbm",
+      "train_rows": 7443,
+      "valid_rows": 1874,
+      "valid_accuracy": 0.4578441835645678,
+      "valid_brier": 0.3208903404216895,
+      "valid_auc": 0.49526135699845364,
+      "valid_return_ic": -0.14380888476715145,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_60d": {
+      "method": "lightgbm",
+      "train_rows": 7123,
+      "valid_rows": 1794,
+      "valid_accuracy": 0.6432552954292085,
+      "valid_brier": 0.23171222055866186,
+      "valid_auc": 0.7400805146205813,
+      "valid_return_ic": 0.4705788437582516,
+      "feature_count": 237,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves."
+}

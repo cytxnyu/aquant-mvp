@@ -1,0 +1,7 @@
+login success!
+logout success!
+Walk-forward training finished.
+Source: baostock; symbols: 220; rows: 72748; event features: 0
+ rows  direction_accuracy  baseline_accuracy      auc    brier   rank_ic  top_bucket_return  bottom_bucket_return  top_bottom_spread  beats_baseline model_status  trust_gate_passed                             trust_gate_reasons  horizon_days   model_type trust_status
+72748            0.484659           0.501526 0.479017 0.256689 -0.038323            0.00738              0.006875           0.000505            True           ok              False auc_above_052;brier_below_025;rank_ic_positive             5 factor_score         weak
+Report: reports\aquant_v04_final\verify_walk_forward_baostock_220_real

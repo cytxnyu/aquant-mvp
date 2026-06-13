@@ -1,0 +1,4 @@
+table,rows,columns,min_date,max_date,pit_ready,missing_ratio
+daily_bar,346,15,2025-01-02,2026-06-10,True,0.06666666666666667
+feature_store,3129,278,2022-01-03,2025-12-31,True,0.02916784501449655
+source_audit,1,10,2026-06-12,2026-06-12,True,0.1

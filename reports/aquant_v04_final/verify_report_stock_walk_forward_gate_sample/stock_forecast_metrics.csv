@@ -1,0 +1,2 @@
+horizon_days,rows,direction_accuracy,brier,return_ic,top_bucket_return,bottom_bucket_return,max_forward_drawdown
+5,1038,0.5115606936416185,0.24936005964478797,0.10415649089571725,0.007128313083156067,0.000822273445323361,-0.9881690753355714

@@ -5,7 +5,7 @@ import pandas as pd
 from aquant_mvp.backtest.stock import _metrics
 from aquant_mvp.factors import FACTOR_COLUMNS, compute_factor_panel
 from aquant_mvp.labels import compute_return_labels
-from aquant_mvp.prediction import build_latest_predictions
+from aquant_mvp.prediction import build_kline_forecast, build_latest_predictions, save_kline_forecast_outputs
 from aquant_mvp.strategy import score_factors
 
 
@@ -52,3 +52,30 @@ def test_stock_backtest_drawdown_is_bounded() -> None:
     )
     metrics = _metrics(frame, 5, "future_return_5d", "direction_up_5d")
     assert -1.0 <= metrics["max_forward_drawdown"] <= 0.0
+
+
+def test_kline_forecast_outputs_valid_scenarios(tmp_path) -> None:
+    bars = {
+        "000630": _sample_bars("000630", 0),
+        "601899": _sample_bars("601899", 10),
+        "600362": _sample_bars("600362", 20),
+    }
+    result = build_kline_forecast(
+        bars,
+        "000630",
+        [1, 5, 20],
+        source="sample",
+        days=10,
+        history_days=60,
+        allow_sample=True,
+    )
+    assert len(result.forecast) == 30
+    assert set(result.forecast["scenario"]) == {"bearish", "base", "bullish"}
+    assert result.forecast["high"].ge(result.forecast[["open", "close"]].max(axis=1)).all()
+    assert result.forecast["low"].le(result.forecast[["open", "close"]].min(axis=1)).all()
+    assert result.forecast["p10_close"].le(result.forecast["p50_close"]).all()
+    assert result.forecast["p50_close"].le(result.forecast["p90_close"]).all()
+    paths = save_kline_forecast_outputs(result, tmp_path)
+    assert paths["forecast_kline"].exists()
+    assert paths["forecast_kline_html"].exists()
+    assert paths["stock_prediction_report"].exists()

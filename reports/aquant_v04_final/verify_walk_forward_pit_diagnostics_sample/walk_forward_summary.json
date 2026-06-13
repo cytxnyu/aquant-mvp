@@ -1,0 +1,15 @@
+{
+  "model_type": "factor_score",
+  "horizons": [
+    5
+  ],
+  "symbols": 3,
+  "min_symbols": 200,
+  "embargo_days": 5,
+  "feature_count": 237,
+  "base_factor_count": 237,
+  "event_feature_count": 0,
+  "event_features": [],
+  "rows": 2358,
+  "trust_note": "trusted requires enough symbols and model metrics better than baseline"
+}

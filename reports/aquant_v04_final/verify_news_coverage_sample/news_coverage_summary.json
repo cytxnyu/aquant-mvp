@@ -1,0 +1,10 @@
+{
+  "symbols": 3,
+  "event_rows": 9,
+  "event_factor_rows": 15,
+  "coverage_counts": {
+    "ok": 3
+  },
+  "event_store": "reports\\aquant_v04_final\\verify_news_coverage_sample\\event_store.csv",
+  "event_factors": "reports\\aquant_v04_final\\verify_news_coverage_sample\\event_factors.csv"
+}

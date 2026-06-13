@@ -1,0 +1,2 @@
+rows,direction_accuracy,baseline_accuracy,auc,brier,rank_ic,top_bucket_return,bottom_bucket_return,top_bottom_spread,beats_baseline,model_status,trust_gate_passed,trust_gate_reasons,horizon_days,model_type,trust_status
+72748,0.4846593720789575,0.5015258151426844,0.47901668649129403,0.2566894732670051,-0.03832276574588786,0.0073797408598060745,0.0068746634412474176,0.000505077418558657,True,ok,False,auc_above_052;brier_below_025;rank_ic_positive,5,factor_score,weak

@@ -1,0 +1,6 @@
+{
+  "warnings": [
+    "000630: cninfo_direct unexpected schema",
+    "event_store_empty"
+  ]
+}

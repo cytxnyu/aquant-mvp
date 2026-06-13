@@ -1,0 +1,72 @@
+{
+  "symbol": "000630",
+  "source": "sample",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "with_kline": true,
+  "with_news": true,
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 3,
+    "event_factor_rows": 5,
+    "event_types": [
+      "commodity_shock",
+      "order_contract",
+      "public_opinion_risk"
+    ],
+    "latest_event_title": "公告: 000630 发布经营进展公告，订单合同和产能信息需要继续跟踪。"
+  },
+  "forecast_rows": 4,
+  "explanation_rows": 4,
+  "similar_history_rows": 56,
+  "backtest_rows": 4086,
+  "backtest_metric_rows": 4,
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "files": [
+    "event_factors.csv",
+    "event_store.csv",
+    "event_warnings.json",
+    "forecast_kline.csv",
+    "forecast_kline.html",
+    "forecast_kline.json",
+    "forecast_kline.png",
+    "history_kline.csv",
+    "news_evidence.md",
+    "raw_events.csv",
+    "similar_history.csv",
+    "stock_event_factors.csv",
+    "stock_event_store.csv",
+    "stock_explanation.csv",
+    "stock_explanation.md",
+    "stock_forecast.csv",
+    "stock_forecast.json",
+    "stock_forecast_backtest.csv",
+    "stock_forecast_metrics.csv",
+    "stock_news_evidence.md",
+    "stock_prediction_report.md"
+  ],
+  "kline_files": {
+    "stock_forecast": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\stock_forecast.csv",
+    "stock_forecast_json": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\stock_forecast.json",
+    "forecast_kline": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\forecast_kline.csv",
+    "forecast_kline_json": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\forecast_kline.json",
+    "history_kline": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\history_kline.csv",
+    "forecast_kline_png": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\forecast_kline.png",
+    "forecast_kline_html": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\forecast_kline.html",
+    "stock_prediction_report": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\stock_prediction_report.md"
+  },
+  "news_files": {
+    "raw_events": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\raw_events.csv",
+    "event_store": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\event_store.csv",
+    "event_factors": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\event_factors.csv",
+    "news_evidence": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\news_evidence.md",
+    "event_warnings": "reports\\aquant_v04_final\\verify_report_stock_event_text_000630\\event_warnings.json"
+  },
+  "note": "Research reports only; not investment advice. Live trading remains disabled."
+}

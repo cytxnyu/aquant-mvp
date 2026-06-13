@@ -1,0 +1,67 @@
+{
+  "command": "backtest-portfolio",
+  "source": "sample",
+  "requested_universe": "630,601899,600362",
+  "loaded_symbols": [
+    "000630",
+    "600362",
+    "601899"
+  ],
+  "selected_symbols": [
+    "000630",
+    "600362",
+    "601899"
+  ],
+  "metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1915748.2339494305,
+    "total_return": 0.9157482339494305,
+    "annual_return": 0.1700811891301537,
+    "annual_volatility": 0.16101385514866634,
+    "max_drawdown": -0.21030756263525863,
+    "sharpe": 1.056363429229828,
+    "calmar": 0.8087259773207942,
+    "win_rate": 0.7208480565371025,
+    "avg_turnover": 0.029695887851122284,
+    "total_turnover": 6.176744673033435,
+    "trade_count": 548.0,
+    "rebalance_count": 208.0
+  },
+  "with_news": true,
+  "event_attribution_rows": 1038,
+  "event_risk_guard": {
+    "enabled": true,
+    "adjusted_rows": 6,
+    "blocked_symbols": [],
+    "reduced_symbols": [
+      "000630",
+      "600362",
+      "601899"
+    ],
+    "weight_removed": 0.9,
+    "config": {
+      "max_event_risk_count": 0,
+      "min_negative_impact": -0.2,
+      "min_confidence": 0.45,
+      "weight_multiplier": 0.5,
+      "block_new_buy": true,
+      "max_event_age_days": 30
+    }
+  },
+  "event_guarded_metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1908847.8800663599,
+    "total_return": 0.90884788006636,
+    "annual_return": 0.1690615202166179,
+    "annual_volatility": 0.16081024921717102,
+    "max_drawdown": -0.21030756263525863,
+    "sharpe": 1.052072915325443,
+    "calmar": 0.8038775120504121,
+    "win_rate": 0.7192982456140351,
+    "avg_turnover": 0.03165414540579432,
+    "total_turnover": 6.584062244405219,
+    "trade_count": 549.0,
+    "rebalance_count": 208.0
+  },
+  "note": "Portfolio research backtest only; live trading remains disabled."
+}

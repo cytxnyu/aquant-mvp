@@ -1,0 +1,39 @@
+{
+  "latest_date": "2025-12-31",
+  "horizon_days": 5,
+  "method": "lightgbm",
+  "model_quality": {
+    "train_rows": 6278,
+    "valid_rows": 1580,
+    "valid_rank_ic": -0.025363122408605967,
+    "valid_mae": 0.0331161763803348
+  },
+  "top_symbols": [
+    {
+      "symbol": "600900",
+      "prediction_rank": 1,
+      "signal": "候选"
+    },
+    {
+      "symbol": "601318",
+      "prediction_rank": 2,
+      "signal": "候选"
+    },
+    {
+      "symbol": "000001",
+      "prediction_rank": 3,
+      "signal": "候选"
+    },
+    {
+      "symbol": "600519",
+      "prediction_rank": 4,
+      "signal": "观察"
+    },
+    {
+      "symbol": "000333",
+      "prediction_rank": 5,
+      "signal": "观察"
+    }
+  ],
+  "note": "Predictions are research signals, not investment advice."
+}

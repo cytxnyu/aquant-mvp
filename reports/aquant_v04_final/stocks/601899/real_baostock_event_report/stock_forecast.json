@@ -1,0 +1,70 @@
+{
+  "symbol": "601899",
+  "latest_date": "2026-06-10",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "source": "baostock",
+  "model_type": "event_aware_ensemble",
+  "data_version": "5c3fea71183b",
+  "event_feature_count": 7,
+  "event_features": [
+    "event_count_3d",
+    "event_count_20d",
+    "positive_event_count",
+    "negative_event_count",
+    "event_risk_count",
+    "event_impact_score",
+    "event_confidence_mean"
+  ],
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "lightgbm",
+      "train_rows": 24879,
+      "valid_rows": 6229,
+      "valid_accuracy": 0.4970300208701236,
+      "valid_brier": 0.2572109827343261,
+      "valid_auc": 0.5025471123478998,
+      "valid_return_ic": 0.001020887165863719,
+      "feature_count": 244,
+      "embargo_days": 5
+    },
+    "horizon_5d": {
+      "method": "lightgbm",
+      "train_rows": 24819,
+      "valid_rows": 6209,
+      "valid_accuracy": 0.47849895313254953,
+      "valid_brier": 0.2693284192171739,
+      "valid_auc": 0.5407943601819731,
+      "valid_return_ic": 0.0837249275023913,
+      "feature_count": 244,
+      "embargo_days": 5
+    },
+    "horizon_20d": {
+      "method": "lightgbm",
+      "train_rows": 24579,
+      "valid_rows": 6149,
+      "valid_accuracy": 0.37436981623028137,
+      "valid_brier": 0.3562605096264591,
+      "valid_auc": 0.5292334102707901,
+      "valid_return_ic": 0.0770815194015623,
+      "feature_count": 244,
+      "embargo_days": 5
+    },
+    "horizon_60d": {
+      "method": "lightgbm",
+      "train_rows": 23939,
+      "valid_rows": 5989,
+      "valid_accuracy": 0.3058941392553014,
+      "valid_brier": 0.4365159701052816,
+      "valid_auc": 0.4372962947140579,
+      "valid_return_ic": -0.20479602998467147,
+      "feature_count": 244,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves."
+}

@@ -7,21 +7,35 @@ from pathlib import Path
 
 import pandas as pd
 
-from aquant_mvp.backtest import backtest_stock_forecast
+from aquant_mvp.backtest import backtest_stock_forecast, run_backtest
 from aquant_mvp.broker import PaperBroker, QMTReadOnlyBroker, build_order_plan_from_targets
 from aquant_mvp.config import load_config
-from aquant_mvp.data import add_source_audit_columns, audit_point_in_time_tables, check_daily_bars, load_daily_bars
+from aquant_mvp.data import add_source_audit_columns, audit_point_in_time_tables, check_daily_bars, load_daily_bars, load_daily_bars_resilient
 from aquant_mvp.data.providers import LoadReport
+from aquant_mvp.events import audit_event_coverage, build_event_store, build_news_evidence_report, sync_public_events, write_event_outputs
 from aquant_mvp.features import build_point_in_time_feature_store
-from aquant_mvp.factors import compute_factor_panel
+from aquant_mvp.factors import FACTOR_COLUMNS, analyze_factor_trust, compute_factor_panel, write_factor_trust_report
 from aquant_mvp.foundations import discover_foundations, write_foundation_report
+from aquant_mvp.labels import compute_return_labels
+from aquant_mvp.analysis import (
+    analyze_factors,
+    attribute_portfolio_events,
+    evaluate_walk_forward_slices,
+    load_walk_forward_prediction_artifacts,
+    summarize_model_registry,
+)
 from aquant_mvp.modeling import train_model, train_walk_forward
 from aquant_mvp.pipeline import run_pipeline
-from aquant_mvp.prediction import build_stock_forecast, explain_stock_forecast
-from aquant_mvp.risk import TradingRiskConfig, check_order_plan
+from aquant_mvp.prediction import build_kline_forecast, build_stock_forecast, explain_stock_forecast, save_kline_forecast_outputs
+from aquant_mvp.risk import EventRiskConfig, TradingRiskConfig, apply_event_risk_guard, check_order_plan, event_context_by_symbol
 from aquant_mvp.sources import discover_domestic_sources, write_source_coverage
 from aquant_mvp.storage import LocalWarehouse
-from aquant_mvp.strategy import build_rebalance_targets, score_factors
+from aquant_mvp.strategy import (
+    apply_portfolio_constraints,
+    build_rebalance_targets,
+    score_factors,
+    write_portfolio_constraint_outputs,
+)
 from aquant_mvp.tooling import discover_tools, write_tool_report
 from aquant_mvp.universe import build_theme_universe, symbol_theme_membership, symbols_for_themes, theme_universe_summary
 from aquant_mvp.universe import filter_universe
@@ -44,6 +58,9 @@ def build_parser() -> argparse.ArgumentParser:
             "train-model",
             "backtest",
             "predict-stock",
+            "predict-kline",
+            "plot-kline",
+            "report-stock",
             "backtest-stock",
             "paper-trade",
             "live-trade",
@@ -52,8 +69,14 @@ def build_parser() -> argparse.ArgumentParser:
             "discover-tools",
             "sync-free-all",
             "audit-data",
+            "analyze-factor-trust",
+            "sync-news",
+            "sync-announcements",
+            "build-event-store",
+            "audit-news",
             "build-feature-store",
             "train-walk-forward",
+            "backtest-portfolio",
             "evaluate-models",
             "explain-stock",
             "qmt-readonly-sync",
@@ -62,7 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", default="configs/mvp.json", help="Path to JSON/YAML config.")
     parser.add_argument(
         "--source",
-        choices=["sample", "akshare", "auto", "free_real", "research", "baostock", "tushare"],
+        choices=["sample", "akshare", "auto", "free_real", "research", "baostock", "tushare", "cninfo", "cninfo_direct", "direct_cninfo"],
         default=None,
         help="Override data source.",
     )
@@ -80,12 +103,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--start", default=None, help="Override start date for sync-free-all.")
     parser.add_argument("--universe", default=None, help="Universe name: all-a, hot, mega-hot, professional, core-hot, config, or comma-separated symbols.")
     parser.add_argument("--max-symbols", type=int, default=0, help="Optional safety limit for large free sync jobs.")
+    parser.add_argument("--min-symbols", type=int, default=0, help="Minimum universe size required before walk-forward can emit trusted candidates.")
+    parser.add_argument("--train-years", type=int, default=0, help="Override walk-forward rolling train window in years.")
+    parser.add_argument("--test-months", type=int, default=0, help="Override walk-forward rolling test step in months.")
     parser.add_argument("--strict-pit", action="store_true", help="Treat missing point-in-time metadata as audit issues.")
     parser.add_argument("--point-in-time", action="store_true", help="Build PIT feature store with effective dates.")
     parser.add_argument("--trusted-only", action="store_true", help="Require trusted/weak-free prediction metadata when available.")
     parser.add_argument("--by-year", action="store_true", help="Write yearly evaluation slices.")
     parser.add_argument("--by-industry", action="store_true", help="Write industry evaluation placeholder slices.")
-    parser.add_argument("--days", type=int, default=1, help="Number of dry-run paper trading days to simulate.")
+    parser.add_argument("--days", type=int, default=20, help="Forecast/paper-trading days.")
+    parser.add_argument("--history-days", type=int, default=120, help="Historical K-line days to include in forecast charts.")
+    parser.add_argument("--with-kline", action="store_true", help="Include predicted K-line artifacts in report-stock.")
+    parser.add_argument("--with-news", action="store_true", help="Include news/event evidence and event factors where supported.")
+    parser.add_argument("--fetch-announcement-text", action="store_true", help="Fetch and parse direct announcement body text where supported.")
     parser.add_argument("--no-live", action="store_true", help="Explicitly forbid live trading in paper/QMT workflows.")
     return parser
 
@@ -97,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
     output_dir = Path(args.output_dir) if args.output_dir else None
 
     if args.command == "build-universe":
-        return _cmd_build_universe(args, output_dir)
+        return _cmd_build_universe(config, args, output_dir)
 
     if args.command == "discover-sources":
         return _cmd_discover_sources(args, output_dir)
@@ -114,11 +144,29 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "audit-data":
         return _cmd_audit_data(config, args, output_dir)
 
+    if args.command == "analyze-factor-trust":
+        return _cmd_analyze_factor_trust(config, args, source, output_dir)
+
+    if args.command == "sync-news":
+        return _cmd_sync_events(config, args, source, output_dir, mode="news")
+
+    if args.command == "sync-announcements":
+        return _cmd_sync_events(config, args, source, output_dir, mode="announcements")
+
+    if args.command == "build-event-store":
+        return _cmd_build_event_store(config, args, source, output_dir)
+
+    if args.command == "audit-news":
+        return _cmd_audit_news(config, args, source, output_dir)
+
     if args.command == "build-feature-store":
         return _cmd_build_feature_store(config, args, source, output_dir)
 
     if args.command == "train-walk-forward":
         return _cmd_train_walk_forward(config, args, source, output_dir)
+
+    if args.command == "backtest-portfolio":
+        return _cmd_backtest_portfolio(config, args, source, output_dir)
 
     if args.command == "evaluate-models":
         return _cmd_evaluate_models(config, args, output_dir)
@@ -138,6 +186,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "predict-stock":
         return _cmd_predict_stock(config, args, source, output_dir)
 
+    if args.command == "predict-kline":
+        return _cmd_predict_kline(config, args, source, output_dir)
+
+    if args.command == "plot-kline":
+        return _cmd_predict_kline(config, args, source, output_dir)
+
+    if args.command == "report-stock":
+        return _cmd_report_stock(config, args, source, output_dir)
+
     if args.command == "backtest-stock":
         return _cmd_backtest_stock(config, args, source, output_dir)
 
@@ -152,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "check-data":
         data_config = config.data if source is None else replace(config.data, source=source)
-        bars_by_symbol, load_report = load_daily_bars(data_config)
+        bars_by_symbol, load_report = _load_command_bars(data_config)
         quality = check_daily_bars(bars_by_symbol)
         filtered, universe_report = filter_universe(bars_by_symbol, config.universe)
         print("A-share data check finished.")
@@ -180,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
         print("A-share factor analysis finished.")
     elif args.command == "predict":
         print("A-share latest prediction finished.")
-    elif args.command == "backtest":
+    elif args.command in {"backtest", "backtest-portfolio"}:
         print("A-share backtest finished.")
     else:
         print("A-share quant platform run finished.")
@@ -237,9 +294,24 @@ def _parse_horizons(args: argparse.Namespace, default: list[int]) -> list[int]:
     return [int(item.strip()) for item in args.horizons.split(",") if item.strip()]
 
 
-def _cmd_build_universe(args: argparse.Namespace, output_dir: Path | None) -> int:
+def _load_command_bars(data_config) -> tuple[dict[str, pd.DataFrame], LoadReport]:
+    if data_config.source.lower() in {"free_real", "research", "baostock", "tushare", "akshare"} and len(data_config.symbols) > 1:
+        return load_daily_bars_resilient(data_config)
+    return load_daily_bars(data_config)
+
+
+def _cmd_build_universe(config, args: argparse.Namespace, output_dir: Path | None) -> int:
     themes = args.themes or args.universe or "hot"
-    frame = build_theme_universe(themes)
+    normalized = themes.strip().lower().replace("_", "-")
+    if normalized in {"all-a", "all-a-free", "all-free"}:
+        frame = _try_fetch_all_a_universe_frame()
+        if frame.empty:
+            frame = _curated_universe_as_all_a_fallback()
+    else:
+        frame = build_theme_universe(themes)
+        if normalized in {"hot", "mega-hot", "all-hot"}:
+            frame = _augment_hot_universe_with_free_market(frame, minimum_symbols=900, target_symbols=1200)
+    frame = _normalize_universe_output_columns(frame)
     summary = theme_universe_summary(frame)
     membership = symbol_theme_membership(frame)
     out_dir = output_dir or Path("reports/hot_universe")
@@ -253,18 +325,27 @@ def _cmd_build_universe(args: argparse.Namespace, output_dir: Path | None) -> in
     membership.to_csv(membership_path, index=False)
     unique_symbols = int(frame["symbol"].nunique()) if not frame.empty else 0
     duplicate_rows = int(len(frame) - unique_symbols)
+    warehouse_write = None
+    try:
+        warehouse_frame = add_source_audit_columns(frame, "free_universe" if normalized in {"all-a", "all-a-free", "all-free"} else "curated_plus_free_universe")
+        warehouse_write = LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table("universe", warehouse_frame)
+    except Exception as exc:  # noqa: BLE001
+        warehouse_write = {"error": str(exc)}
     _write_json(
         manifest_path,
         {
             "requested_themes": themes,
+            "universe_mode": "all_a_free" if normalized in {"all-a", "all-a-free", "all-free"} else "theme_seed",
             "theme_count": int(frame["theme"].nunique()) if not frame.empty else 0,
             "rows": int(len(frame)),
             "unique_symbols": unique_symbols,
             "duplicate_theme_rows": duplicate_rows,
             "multi_theme_symbols": int((membership["theme_count"] > 1).sum()) if not membership.empty else 0,
             "minimum_symbols_for_trusted_prediction": 200,
+            "warehouse_universe": warehouse_write,
             "notes": [
                 "This is a curated hot-sector seed universe, not an official industry classifier.",
+                "mega-hot is augmented with free all-A names when domestic sources are available to support large-sample modeling.",
                 "Use --universe all-a for maximum market coverage when free source availability allows it.",
             ],
         },
@@ -362,20 +443,9 @@ def _cmd_sync_free_all(config, args: argparse.Namespace, source: str | None, out
 
 
 def _load_symbols_resilient(config, args: argparse.Namespace, symbols: list[str], source: str, start_date: str) -> tuple[dict[str, pd.DataFrame], LoadReport]:
-    loaded: dict[str, pd.DataFrame] = {}
-    warnings: list[str] = []
-    for idx, symbol in enumerate(symbols, start=1):
-        data_config = replace(config.data, source=source, symbols=[symbol], start_date=start_date)
-        try:
-            bars_by_symbol, report = load_daily_bars(data_config)
-        except Exception as exc:  # noqa: BLE001 - large free-source jobs must keep the audit trail moving.
-            warnings.append(f"{symbol}: failed to load ({exc})")
-            continue
-        loaded.update(bars_by_symbol)
-        warnings.extend(report.warnings)
-        if args.max_symbols and idx >= args.max_symbols:
-            break
-    return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=warnings)
+    selected = symbols[: args.max_symbols] if args.max_symbols and args.max_symbols > 0 else symbols
+    data_config = replace(config.data, source=source, symbols=selected, start_date=start_date)
+    return load_daily_bars_resilient(data_config)
 
 
 def _cmd_audit_data(config, args: argparse.Namespace, output_dir: Path | None) -> int:
@@ -403,38 +473,287 @@ def _cmd_audit_data(config, args: argparse.Namespace, output_dir: Path | None) -
     return 0
 
 
+def _cmd_analyze_factor_trust(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    data_config = _data_config_with_source(config, args, source)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
+    factors = compute_factor_panel(bars_by_symbol)
+    horizons = _parse_horizons(args, [5])
+    labels = compute_return_labels(bars_by_symbol, horizons)
+    label_column = f"future_return_{horizons[0]}d"
+    analysis = analyze_factors(factors, labels, FACTOR_COLUMNS, label_column, config.analysis.quantiles)
+    result = analyze_factor_trust(factors, analysis, FACTOR_COLUMNS, labels=labels, label_column=label_column)
+    out_dir = output_dir or Path("reports/factor_trust")
+    paths = write_factor_trust_report(result, out_dir)
+    try:
+        warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+        warehouse.write_table("factor_registry", add_source_audit_columns(result.registry, "factor_registry_v04"))
+        warehouse.write_table("factor_trust_audit", add_source_audit_columns(result.audit, load_report.source))
+    except Exception:  # noqa: BLE001
+        pass
+    counts = result.audit["trust_status"].value_counts().to_dict() if not result.audit.empty else {}
+    print("Factor trust analysis finished.")
+    print(f"Source: {load_report.source}; factors: {len(result.registry)}; counts: {counts}")
+    print(f"Registry: {paths['factor_registry']}")
+    print(f"Audit: {paths['factor_trust_audit']}")
+    print(f"Report: {paths['factor_trust_report']}")
+    return 0
+
+
+def _cmd_sync_events(config, args: argparse.Namespace, source: str | None, output_dir: Path | None, mode: str) -> int:
+    symbols = _symbols_for_universe_arg(args, config)
+    if args.max_symbols and args.max_symbols > 0:
+        symbols = symbols[: args.max_symbols]
+    if args.symbol:
+        symbol = args.symbol.zfill(6)
+        if symbol not in symbols:
+            symbols.append(symbol)
+    event_source = _event_source_from_data_source(config, args, source)
+    raw, warnings = sync_public_events(
+        symbols,
+        args.start or config.data.start_date,
+        config.data.end_date,
+        source=event_source,
+        fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+    )
+    if mode == "announcements" and "source" in raw.columns:
+        raw = raw[raw["source"].astype(str).str.contains("cninfo|notice|announcement|sample_announcement", case=False, regex=True)].copy()
+    out_dir = output_dir or Path(f"reports/{mode}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    raw.to_csv(out_dir / "raw_events.csv", index=False)
+    _write_json(
+        out_dir / f"{mode}_summary.json",
+        {"mode": mode, "source": event_source, "symbols": len(symbols), "rows": len(raw), "warnings": warnings},
+    )
+    if event_source != "sample":
+        try:
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "raw_events",
+                add_source_audit_columns(raw, event_source, quality_flag="raw_event"),
+            )
+        except Exception:  # noqa: BLE001
+            pass
+    print(f"{mode} sync finished.")
+    print(f"Source: {event_source}; symbols: {len(symbols)}; rows: {len(raw)}; warnings: {len(warnings)}")
+    print(f"Output: {out_dir}")
+    return 0
+
+
+def _cmd_build_event_store(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    symbols = _symbols_for_universe_arg(args, config)
+    if args.max_symbols and args.max_symbols > 0:
+        symbols = symbols[: args.max_symbols]
+    if args.symbol:
+        symbol = args.symbol.zfill(6)
+        if symbol not in symbols:
+            symbols.append(symbol)
+    raw, source_warnings = _load_or_sync_events_with_warnings(config, args, source, symbols)
+    result = build_event_store(raw, symbols)
+    if source_warnings:
+        result = replace(result, warnings=[*source_warnings, *result.warnings])
+    out_dir = output_dir or Path("reports/event_store")
+    paths = write_event_outputs(result, out_dir)
+    if not _uses_sample_events(config, args, source):
+        try:
+            warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+            warehouse.write_table("event_store", add_source_audit_columns(result.event_store, "event_store_v04"))
+            warehouse.write_table("event_factor", add_source_audit_columns(result.event_factors, "event_factor_v04"))
+        except Exception:  # noqa: BLE001
+            pass
+    print("Event store built.")
+    print(f"Events: {len(result.event_store)}; event factor rows: {len(result.event_factors)}; warnings: {len(result.warnings)}")
+    print(f"Event store: {paths['event_store']}")
+    print(f"Event factors: {paths['event_factors']}")
+    print(f"Evidence: {paths['news_evidence']}")
+    return 0
+
+
+def _cmd_audit_news(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    symbols = _symbols_for_universe_arg(args, config)
+    if args.max_symbols and args.max_symbols > 0:
+        symbols = symbols[: args.max_symbols]
+    if args.symbol:
+        symbol = args.symbol.zfill(6)
+        if symbol not in symbols:
+            symbols.append(symbol)
+    raw, source_warnings = _load_or_sync_events_with_warnings(config, args, source, symbols)
+    result = build_event_store(raw, symbols)
+    if source_warnings:
+        result = replace(result, warnings=[*source_warnings, *result.warnings])
+    audit = audit_event_coverage(result.event_store, result.event_factors, symbols)
+    out_dir = output_dir or Path("reports/news_audit")
+    paths = write_event_outputs(result, out_dir)
+    audit_path = out_dir / "news_coverage_audit.csv"
+    audit.to_csv(audit_path, index=False)
+    _write_json(
+        out_dir / "news_coverage_summary.json",
+        {
+            "symbols": len(symbols),
+            "event_rows": int(len(result.event_store)),
+            "event_factor_rows": int(len(result.event_factors)),
+            "coverage_counts": audit["coverage_status"].value_counts().to_dict() if not audit.empty else {},
+            "warnings": result.warnings,
+            "event_store": str(paths["event_store"]),
+            "event_factors": str(paths["event_factors"]),
+        },
+    )
+    print("News coverage audit finished.")
+    print(f"Symbols: {len(symbols)}; events: {len(result.event_store)}; event factor rows: {len(result.event_factors)}")
+    print(audit["coverage_status"].value_counts().to_string() if not audit.empty else "No symbols audited.")
+    print(f"Audit: {audit_path}")
+    return 0
+
+
 def _cmd_build_feature_store(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
     data_config = _data_config_with_source(config, args, source)
-    bars_by_symbol, load_report = load_daily_bars(data_config)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
     horizons = _parse_horizons(args, config.model.horizons)
-    result = build_point_in_time_feature_store(bars_by_symbol, horizons, load_report.source)
-    warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
-    write_result = warehouse.write_table("feature_store", result.features)
     out_dir = output_dir or Path("reports/feature_store")
     out_dir.mkdir(parents=True, exist_ok=True)
+    event_factors = _load_or_build_event_factors(config, args, source, list(bars_by_symbol), out_dir) if args.with_news else None
+    result = build_point_in_time_feature_store(bars_by_symbol, horizons, load_report.source, event_factors=event_factors)
+    warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+    write_result = warehouse.write_table("feature_store", result.features)
     result.features.head(2000).to_csv(out_dir / "feature_store_preview.csv", index=False)
     _write_json(out_dir / "feature_store_summary.json", result.metadata)
     print("Point-in-time feature store built.")
-    print(f"Rows: {len(result.features)}; features: {result.metadata['feature_count']}; version: {result.metadata['feature_version']}")
+    print(
+        f"Rows: {len(result.features)}; features: {result.metadata['feature_count']}; "
+        f"event features: {result.metadata.get('event_feature_count', 0)}; version: {result.metadata['feature_version']}"
+    )
     print(f"Warehouse: {write_result.path}")
     return 0
 
 
 def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
     data_config = _data_config_with_source(config, args, source)
-    bars_by_symbol, load_report = load_daily_bars(data_config)
+    if args.max_symbols and args.max_symbols > 0:
+        data_config = replace(data_config, symbols=list(data_config.symbols)[: args.max_symbols])
+    if data_config.source.lower() in {"free_real", "research", "baostock", "tushare", "akshare"} and len(data_config.symbols) > 1:
+        bars_by_symbol, load_report = load_daily_bars_resilient(data_config)
+    else:
+        bars_by_symbol, load_report = load_daily_bars(data_config)
     horizons = _parse_horizons(args, config.model.horizons)
     out_dir = output_dir or Path("reports/walk_forward")
+    model_type = args.model or config.model.model_type
+    use_events = args.with_news or "event" in str(model_type).lower()
+    event_factors = _load_or_build_event_factors(config, args, source, list(bars_by_symbol), out_dir) if use_events else None
     result = train_walk_forward(
         bars_by_symbol,
-        args.model or config.model.model_type,
+        model_type,
         horizons,
         out_dir,
         config.model.registry_dir,
+        min_symbols=args.min_symbols if args.min_symbols > 0 else 200,
+        train_years=args.train_years if args.train_years > 0 else 4,
+        test_months=args.test_months if args.test_months > 0 else 6,
+        embargo_days=config.model.embargo_days,
+        event_factors=event_factors,
     )
+    try:
+        registry_rows = pd.DataFrame(_read_model_registry(config.model.registry_dir))
+        if not registry_rows.empty:
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "model_registry",
+                add_source_audit_columns(registry_rows, "model_registry"),
+            )
+    except Exception:  # noqa: BLE001
+        pass
     print("Walk-forward training finished.")
-    print(f"Source: {load_report.source}; symbols: {len(bars_by_symbol)}; rows: {result.summary['rows']}")
+    print(
+        f"Source: {load_report.source}; symbols: {len(bars_by_symbol)}; rows: {result.summary['rows']}; "
+        f"event features: {result.summary.get('event_feature_count', 0)}"
+    )
+    _write_json(
+        out_dir / "walk_forward_load_manifest.json",
+        {
+            "source": load_report.source,
+            "requested_symbols": len(data_config.symbols),
+            "loaded_symbols": len(bars_by_symbol),
+            "min_symbols": args.min_symbols if args.min_symbols > 0 else 200,
+            "warnings": load_report.warnings[:2000],
+            "note": "Large free-source walk-forward uses resilient per-symbol loading; failed symbols remain audited.",
+        },
+    )
     print(result.metrics.to_string(index=False) if not result.metrics.empty else "No metrics generated.")
+    print(f"Report: {out_dir}")
+    return 0
+
+
+def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    data_config = _data_config_with_source(config, args, source)
+    portfolio_config = replace(config, data=data_config)
+    payload = run_pipeline(portfolio_config, source=None, output_dir=output_dir)
+    result = payload["result"]
+    load_report = payload["load_report"]
+    universe_report = payload["universe_report"]
+    out_dir = payload["run_dir"]
+    event_attribution = None
+    event_guard = None
+    event_guarded_metrics: dict[str, float] | None = None
+    out_path = Path(out_dir)
+    constraint = apply_portfolio_constraints(
+        payload["targets"],
+        bars_by_symbol=payload["bars_by_symbol"],
+        strategy_config=config.strategy,
+        risk_config=config.risk,
+        theme_membership=_theme_membership_for_symbols(payload["targets"].columns),
+        equity_curve=result.equity_curve,
+    )
+    write_portfolio_constraint_outputs(out_path, constraint)
+    constrained_result = run_backtest(payload["bars_by_symbol"], constraint.adjusted_targets, config.backtest)
+    constrained_result.equity_curve.to_csv(out_path / "portfolio_constraint_equity_curve.csv", index=False)
+    constrained_result.trades.to_csv(out_path / "portfolio_constraint_trades.csv", index=False)
+    constrained_result.holdings.to_csv(out_path / "portfolio_constraint_holdings.csv", index=False)
+    constrained_result.rebalances.to_csv(out_path / "portfolio_constraint_rebalances.csv", index=False)
+    _write_json(out_path / "portfolio_constraint_metrics.json", constrained_result.metrics)
+    if args.with_news:
+        event_factors = _load_or_build_event_factors(config, args, source, list(data_config.symbols), out_path)
+        event_attribution = attribute_portfolio_events(constrained_result.holdings, event_factors)
+        event_attribution.daily.to_csv(out_path / "portfolio_event_attribution_daily.csv", index=False)
+        event_attribution.symbol.to_csv(out_path / "portfolio_event_attribution_symbol.csv", index=False)
+        (out_path / "portfolio_event_attribution.md").write_text(event_attribution.markdown, encoding="utf-8")
+        event_guard = apply_event_risk_guard(constraint.adjusted_targets, event_factors, _event_risk_config(config))
+        event_guard.adjusted_targets.to_csv(out_path / "event_guarded_rebalance_targets.csv")
+        event_guard.report.to_csv(out_path / "event_risk_guard_report.csv", index=False)
+        (out_path / "event_risk_guard_report.md").write_text(event_guard.markdown, encoding="utf-8")
+        _write_json(out_path / "event_risk_guard_summary.json", event_guard.metadata)
+        guarded_result = run_backtest(payload["bars_by_symbol"], event_guard.adjusted_targets, config.backtest)
+        guarded_result.equity_curve.to_csv(out_path / "event_guarded_equity_curve.csv", index=False)
+        guarded_result.trades.to_csv(out_path / "event_guarded_trades.csv", index=False)
+        guarded_result.holdings.to_csv(out_path / "event_guarded_holdings.csv", index=False)
+        guarded_result.rebalances.to_csv(out_path / "event_guarded_rebalances.csv", index=False)
+        _write_json(out_path / "event_guarded_metrics.json", guarded_result.metrics)
+        event_guarded_metrics = guarded_result.metrics
+        guarded_attribution = attribute_portfolio_events(guarded_result.holdings, event_factors)
+        guarded_attribution.daily.to_csv(out_path / "event_guarded_portfolio_event_attribution_daily.csv", index=False)
+        guarded_attribution.symbol.to_csv(out_path / "event_guarded_portfolio_event_attribution_symbol.csv", index=False)
+        (out_path / "event_guarded_portfolio_event_attribution.md").write_text(guarded_attribution.markdown, encoding="utf-8")
+    _write_json(
+        out_path / "portfolio_backtest_manifest.json",
+        {
+            "command": "backtest-portfolio",
+            "source": load_report.source,
+            "requested_universe": args.universe or "config",
+            "loaded_symbols": load_report.symbols_loaded,
+            "selected_symbols": universe_report.selected_symbols,
+            "metrics": result.metrics,
+            "portfolio_constraints": constraint.metadata,
+            "constraint_adjusted_metrics": constrained_result.metrics,
+            "with_news": bool(args.with_news),
+            "event_attribution_rows": int(len(event_attribution.daily)) if event_attribution is not None else 0,
+            "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
+            "event_guarded_metrics": event_guarded_metrics or {},
+            "note": "Portfolio research backtest only; live trading remains disabled.",
+        },
+    )
+    print("Portfolio backtest finished.")
+    print(f"Source: {load_report.source}; loaded symbols: {len(load_report.symbols_loaded)}; selected: {len(universe_report.selected_symbols)}")
+    print("Base metrics:")
+    for key, value in result.metrics.items():
+        print(f"{key}: {value:.6f}")
+    print("Constraint-adjusted metrics:")
+    for key, value in constrained_result.metrics.items():
+        print(f"{key}: {value:.6f}")
     print(f"Report: {out_dir}")
     return 0
 
@@ -443,35 +762,43 @@ def _cmd_evaluate_models(config, args: argparse.Namespace, output_dir: Path | No
     out_dir = output_dir or Path("reports/model_evaluation")
     out_dir.mkdir(parents=True, exist_ok=True)
     records = _read_model_registry(config.model.registry_dir)
-    rows = []
-    for record in records:
-        metrics = record.get("metrics", {}) if isinstance(record, dict) else {}
-        rows.append(
-            {
-                "model_id": record.get("model_id", ""),
-                "model_type": record.get("model_type", ""),
-                "horizon_days": record.get("horizon_days", ""),
-                "model_family": record.get("model_family", ""),
-                "trust_status": metrics.get("trust_status", record.get("trust_status", "")) if isinstance(metrics, dict) else "",
-                "rank_ic": metrics.get("rank_ic", metrics.get("valid_rank_ic", "")) if isinstance(metrics, dict) else "",
-                "direction_accuracy": metrics.get("direction_accuracy", metrics.get("valid_accuracy", "")) if isinstance(metrics, dict) else "",
-                "brier": metrics.get("brier", metrics.get("valid_brier", "")) if isinstance(metrics, dict) else "",
-                "beats_baseline": metrics.get("beats_baseline", "") if isinstance(metrics, dict) else "",
-            }
-        )
-    evaluation = pd.DataFrame(rows)
-    if evaluation.empty:
-        evaluation = pd.DataFrame(columns=["model_id", "model_type", "horizon_days", "model_family", "rank_ic", "direction_accuracy"])
+    evaluation = summarize_model_registry(records)
     evaluation.to_csv(out_dir / "model_evaluation.csv", index=False)
-    if args.by_year:
-        _write_yearly_evaluation(out_dir)
+    predictions, artifacts = load_walk_forward_prediction_artifacts(records, out_dir)
+    slices = evaluate_walk_forward_slices(predictions)
+    if args.by_year or not args.by_industry:
+        slices["year"].to_csv(out_dir / "evaluation_by_year.csv", index=False)
     if args.by_industry:
-        pd.DataFrame([{"industry": "industry_data_unavailable_free_mode", "note": "industry history not yet synced"}]).to_csv(
-            out_dir / "evaluation_by_industry.csv",
-            index=False,
-        )
+        slices["industry"].to_csv(out_dir / "evaluation_by_industry.csv", index=False)
+    else:
+        slices["industry"].to_csv(out_dir / "evaluation_by_industry.csv", index=False)
+    slices["theme"].to_csv(out_dir / "evaluation_by_theme.csv", index=False)
+    slices["size"].to_csv(out_dir / "evaluation_by_size.csv", index=False)
+    slices["regime"].to_csv(out_dir / "evaluation_by_regime.csv", index=False)
+    _write_json(
+        out_dir / "model_evaluation_manifest.json",
+        {
+            "registry_dir": config.model.registry_dir,
+            "registry_records": len(records),
+            "walk_forward_prediction_rows": int(len(predictions)),
+            "walk_forward_artifacts": artifacts,
+            "slice_reports": [
+                "evaluation_by_year.csv",
+                "evaluation_by_industry.csv",
+                "evaluation_by_theme.csv",
+                "evaluation_by_size.csv",
+                "evaluation_by_regime.csv",
+            ],
+            "notes": [
+                "industry is a curated hot-theme proxy unless historical industry data has been synced",
+                "size uses market_cap when available, otherwise PIT liquidity proxy or unavailable",
+                "regime uses PIT market breadth/mean return when present; older artifacts fall back to ex-post OOS diagnostics",
+            ],
+        },
+    )
     print("Model evaluation finished.")
     print(f"Records: {len(evaluation)}")
+    print(f"Walk-forward rows: {len(predictions)}")
     print(f"Report: {out_dir}")
     return 0
 
@@ -480,8 +807,14 @@ def _cmd_explain_stock(config, args: argparse.Namespace, source: str | None, out
     if not args.symbol:
         raise ValueError("explain-stock requires --symbol.")
     data_config = _data_config_with_source(config, args, source, ensure_symbol=args.symbol)
-    bars_by_symbol, load_report = load_daily_bars(data_config)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
     horizons = _parse_horizons(args, config.model.horizons)
+    out_dir = output_dir or Path("reports/stock_explain")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    event_factors = None
+    news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
+    if args.with_news:
+        event_factors, _news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
     forecast = build_stock_forecast(
         bars_by_symbol,
         args.symbol,
@@ -490,13 +823,14 @@ def _cmd_explain_stock(config, args: argparse.Namespace, source: str | None, out
         model_type=args.model or config.model.model_type,
         embargo_days=config.model.embargo_days,
         allow_sample=args.allow_sample,
+        event_factors=event_factors,
+        model_registry_dir=config.model.registry_dir,
     )
     explanation = explain_stock_forecast(bars_by_symbol, forecast, args.symbol, horizons)
-    out_dir = output_dir or Path("reports/stock_explain")
-    out_dir.mkdir(parents=True, exist_ok=True)
     explanation.report.to_csv(out_dir / "stock_explanation.csv", index=False)
     explanation.similar_history.to_csv(out_dir / "similar_history.csv", index=False)
     (out_dir / "stock_explanation.md").write_text(explanation.markdown, encoding="utf-8")
+    _write_json(out_dir / "stock_explain_manifest.json", {"symbol": args.symbol.zfill(6), "news_summary": news_summary})
     trusted = explanation.report["trust_status"].isin(["trusted"]).any() if not explanation.report.empty else False
     print("Stock explanation finished.")
     print(f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; trusted_any: {trusted}")
@@ -553,6 +887,15 @@ def _cmd_train_model(config, args: argparse.Namespace, source: str | None, outpu
     model_type = args.model or config.model.model_type
     horizons = _parse_horizons(args, config.model.horizons)
     summary = train_model(bars_by_symbol, model_type, horizons, out_dir, config.model.registry_dir)
+    try:
+        registry_rows = pd.DataFrame(_read_model_registry(config.model.registry_dir))
+        if not registry_rows.empty:
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "model_registry",
+                add_source_audit_columns(registry_rows, "model_registry"),
+            )
+    except Exception:  # noqa: BLE001
+        pass
     print("Model training finished.")
     print(f"Source: {load_report.source}; model: {model_type}; horizons: {horizons}")
     print(f"Registry: {config.model.registry_dir / 'model_registry.json'}")
@@ -564,8 +907,15 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
     if not args.symbol:
         raise ValueError("predict-stock requires --symbol.")
     data_config = _data_config_with_source(config, args, source, ensure_symbol=args.symbol)
-    bars_by_symbol, load_report = load_daily_bars(data_config)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
     horizons = _parse_horizons(args, config.model.horizons)
+    out_dir = output_dir or Path("reports/stock_forecast")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    event_factors = None
+    news_paths: dict[str, Path] = {}
+    news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
+    if args.with_news:
+        event_factors, news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
     result = build_stock_forecast(
         bars_by_symbol,
         args.symbol,
@@ -574,11 +924,21 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
         model_type=args.model or config.model.model_type,
         embargo_days=config.model.embargo_days,
         allow_sample=args.allow_sample,
+        event_factors=event_factors,
+        model_registry_dir=config.model.registry_dir,
     )
-    out_dir = output_dir or Path("reports/stock_forecast")
-    out_dir.mkdir(parents=True, exist_ok=True)
     result.forecast.to_csv(out_dir / "stock_forecast.csv", index=False)
-    _write_json(out_dir / "stock_forecast.json", result.summary)
+    summary = dict(result.summary)
+    summary["news_summary"] = news_summary
+    summary["news_files"] = {key: str(value) for key, value in news_paths.items()}
+    _write_json(out_dir / "stock_forecast.json", summary)
+    try:
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "stock_forecast",
+            add_source_audit_columns(result.forecast, load_report.source),
+        )
+    except Exception:  # noqa: BLE001
+        pass
     print("Stock forecast finished.")
     print(f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; horizons: {horizons}")
     print(
@@ -587,6 +947,58 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
         ].to_string(index=False)
     )
     print(f"Output: {out_dir}")
+    if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
+        print("trusted-only requested, but no trusted signal was produced.")
+        return 2
+    return 0
+
+
+def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    if not args.symbol:
+        raise ValueError(f"{args.command} requires --symbol.")
+    data_config = _data_config_with_source(config, args, source, ensure_symbol=args.symbol)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
+    horizons = _parse_horizons(args, [1, 5, 20, 60])
+    out_dir = output_dir or Path("reports/stock_kline")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    event_factors = None
+    if args.with_news:
+        event_factors, _news_paths, _news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
+    result = build_kline_forecast(
+        bars_by_symbol,
+        args.symbol,
+        horizons,
+        source=load_report.source,
+        model_type=args.model or config.model.model_type,
+        days=args.days,
+        history_days=args.history_days,
+        embargo_days=config.model.embargo_days,
+        allow_sample=args.allow_sample,
+        event_factors=event_factors,
+        model_registry_dir=config.model.registry_dir,
+    )
+    paths = save_kline_forecast_outputs(result, out_dir)
+    try:
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "forecast_kline",
+            add_source_audit_columns(result.forecast, load_report.source),
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    base = result.forecast[result.forecast["scenario"] == "base"]
+    last = base.iloc[-1] if not base.empty else None
+    print("Predicted K-line forecast finished.")
+    print(f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; days: {args.days}; horizons: {horizons}")
+    if last is not None:
+        print(
+            "Base path: "
+            f"close={float(last['close']):.4f}, "
+            f"p10/p50/p90={float(last['p10_close']):.4f}/{float(last['p50_close']):.4f}/{float(last['p90_close']):.4f}, "
+            f"prob_up={float(last['prob_up']):.3f}, trust={last['trust_status']}"
+        )
+    print(f"PNG: {paths['forecast_kline_png']}")
+    print(f"HTML: {paths['forecast_kline_html']}")
+    print(f"Report: {paths['stock_prediction_report']}")
     if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
         print("trusted-only requested, but no trusted signal was produced.")
         return 2
@@ -604,10 +1016,125 @@ def _cmd_backtest_stock(config, args: argparse.Namespace, source: str | None, ou
     out_dir.mkdir(parents=True, exist_ok=True)
     result.predictions.to_csv(out_dir / "stock_forecast_backtest.csv", index=False)
     result.metrics.to_csv(out_dir / "stock_forecast_metrics.csv", index=False)
+    try:
+        metrics = result.metrics.copy()
+        metrics["symbol"] = args.symbol.zfill(6)
+        metrics["result_type"] = "stock_forecast_metrics"
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "backtest_result",
+            add_source_audit_columns(metrics, load_report.source),
+        )
+    except Exception:  # noqa: BLE001
+        pass
     print("Stock forecast backtest finished.")
     print(f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; horizons: {horizons}")
     print(result.metrics.to_string(index=False))
     print(f"Output: {out_dir}")
+    return 0
+
+
+def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    if not args.symbol:
+        raise ValueError("report-stock requires --symbol.")
+    symbol = args.symbol.zfill(6)
+    data_config = _data_config_with_source(config, args, source, ensure_symbol=symbol)
+    bars_by_symbol, load_report = load_daily_bars(data_config)
+    horizons = _parse_horizons(args, [1, 5, 20, 60])
+    out_dir = output_dir or Path("reports/stock_report") / symbol
+    out_dir.mkdir(parents=True, exist_ok=True)
+    news_paths: dict[str, Path] = {}
+    news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
+    event_factors = None
+    if args.with_news:
+        event_factors, news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), symbol, out_dir)
+
+    forecast = build_stock_forecast(
+        bars_by_symbol,
+        symbol,
+        horizons,
+        source=load_report.source,
+        model_type=args.model or config.model.model_type,
+        embargo_days=config.model.embargo_days,
+        allow_sample=args.allow_sample,
+        event_factors=event_factors,
+    )
+    forecast.forecast.to_csv(out_dir / "stock_forecast.csv", index=False)
+    _write_json(out_dir / "stock_forecast.json", forecast.summary)
+
+    explanation = explain_stock_forecast(bars_by_symbol, forecast, symbol, horizons)
+    explanation.report.to_csv(out_dir / "stock_explanation.csv", index=False)
+    explanation.similar_history.to_csv(out_dir / "similar_history.csv", index=False)
+    (out_dir / "stock_explanation.md").write_text(explanation.markdown, encoding="utf-8")
+
+    backtest = backtest_stock_forecast(bars_by_symbol, symbol, horizons)
+    backtest.predictions.to_csv(out_dir / "stock_forecast_backtest.csv", index=False)
+    backtest.metrics.to_csv(out_dir / "stock_forecast_metrics.csv", index=False)
+
+    kline_paths: dict[str, Path] = {}
+    if args.with_kline:
+        kline = build_kline_forecast(
+            bars_by_symbol,
+            symbol,
+            horizons,
+            source=load_report.source,
+            model_type=args.model or config.model.model_type,
+            days=args.days,
+            history_days=args.history_days,
+            embargo_days=config.model.embargo_days,
+            allow_sample=args.allow_sample,
+            event_factors=event_factors,
+            model_registry_dir=config.model.registry_dir,
+        )
+        kline_paths = save_kline_forecast_outputs(kline, out_dir)
+        try:
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "forecast_kline",
+                add_source_audit_columns(kline.forecast, load_report.source),
+            )
+        except Exception:  # noqa: BLE001
+            pass
+
+    manifest = {
+        "symbol": symbol,
+        "source": load_report.source,
+        "horizons": horizons,
+        "with_kline": bool(args.with_kline),
+        "with_news": bool(args.with_news),
+        "news_summary": news_summary,
+        "forecast_rows": int(len(forecast.forecast)),
+        "explanation_rows": int(len(explanation.report)),
+        "similar_history_rows": int(len(explanation.similar_history)),
+        "backtest_rows": int(len(backtest.predictions)),
+        "backtest_metric_rows": int(len(backtest.metrics)),
+        "trust_status_set": sorted(forecast.forecast["trust_status"].astype(str).unique().tolist()),
+        "files": sorted(path.name for path in out_dir.iterdir() if path.is_file()),
+        "kline_files": {key: str(value) for key, value in kline_paths.items()},
+        "news_files": {key: str(value) for key, value in news_paths.items()},
+        "note": "Research reports only; not investment advice. Live trading remains disabled.",
+    }
+    _write_json(out_dir / "stock_report_manifest.json", manifest)
+    try:
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "stock_forecast",
+            add_source_audit_columns(forecast.forecast, load_report.source),
+        )
+        if not backtest.metrics.empty:
+            metrics = backtest.metrics.copy()
+            metrics["symbol"] = symbol
+            metrics["result_type"] = "stock_forecast_metrics"
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "backtest_result",
+                add_source_audit_columns(metrics, load_report.source),
+            )
+    except Exception:  # noqa: BLE001
+        pass
+
+    print("Full stock report finished.")
+    print(f"Symbol: {symbol}; source: {load_report.source}; horizons: {horizons}; with_kline: {args.with_kline}; with_news: {args.with_news}")
+    print(f"Report: {out_dir}")
+    if args.trusted_only and not forecast.forecast["trust_status"].isin(["trusted"]).any():
+        print("trusted-only requested, but no trusted signal was produced.")
+        return 2
     return 0
 
 
@@ -625,9 +1152,32 @@ def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, outpu
     factors = compute_factor_panel(filtered_bars)
     scores = score_factors(factors, config.strategy.factor_weights)
     targets = build_rebalance_targets(scores, config.strategy)
+    event_guard = None
+    event_context: dict[str, dict[str, object]] = {}
+    out_dir = output_dir or Path("reports/paper_trade")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    constraint = apply_portfolio_constraints(
+        targets,
+        bars_by_symbol=filtered_bars,
+        strategy_config=config.strategy,
+        risk_config=config.risk,
+        theme_membership=_theme_membership_for_symbols(targets.columns),
+    )
+    write_portfolio_constraint_outputs(out_dir, constraint)
+    targets = constraint.adjusted_targets
+    if args.with_news:
+        event_factors = _load_or_build_event_factors(config, args, source, list(filtered_bars), out_dir)
+        event_guard = apply_event_risk_guard(targets, event_factors, _event_risk_config(config))
+        event_guard.adjusted_targets.to_csv(out_dir / "event_guarded_rebalance_targets.csv")
+        event_guard.report.to_csv(out_dir / "event_risk_guard_report.csv", index=False)
+        (out_dir / "event_risk_guard_report.md").write_text(event_guard.markdown, encoding="utf-8")
+        _write_json(out_dir / "event_risk_guard_summary.json", event_guard.metadata)
+        targets = event_guard.adjusted_targets
     bars_by_symbol = filtered_bars
     latest_target = targets.iloc[-1]
     latest_date = pd.Timestamp(targets.index[-1]).date().isoformat()
+    if args.with_news:
+        event_context = event_context_by_symbol(event_factors, latest_date)
     latest_prices = pd.Series({symbol: bars.sort_values("date")["close"].iloc[-1] for symbol, bars in bars_by_symbol.items()})
     order_plan = build_order_plan_from_targets(
         latest_target,
@@ -643,13 +1193,30 @@ def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, outpu
         max_daily_loss=config.risk.max_daily_loss,
         max_drawdown=config.risk.max_drawdown,
         blacklist=tuple(config.risk.blacklist),
+        max_event_risk_count=config.risk.event_risk_max_count if args.with_news else None,
+        min_event_impact_score=config.risk.event_risk_min_negative_impact if args.with_news else None,
+        min_event_confidence=config.risk.event_risk_min_confidence,
     )
-    decision = check_order_plan(order_plan.orders, risk_config, equity=config.backtest.initial_cash)
-    out_dir = output_dir or Path("reports/paper_trade")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    order_plan.to_frame().to_csv(out_dir / "order_plan.csv", index=False)
+    decision = check_order_plan(
+        order_plan.orders,
+        risk_config,
+        equity=config.backtest.initial_cash,
+        event_context=event_context,
+    )
+    order_frame = order_plan.to_frame()
+    order_frame.to_csv(out_dir / "order_plan.csv", index=False)
     decision.report.to_csv(out_dir / "risk_report.csv", index=False)
     targets.to_csv(out_dir / "rebalance_targets.csv")
+    try:
+        paper_frame = order_frame.copy()
+        paper_frame["risk_passed"] = decision.passed
+        paper_frame["risk_reasons"] = ";".join(decision.reasons)
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "paper_trade",
+            add_source_audit_columns(paper_frame, load_report.source),
+        )
+    except Exception:  # noqa: BLE001
+        pass
     if decision.passed:
         broker = PaperBroker(
             initial_cash=config.backtest.initial_cash,
@@ -661,12 +1228,28 @@ def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, outpu
         broker.save_report(execution, out_dir)
         _write_json(
             out_dir / "paper_summary.json",
-            {"passed": True, "requested_days": args.days, "no_live": args.no_live, "metadata": execution.metadata},
+            {
+                "passed": True,
+                "requested_days": args.days,
+                "no_live": args.no_live,
+                "with_news": bool(args.with_news),
+                "portfolio_constraints": constraint.metadata,
+                "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
+                "metadata": execution.metadata,
+            },
         )
     else:
         _write_json(
             out_dir / "paper_summary.json",
-            {"passed": False, "requested_days": args.days, "no_live": args.no_live, "reasons": decision.reasons},
+            {
+                "passed": False,
+                "requested_days": args.days,
+                "no_live": args.no_live,
+                "with_news": bool(args.with_news),
+                "portfolio_constraints": constraint.metadata,
+                "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
+                "reasons": decision.reasons,
+            },
         )
     print("Paper trade dry-run finished.")
     print(f"Source: {load_report.source}; selected universe: {len(universe_report.selected_symbols)}")
@@ -682,13 +1265,215 @@ def _symbols_for_universe_arg(args: argparse.Namespace, config) -> list[str]:
         return list(config.data.symbols)
     if normalized in {"hot", "mega-hot", "all-hot", "core-hot", "professional", "professional-hot", "pro-hot"}:
         return symbols_for_themes(normalized)
-    if normalized == "all-a":
+    if normalized in {"all-a", "all-a-free", "all-free"}:
         symbols = _try_fetch_all_a_symbols()
         return symbols or symbols_for_themes("mega-hot")
     return [item.strip().zfill(6) for item in universe.split(",") if item.strip()]
 
 
+def _theme_membership_for_symbols(symbols) -> pd.DataFrame:
+    wanted = {str(symbol).zfill(6) for symbol in symbols}
+    if not wanted:
+        return pd.DataFrame()
+    try:
+        membership = symbol_theme_membership(build_theme_universe("hot"))
+    except Exception:  # noqa: BLE001
+        return pd.DataFrame()
+    if membership.empty or "symbol" not in membership.columns:
+        return pd.DataFrame()
+    return membership[membership["symbol"].astype(str).str.zfill(6).isin(wanted)].reset_index(drop=True)
+
+
+def _event_risk_config(config) -> EventRiskConfig:
+    return EventRiskConfig(
+        enabled=config.risk.event_risk_enabled,
+        max_event_risk_count=config.risk.event_risk_max_count,
+        min_negative_impact=config.risk.event_risk_min_negative_impact,
+        min_confidence=config.risk.event_risk_min_confidence,
+        weight_multiplier=config.risk.event_risk_weight_multiplier,
+        block_new_buy=config.risk.event_risk_block_new_buy,
+        max_event_age_days=config.risk.event_risk_max_age_days,
+    )
+
+
+def _load_or_sync_events(config, args: argparse.Namespace, source: str | None, symbols: list[str]) -> pd.DataFrame:
+    raw, _warnings = _load_or_sync_events_with_warnings(config, args, source, symbols)
+    return raw
+
+
+def _load_or_sync_events_with_warnings(config, args: argparse.Namespace, source: str | None, symbols: list[str]) -> tuple[pd.DataFrame, list[str]]:
+    event_source = _event_source_from_data_source(config, args, source)
+    warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+    try:
+        raw = warehouse.read_table("raw_events")
+        if not raw.empty:
+            wanted = set(str(symbol).zfill(6) for symbol in symbols)
+            symbol_col = raw["symbol"].astype(str).str.zfill(6) if "symbol" in raw.columns else pd.Series([], dtype=str)
+            source_mask = _event_source_mask(raw, event_source)
+            filtered = raw[symbol_col.isin(wanted) & source_mask].copy()
+            if not filtered.empty:
+                covered = set(filtered["symbol"].astype(str).str.zfill(6)) if "symbol" in filtered.columns else set()
+                missing = sorted(wanted - covered)
+                if not missing:
+                    return filtered, []
+                fetched, warnings = sync_public_events(
+                    missing,
+                    args.start or config.data.start_date,
+                    config.data.end_date,
+                    source=event_source,
+                    fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+                )
+                combined = pd.concat([filtered, fetched], ignore_index=True, sort=False) if not fetched.empty else filtered
+                if event_source != "sample" and not fetched.empty:
+                    try:
+                        warehouse.write_table("raw_events", add_source_audit_columns(combined, event_source, quality_flag="raw_event"))
+                    except Exception:  # noqa: BLE001
+                        pass
+                return combined, warnings
+    except Exception:  # noqa: BLE001
+        pass
+    raw, warnings = sync_public_events(
+        symbols,
+        args.start or config.data.start_date,
+        config.data.end_date,
+        source=event_source,
+        fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+    )
+    if event_source != "sample":
+        try:
+            warehouse.write_table("raw_events", add_source_audit_columns(raw, event_source, quality_flag="raw_event"))
+        except Exception:  # noqa: BLE001
+            pass
+    return raw, warnings
+
+
+def _load_or_build_event_factors(
+    config,
+    args: argparse.Namespace,
+    source: str | None,
+    symbols: list[str],
+    output_dir: Path | None = None,
+) -> pd.DataFrame:
+    wanted = set(str(symbol).zfill(6) for symbol in symbols)
+    warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+    raw, source_warnings = _load_or_sync_events_with_warnings(config, args, source, symbols)
+    result = build_event_store(raw, symbols)
+    if source_warnings:
+        result = replace(result, warnings=[*source_warnings, *result.warnings])
+    if output_dir is not None:
+        event_dir = output_dir / "event_inputs"
+        write_event_outputs(result, event_dir)
+    if not _uses_sample_events(config, args, source):
+        try:
+            warehouse.write_table("event_store", add_source_audit_columns(result.event_store, "event_store_v04"))
+            warehouse.write_table("event_factor", add_source_audit_columns(result.event_factors, "event_factor_v04"))
+        except Exception:  # noqa: BLE001
+            pass
+    if result.event_factors.empty or "symbol" not in result.event_factors.columns:
+        return result.event_factors
+    return result.event_factors[result.event_factors["symbol"].astype(str).str.zfill(6).isin(wanted)].copy()
+
+
+def _event_source_mask(frame: pd.DataFrame, event_source: str) -> pd.Series:
+    if "source" not in frame.columns:
+        return pd.Series(True, index=frame.index)
+    source_text = frame["source"].astype(str).str.lower()
+    sample_like = source_text.str.contains("sample", na=False)
+    if event_source == "sample":
+        return sample_like | source_text.eq("sample")
+    if event_source in {"cninfo", "cninfo_direct", "direct_cninfo"}:
+        return source_text.str.contains("cninfo_direct|direct_cninfo", na=False)
+    return ~sample_like
+
+
+def _event_source_from_data_source(config, args: argparse.Namespace, source: str | None) -> str:
+    if _uses_sample_events(config, args, source):
+        return "sample"
+    data_source = str(source or config.data.source or "akshare").lower()
+    if data_source in {"cninfo", "cninfo_direct", "direct_cninfo"}:
+        return "cninfo_direct"
+    return "akshare"
+
+
+def _uses_sample_events(config, args: argparse.Namespace, source: str | None) -> bool:
+    return (source or config.data.source) == "sample" or bool(args.allow_sample)
+
+
+def _build_stock_news_context(
+    config,
+    args: argparse.Namespace,
+    source: str | None,
+    symbols: list[str],
+    symbol: str,
+    output_dir: Path,
+) -> tuple[pd.DataFrame | None, dict[str, Path], dict[str, object]]:
+    symbol = symbol.zfill(6)
+    event_symbols = [str(item).zfill(6) for item in symbols]
+    if symbol not in event_symbols:
+        event_symbols.append(symbol)
+    raw_events, source_warnings = _load_or_sync_events_with_warnings(config, args, source, event_symbols)
+    event_result = build_event_store(raw_events, event_symbols)
+    if source_warnings:
+        event_result = replace(event_result, warnings=[*source_warnings, *event_result.warnings])
+    news_paths = write_event_outputs(event_result, output_dir)
+    symbol_evidence = build_news_evidence_report(event_result.event_store, event_result.event_factors, symbol=symbol)
+    (output_dir / "stock_news_evidence.md").write_text(symbol_evidence, encoding="utf-8")
+    symbol_events = event_result.event_store[event_result.event_store["symbol"].astype(str).str.zfill(6) == symbol]
+    symbol_factors = event_result.event_factors[event_result.event_factors["symbol"].astype(str).str.zfill(6) == symbol]
+    symbol_events.to_csv(output_dir / "stock_event_store.csv", index=False)
+    symbol_factors.to_csv(output_dir / "stock_event_factors.csv", index=False)
+    if not _uses_sample_events(config, args, source):
+        try:
+            warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+            warehouse.write_table("event_store", add_source_audit_columns(event_result.event_store, "event_store_v04"))
+            warehouse.write_table("event_factor", add_source_audit_columns(event_result.event_factors, "event_factor_v04"))
+        except Exception:  # noqa: BLE001
+            pass
+    news_summary = {
+        "with_news": True,
+        "event_rows": int(len(symbol_events)),
+        "event_factor_rows": int(len(symbol_factors)),
+        "event_types": sorted(symbol_events["event_type"].astype(str).unique().tolist()) if not symbol_events.empty else [],
+        "latest_event_title": str(symbol_events.sort_values("published_at")["title"].iloc[-1]) if not symbol_events.empty else "",
+    }
+    return event_result.event_factors, news_paths, news_summary
+
+
 def _try_fetch_all_a_symbols() -> list[str]:
+    frame = _try_fetch_all_a_universe_frame()
+    if not frame.empty:
+        return sorted(frame["symbol"].astype(str).str.zfill(6).unique().tolist())
+    return []
+
+
+def _try_fetch_all_a_universe_frame() -> pd.DataFrame:
+    for loader in (_fetch_akshare_all_a_universe, _fetch_baostock_all_a_universe):
+        try:
+            frame = loader()
+        except Exception:  # noqa: BLE001
+            continue
+        if not frame.empty:
+            return _normalize_universe_output_columns(frame)
+    return pd.DataFrame(
+        columns=["theme", "theme_group", "symbol", "name", "reason", "seed_rank", "seed_weight", "source_note", "source", "notes"]
+    )
+
+
+def _fetch_akshare_all_a_universe() -> pd.DataFrame:
+    import akshare as ak  # type: ignore
+
+    raw = ak.stock_info_a_code_name()
+    symbol_col = _infer_symbol_column(raw)
+    name_col = _infer_name_column(raw, symbol_col)
+    if symbol_col is None:
+        return pd.DataFrame()
+    out = pd.DataFrame()
+    out["symbol"] = raw[symbol_col].astype(str).str.replace(r"\D", "", regex=True).str[-6:].str.zfill(6)
+    out["name"] = raw[name_col].astype(str).str.strip() if name_col else out["symbol"].map(lambda value: f"A-share {value}")
+    return _all_a_rows_from_names(out, "akshare_stock_info_a_code_name")
+
+
+def _fetch_baostock_all_a_universe() -> pd.DataFrame:
     try:
         import baostock as bs  # type: ignore
 
@@ -702,19 +1487,69 @@ def _try_fetch_all_a_symbols() -> list[str]:
             if rows:
                 frame = pd.DataFrame(rows, columns=query.fields)
                 if "code" in frame.columns:
-                    return sorted(frame["code"].astype(str).str.replace(".", "", regex=False).str[-6:].unique().tolist())
+                    out = pd.DataFrame()
+                    out["symbol"] = frame["code"].astype(str).str.replace(".", "", regex=False).str[-6:].str.zfill(6)
+                    name_col = "code_name" if "code_name" in frame.columns else _infer_name_column(frame, "code")
+                    out["name"] = frame[name_col].astype(str).str.strip() if name_col else out["symbol"].map(lambda value: f"A-share {value}")
+                    return _all_a_rows_from_names(out, "baostock_query_all_stock")
     except Exception:  # noqa: BLE001
-        pass
-    try:
-        import akshare as ak  # type: ignore
+        return pd.DataFrame()
+    return pd.DataFrame()
 
-        raw = ak.stock_info_a_code_name()
-        code_col = "code" if "code" in raw.columns else _infer_symbol_column(raw)
-        if code_col:
-            return sorted(raw[code_col].astype(str).str.zfill(6).unique().tolist())
-    except Exception:  # noqa: BLE001
-        pass
-    return []
+
+def _all_a_rows_from_names(frame: pd.DataFrame, source_note: str) -> pd.DataFrame:
+    if frame.empty:
+        return pd.DataFrame()
+    clean = frame.copy()
+    clean["symbol"] = clean["symbol"].astype(str).str.zfill(6)
+    clean = clean[clean["symbol"].str.fullmatch(r"\d{6}", na=False)]
+    clean = clean.drop_duplicates("symbol").sort_values("symbol").reset_index(drop=True)
+    clean["theme"] = clean["name"].map(_classify_free_theme)
+    clean["theme_group"] = "all_a_free"
+    clean["reason"] = "free all-A stock list; theme inferred from public name keywords"
+    clean["seed_rank"] = clean.index + 1
+    clean["seed_weight"] = 1.0 / clean["seed_rank"]
+    clean["source_note"] = source_note
+    return clean[["theme", "theme_group", "symbol", "name", "reason", "seed_rank", "seed_weight", "source_note"]]
+
+
+def _augment_hot_universe_with_free_market(frame: pd.DataFrame, minimum_symbols: int, target_symbols: int) -> pd.DataFrame:
+    if frame.empty or int(frame["symbol"].nunique()) >= minimum_symbols:
+        return frame
+    all_a = _try_fetch_all_a_universe_frame()
+    if all_a.empty:
+        return frame
+    existing = set(frame["symbol"].astype(str).str.zfill(6))
+    needed = max(0, target_symbols - len(existing))
+    extension = all_a[~all_a["symbol"].astype(str).str.zfill(6).isin(existing)].head(needed).copy()
+    if extension.empty:
+        return frame
+    extension["theme_group"] = "free_market_extension"
+    extension["reason"] = "free all-A extension added to make mega-hot large enough for cross-sectional validation"
+    extension["source_note"] = extension["source_note"].astype(str) + ";mega_hot_extension"
+    extension["seed_rank"] = range(1, len(extension) + 1)
+    extension["seed_weight"] = 1.0 / extension["seed_rank"].astype(float)
+    return pd.concat([frame, extension[frame.columns]], ignore_index=True, sort=False)
+
+
+def _curated_universe_as_all_a_fallback() -> pd.DataFrame:
+    frame = build_theme_universe("mega-hot").copy()
+    frame["theme_group"] = "all_a_free_fallback"
+    frame["source_note"] = frame["source_note"].astype(str) + ";all_a_free_fetch_failed"
+    frame["reason"] = frame["reason"].astype(str) + "; all-a free fetch failed"
+    return frame
+
+
+def _normalize_universe_output_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    out = frame.copy()
+    if out.empty:
+        return out
+    out["symbol"] = out["symbol"].astype(str).str.zfill(6)
+    if "source" not in out.columns:
+        out["source"] = out.get("source_note", "curated_public_hot_seed")
+    if "notes" not in out.columns:
+        out["notes"] = out.get("reason", "")
+    return out.reset_index(drop=True)
 
 
 def _infer_symbol_column(frame: pd.DataFrame) -> str | None:
@@ -723,6 +1558,42 @@ def _infer_symbol_column(frame: pd.DataFrame) -> str | None:
         if values.str.fullmatch(r"\d{6}").mean() > 0.50:
             return str(column)
     return None
+
+
+def _infer_name_column(frame: pd.DataFrame, symbol_col: str | None) -> str | None:
+    preferred = {"name", "名称", "股票简称", "code_name", "证券简称"}
+    for column in frame.columns:
+        if str(column) in preferred:
+            return str(column)
+    for column in frame.columns:
+        if symbol_col is not None and str(column) == str(symbol_col):
+            continue
+        values = frame[column].astype(str).str.strip()
+        if values.str.len().between(2, 12).mean() > 0.50 and values.str.fullmatch(r"\d{6}").mean() < 0.10:
+            return str(column)
+    return None
+
+
+def _classify_free_theme(name: object) -> str:
+    text = str(name)
+    buckets = [
+        ("ai_compute_semiconductor", ["半导体", "芯片", "微电", "光电", "光迅", "中际", "浪潮", "曙光", "软件", "科技"]),
+        ("robotics_highend_manufacturing", ["机器人", "机床", "自动", "精密", "机械", "数控", "激光", "电机"]),
+        ("metals_energy_metals", ["铜", "铝", "锂", "钴", "镍", "锡", "锌", "黄金", "稀土", "有色", "矿", "钨", "钛"]),
+        ("power_solid_state_battery", ["电池", "锂电", "新能源", "储能", "电力", "光伏", "风电", "能源", "电气"]),
+        ("defense_ship_equipment", ["航天", "航空", "船", "卫星", "军", "兵", "中航", "中国船"]),
+        ("innovative_drug_medical_device", ["药", "医", "生物", "医疗", "制药", "器械", "基因"]),
+        ("consumer_electronics_pcb", ["电子", "消费", "视源", "歌尔", "立讯", "鹏鼎", "沪电"]),
+        ("data_element_fintech_ai_app", ["数据", "传媒", "互联", "金融", "证券", "银行", "保险", "信安", "安全"]),
+        ("central_soe_high_dividend", ["中国", "中远", "中铁", "中交", "中煤", "中石", "国电", "华能", "大唐", "银行"]),
+        ("agriculture_food_beverage", ["食品", "酒", "乳", "农", "牧", "饮料", "消费"]),
+        ("construction_infrastructure", ["建", "路桥", "水泥", "工程", "地产", "基建"]),
+        ("environmental_water_gas", ["环保", "水务", "燃气", "节能", "环卫"]),
+    ]
+    for theme, keywords in buckets:
+        if any(keyword in text for keyword in keywords):
+            return theme
+    return "mega_hot_free_market_extension"
 
 
 def _read_model_registry(registry_dir: Path) -> list[dict[str, object]]:
@@ -774,11 +1645,13 @@ def _data_config_with_source(config, args: argparse.Namespace, source: str | Non
         symbols = symbols_for_themes(args.themes)
     if not symbols:
         symbols = symbols_for_themes("core-hot")
+    if getattr(args, "max_symbols", 0) and args.max_symbols > 0 and len(symbols) > args.max_symbols:
+        symbols = list(symbols)[: args.max_symbols]
     if ensure_symbol:
         normalized = ensure_symbol.zfill(6)
         if normalized not in symbols:
             symbols.append(normalized)
-    return replace(config.data, source=data_source, symbols=symbols)
+    return replace(config.data, source=data_source, symbols=symbols, start_date=args.start or config.data.start_date)
 
 
 def _write_json(path: Path, value: object) -> None:

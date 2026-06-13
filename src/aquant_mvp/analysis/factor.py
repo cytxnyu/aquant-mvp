@@ -12,6 +12,7 @@ class FactorAnalysisResult:
     ic_series: pd.DataFrame
     quantile_returns: pd.DataFrame
     coverage: pd.DataFrame
+    stability: pd.DataFrame
 
 
 def analyze_factors(
@@ -26,12 +27,14 @@ def analyze_factors(
     quantile_returns = _build_quantile_returns(joined, factor_columns, label_column, quantiles)
     ic_rows = _summarize_ic(ic_series, factor_columns)
     coverage_rows = _build_coverage(joined, factor_columns, label_column)
+    stability = _build_yearly_stability(ic_series, factor_columns)
 
     return FactorAnalysisResult(
         ic_summary=pd.DataFrame(ic_rows),
         ic_series=ic_series,
         quantile_returns=quantile_returns,
         coverage=pd.DataFrame(coverage_rows),
+        stability=stability,
     )
 
 
@@ -147,7 +150,34 @@ def _build_coverage(joined: pd.DataFrame, factor_columns: list[str], label_colum
     denominator = max(1, len(joined))
     label_valid = joined[label_column].notna()
     valid_counts = joined[factor_columns].notna().where(label_valid, False).sum()
-    return [{"factor": factor, "coverage": float(valid_counts.get(factor, 0) / denominator)} for factor in factor_columns]
+    return [
+        {
+            "factor": factor,
+            "coverage": float(valid_counts.get(factor, 0) / denominator),
+            "missing_ratio": float(1 - valid_counts.get(factor, 0) / denominator),
+        }
+        for factor in factor_columns
+    ]
+
+
+def _build_yearly_stability(ic_series: pd.DataFrame, factor_columns: list[str]) -> pd.DataFrame:
+    if ic_series.empty:
+        return pd.DataFrame(
+            [{"factor": factor, "year": "", "rank_ic_mean": 0.0, "ic_mean": 0.0, "positive_rank_ic_ratio": 0.0, "observations": 0} for factor in factor_columns]
+        )
+    frame = ic_series.copy()
+    frame["year"] = pd.to_datetime(frame["date"]).dt.year
+    grouped = (
+        frame.groupby(["factor", "year"], as_index=False)
+        .agg(
+            rank_ic_mean=("rank_ic", "mean"),
+            ic_mean=("ic", "mean"),
+            positive_rank_ic_ratio=("rank_ic", lambda values: float((values > 0).mean())),
+            observations=("rank_ic", "size"),
+        )
+        .sort_values(["factor", "year"])
+    )
+    return grouped
 
 
 def _safe_qcut(values: pd.Series, quantiles: int) -> pd.Series | None:

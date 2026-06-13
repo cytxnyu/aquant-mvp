@@ -50,8 +50,40 @@ class AkshareAdapter:
 class BaoStockAdapter:
     name: str = "baostock"
     capabilities: VendorCapabilities = VendorCapabilities(daily_bar=True, adj_factor=True, st_flag=True)
+    _session: object | None = None
+    _persistent: bool = False
+
+    def __enter__(self) -> "BaoStockAdapter":
+        object.__setattr__(self, "_persistent", True)
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
+        if self._session is not None:
+            try:
+                import baostock as bs  # type: ignore
+
+                bs.logout()
+            finally:
+                object.__setattr__(self, "_session", None)
+        object.__setattr__(self, "_persistent", False)
 
     def fetch_daily_bars(self, symbol: str, start_date: str, end_date: str, adjust: str) -> VendorFetchResult:
+        if self._session is None:
+            object.__setattr__(self, "_session", self._login())
+        owns_session = not self._persistent
+        try:
+            return self._query_daily_bars(symbol, start_date, end_date, adjust)
+        finally:
+            if owns_session:
+                try:
+                    import baostock as bs  # type: ignore
+
+                    bs.logout()
+                except Exception:  # noqa: BLE001
+                    pass
+                object.__setattr__(self, "_session", None)
+
+    def _login(self) -> object:
         try:
             import baostock as bs  # type: ignore
         except ImportError as exc:
@@ -60,24 +92,26 @@ class BaoStockAdapter:
         login = bs.login()
         if getattr(login, "error_code", "0") != "0":
             raise VendorUnavailable(f"BaoStock login failed: {getattr(login, 'error_msg', '')}")
-        try:
-            fields = "date,code,open,high,low,close,volume,amount,turn,tradestatus,pctChg,isST"
-            query = bs.query_history_k_data_plus(
-                _baostock_code(symbol),
-                fields,
-                start_date=start_date,
-                end_date=end_date,
-                frequency="d",
-                adjustflag=_baostock_adjust_flag(adjust),
-            )
-            if getattr(query, "error_code", "0") != "0":
-                raise VendorUnavailable(f"BaoStock query failed: {getattr(query, 'error_msg', '')}")
-            rows: list[list[str]] = []
-            while query.next():
-                rows.append(query.get_row_data())
-            raw = pd.DataFrame(rows, columns=query.fields)
-        finally:
-            bs.logout()
+        return login
+
+    def _query_daily_bars(self, symbol: str, start_date: str, end_date: str, adjust: str) -> VendorFetchResult:
+        import baostock as bs  # type: ignore
+
+        fields = "date,code,open,high,low,close,volume,amount,turn,tradestatus,pctChg,isST"
+        query = bs.query_history_k_data_plus(
+            _baostock_code(symbol),
+            fields,
+            start_date=start_date,
+            end_date=end_date,
+            frequency="d",
+            adjustflag=_baostock_adjust_flag(adjust),
+        )
+        if getattr(query, "error_code", "0") != "0":
+            raise VendorUnavailable(f"BaoStock query failed: {getattr(query, 'error_msg', '')}")
+        rows: list[list[str]] = []
+        while query.next():
+            rows.append(query.get_row_data())
+        raw = pd.DataFrame(rows, columns=query.fields)
 
         frame = _normalize_baostock_daily(raw, symbol)
         if frame.empty:
@@ -132,6 +166,22 @@ class FreeDataRouter:
 
     def __init__(self, vendors: list[str] | None = None) -> None:
         self.adapters = [_make_adapter(name) for name in (vendors or ["akshare", "baostock", "tushare"])]
+
+    def __enter__(self) -> "FreeDataRouter":
+        for adapter in self.adapters:
+            enter = getattr(adapter, "__enter__", None)
+            if callable(enter):
+                enter()
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
+        self.close()
+
+    def close(self) -> None:
+        for adapter in reversed(self.adapters):
+            exit_method = getattr(adapter, "__exit__", None)
+            if callable(exit_method):
+                exit_method(None, None, None)
 
     def fetch_daily_bars(self, symbol: str, start_date: str, end_date: str, adjust: str) -> VendorFetchResult:
         warnings: list[str] = []

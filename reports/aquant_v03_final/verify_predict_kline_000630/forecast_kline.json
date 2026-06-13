@@ -1,0 +1,26 @@
+{
+  "symbol": "000630",
+  "source": "baostock",
+  "model_type": "ensemble",
+  "days": 20,
+  "history_days": 120,
+  "latest_date": "2026-06-10",
+  "latest_close": 6.35,
+  "forecast_rows": 60,
+  "scenarios": [
+    "bearish",
+    "base",
+    "bullish"
+  ],
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "data_version": "5c3fea71183b",
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "note": "Predicted K-line is a probability scenario chart, not a deterministic forecast."
+}

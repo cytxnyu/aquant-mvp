@@ -16,15 +16,25 @@ class DataAuditResult:
 def add_source_audit_columns(frame: pd.DataFrame, source: str, quality_flag: str = "ok") -> pd.DataFrame:
     out = frame.copy()
     fetched_at = pd.Timestamp.now().isoformat(timespec="seconds")
-    out["source"] = source
-    out["fetched_at"] = fetched_at
+    out["audit_source"] = source
+    out["audit_fetched_at"] = fetched_at
+    out["audit_quality_flag"] = quality_flag
+    if "source" not in out.columns:
+        out["source"] = source
+    if "fetched_at" not in out.columns:
+        out["fetched_at"] = fetched_at
     if "date" in out.columns:
-        out["effective_date"] = pd.to_datetime(out["date"], errors="coerce")
+        if "effective_date" not in out.columns:
+            out["effective_date"] = pd.to_datetime(out["date"], errors="coerce")
     elif "effective_date" not in out.columns:
         out["effective_date"] = pd.Timestamp(fetched_at)
-    out["announce_date"] = pd.NaT
-    out["quality_flag"] = quality_flag
-    out["raw_hash"] = pd.util.hash_pandas_object(out.astype(str), index=False).astype(str)
+    if "announce_date" not in out.columns:
+        out["announce_date"] = pd.NaT
+    if "quality_flag" not in out.columns:
+        out["quality_flag"] = quality_flag
+    out["audit_raw_hash"] = pd.util.hash_pandas_object(out.astype(str), index=False).astype(str)
+    if "raw_hash" not in out.columns:
+        out["raw_hash"] = out["audit_raw_hash"]
     return out
 
 
@@ -94,12 +104,14 @@ def compare_daily_bar_sources(left: pd.DataFrame, right: pd.DataFrame, left_sour
 
 
 def _pit_ready(table: str, columns: set[str]) -> bool:
-    if table in {"daily_bar", "minute_bar", "trade_calendar"}:
+    if table in {"daily_bar", "minute_bar", "trade_calendar", "raw_events", "event_store", "event_factor"}:
         return "date" in columns or "effective_date" in columns
     if table in {"financial", "announcement"}:
         return "announce_date" in columns
     if table in {"industry", "index_member", "concept"}:
         return "effective_date" in columns
+    if table in {"factor_registry", "factor_trust_audit"}:
+        return True
     return "date" in columns or "effective_date" in columns or "announce_date" in columns
 
 

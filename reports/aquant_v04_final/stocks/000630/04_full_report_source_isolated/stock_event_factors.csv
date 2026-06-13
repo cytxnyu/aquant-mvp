@@ -1,0 +1,6 @@
+date,symbol,event_count_3d,event_count_20d,positive_event_count,negative_event_count,event_risk_count,event_impact_score,event_confidence_mean,latest_event_type,latest_event_title
+2025-12-25,000630,1,1,0,1,1,-0.55,0.7100000000000001,public_opinion_risk,风险: 000630 出现舆情风险提示，需降低事件置信度。
+2025-12-26,000630,1,1,0,1,1,-0.55,0.7100000000000001,public_opinion_risk,风险: 000630 出现舆情风险提示，需降低事件置信度。
+2025-12-29,000630,2,2,1,1,1,-0.09585063458456078,0.67,commodity_shock,行业: 有色金属与新能源产业链价格波动，对相关股票形成商品价格冲击。
+2025-12-30,000630,2,2,1,1,1,-0.09585063458456074,0.67,commodity_shock,行业: 有色金属与新能源产业链价格波动，对相关股票形成商品价格冲击。
+2025-12-31,000630,2,3,2,1,1,0.21528094414203244,0.6833333333333335,order_contract,公告: 000630 发布经营进展公告，订单合同和产能信息需要继续跟踪。

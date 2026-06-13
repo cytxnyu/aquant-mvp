@@ -1,0 +1,222 @@
+symbol,name,theme_count,themes,reasons
+603799,Huayou Cobalt,2,metals_energy_metals;power_solid_state_battery,cobalt nickel lithium material;battery metal
+000157,Zoomlion,1,robotics_highend_manufacturing,construction machinery
+000425,XCMG Machinery,1,robotics_highend_manufacturing,construction machinery
+000426,Xingye Silver Tin,1,metals_energy_metals,silver tin
+000547,Avic Industry-Finance,1,defense_ship_equipment,defense group finance
+000630,Tongling Nonferrous,1,metals_energy_metals,copper
+000661,Changchun High-Tech,1,innovative_drug_medical_device,biopharma
+000733,Zhenhua Technology,1,defense_ship_equipment,military electronics
+000737,North Copper,1,metals_energy_metals,copper
+000738,Avicopter,1,defense_ship_equipment,helicopter
+000768,AVIC Xian Aircraft,1,defense_ship_equipment,aircraft
+000807,Yunnan Aluminum,1,metals_energy_metals,aluminum
+000831,China Rare Earth,1,metals_energy_metals,rare earth
+000878,Yunnan Copper,1,metals_energy_metals,copper
+000901,Aerospace Hi-Tech,1,defense_ship_equipment,aerospace electronic
+000933,Shenhuo,1,metals_energy_metals,coal aluminum
+000938,Unisplendour,1,ai_compute_semiconductor,AI infrastructure
+000960,Yunnan Tin,1,metals_energy_metals,tin
+000963,Huadong Medicine,1,innovative_drug_medical_device,pharma and aesthetics
+000975,Yintai Gold,1,metals_energy_metals,gold
+000977,Inspur Information,1,ai_compute_semiconductor,AI server
+000988,Huagong Tech,1,robotics_highend_manufacturing,laser equipment
+002008,Han's Laser,1,robotics_highend_manufacturing,laser automation
+002025,Aerospace Electric,1,defense_ship_equipment,connector
+002049,Unigroup Guoxin,1,ai_compute_semiconductor,security and FPGA chip
+002050,Sanhua Intelligent Controls,1,robotics_highend_manufacturing,thermal management actuator
+002074,Gotion High-Tech,1,power_solid_state_battery,battery
+002080,Sinoma Science,1,power_solid_state_battery,lithium separator
+002151,BDS Navigation,1,defense_ship_equipment,Beidou navigation
+002155,Hunan Gold,1,metals_energy_metals,gold antimony
+002156,Tongfu Microelectronics,1,ai_compute_semiconductor,advanced packaging
+002179,AVIC Optoelectronics,1,defense_ship_equipment,connectors
+002182,Baowu Magnesium,1,metals_energy_metals,magnesium
+002192,Rongjie,1,power_solid_state_battery,lithium mining
+002203,Hailiang,1,metals_energy_metals,copper pipe
+002230,iFlytek,1,ai_compute_semiconductor,AI application platform
+002237,Hengbang,1,metals_energy_metals,gold smelting
+002340,GEM,1,power_solid_state_battery,battery recycling precursor
+002371,NAURA,1,ai_compute_semiconductor,semiconductor equipment
+002389,Aerospace Rainbow,1,defense_ship_equipment,UAV
+002407,Do-Fluoride,1,power_solid_state_battery,electrolyte and fluorine
+002414,Infrared Equipment Seed,1,defense_ship_equipment,infrared seed
+002415,Hikvision,1,ai_compute_semiconductor,AI vision hardware
+002460,Ganfeng Lithium,1,metals_energy_metals,lithium
+002465,Haige Communications,1,defense_ship_equipment,military communication
+002466,Tianqi Lithium,1,metals_energy_metals,lithium
+002472,Shuanghuan Driveline,1,robotics_highend_manufacturing,gear transmission
+002497,Yahua Group,1,power_solid_state_battery,lithium salt
+002527,Xinshida,1,robotics_highend_manufacturing,robot controller
+002532,Tianshan Aluminum,1,metals_energy_metals,aluminum
+002594,BYD,1,power_solid_state_battery,battery vehicle
+002600,Lingyi iTech,1,robotics_highend_manufacturing,precision manufacturing
+002611,Dongfang Precision,1,power_solid_state_battery,battery equipment
+002698,Bozhon Precision,1,robotics_highend_manufacturing,automation equipment
+002709,Tinci Materials,1,power_solid_state_battery,electrolyte
+002738,Sinomine Resource,1,metals_energy_metals,cesium lithium
+002747,Estun,1,robotics_highend_manufacturing,robotics
+002756,Yongxing Materials,1,metals_energy_metals,lithium stainless steel
+002812,Yunnan Energy New Material,1,power_solid_state_battery,separator
+002821,Asymchem,1,innovative_drug_medical_device,CDMO
+002850,Kedali,1,power_solid_state_battery,battery structure
+002988,New Material Seed,1,metals_energy_metals,new material seed
+300003,Lepu Medical,1,innovative_drug_medical_device,cardiovascular device
+300014,EVE Energy,1,power_solid_state_battery,battery
+300015,Aier Eye,1,innovative_drug_medical_device,medical service
+300024,Siasun Robot,1,robotics_highend_manufacturing,industrial robot
+300037,Capchem,1,power_solid_state_battery,battery electrolyte
+300073,Dangsheng Technology,1,power_solid_state_battery,cathode
+300101,Zhenxin Technology,1,defense_ship_equipment,Beidou chip
+300122,Zhifei Biological,1,innovative_drug_medical_device,vaccine
+300124,Inovance,1,robotics_highend_manufacturing,industrial automation
+300161,Huazhong CNC,1,robotics_highend_manufacturing,industrial CNC
+300207,Sunwoda,1,power_solid_state_battery,battery pack
+300276,Automation Equipment Seed,1,robotics_highend_manufacturing,factory automation seed
+300308,Zhongji Innolight,1,ai_compute_semiconductor,optical module
+300347,Tigermed,1,innovative_drug_medical_device,clinical CRO
+300363,Porton Pharma,1,innovative_drug_medical_device,CDMO
+300390,Canmax,1,power_solid_state_battery,lithium chemical
+300424,Aviation New Technology,1,defense_ship_equipment,aviation maintenance
+300438,Penghui Energy,1,power_solid_state_battery,energy storage battery
+300450,Wuxi Lead,1,power_solid_state_battery,battery equipment
+300474,Jingjia Micro,1,defense_ship_equipment,GPU defense
+300482,Wondfo Biotech,1,innovative_drug_medical_device,IVD
+300502,Eoptolink,1,ai_compute_semiconductor,optical module
+300558,Betta Pharmaceuticals,1,innovative_drug_medical_device,innovative drug
+300567,Jingce Electronic,1,ai_compute_semiconductor,semiconductor inspection
+300568,Senior Technology,1,power_solid_state_battery,separator
+300580,Bethel Automotive,1,robotics_highend_manufacturing,intelligent manufacturing
+300595,Opm Biosciences,1,innovative_drug_medical_device,bioprocess
+300601,Kangtai Biological,1,innovative_drug_medical_device,vaccine
+300604,Changchuan Technology,1,ai_compute_semiconductor,IC testing equipment
+300607,Topstar,1,robotics_highend_manufacturing,industrial automation
+300618,Hanrui Cobalt,1,metals_energy_metals,cobalt
+300627,Huace Navigation,1,defense_ship_equipment,precision navigation
+300660,Jiangsu Leili,1,robotics_highend_manufacturing,micro motor
+300661,SG Micro,1,ai_compute_semiconductor,analog chip
+300697,Electric Alloy,1,metals_energy_metals,copper alloy
+300699,Guangwei Composites,1,defense_ship_equipment,carbon fiber
+300718,Changsheng Bearing,1,robotics_highend_manufacturing,sliding bearing
+300725,Pharmablock,1,innovative_drug_medical_device,CRO chemistry
+300750,CATL,1,power_solid_state_battery,battery
+300759,Pharmaron,1,innovative_drug_medical_device,CXO
+300760,Mindray Medical,1,innovative_drug_medical_device,medical device
+300769,Dynanonic,1,power_solid_state_battery,LFP cathode
+300777,Sinofibers Technology,1,defense_ship_equipment,carbon fiber
+300782,Maxscend,1,ai_compute_semiconductor,RF chip
+300919,CNGR Advanced Material,1,power_solid_state_battery,precursor
+301026,Battery Metal Seed,1,metals_energy_metals,battery metal seed
+301112,Crrc Times Electric,1,robotics_highend_manufacturing,industrial drive
+301219,Tengyuan Cobalt,1,metals_energy_metals,cobalt copper
+301349,Sichuan Energy,1,power_solid_state_battery,lithium chain seed
+301358,Hunan Yuneng,1,power_solid_state_battery,LFP cathode
+301368,Fengli Intelligent,1,robotics_highend_manufacturing,micro transmission
+600031,Sany Heavy Industry,1,robotics_highend_manufacturing,construction machinery
+600038,Avicopter,1,defense_ship_equipment,helicopter
+600110,NuoDe New Materials,1,power_solid_state_battery,copper foil
+600111,Northern Rare Earth,1,metals_energy_metals,rare earth
+600118,China Satellite,1,defense_ship_equipment,satellite
+600150,CSSC Holdings,1,defense_ship_equipment,shipbuilding
+600196,Fosun Pharma,1,innovative_drug_medical_device,pharma platform
+600219,Nanshan Aluminum,1,metals_energy_metals,aluminum
+600276,Hengrui Medicine,1,innovative_drug_medical_device,innovative drug
+600316,Hongdu Aviation,1,defense_ship_equipment,trainer aircraft
+600362,Jiangxi Copper,1,metals_energy_metals,copper
+600372,AVIC Airborne,1,defense_ship_equipment,airborne systems
+600435,North Navigation,1,defense_ship_equipment,navigation equipment
+600456,BaoTi,1,metals_energy_metals,titanium
+600460,Silan Micro,1,ai_compute_semiconductor,power semiconductor
+600482,China Ship Defense,1,defense_ship_equipment,ship equipment
+600489,Zhongjin Gold,1,metals_energy_metals,gold
+600497,Chihong ZnGe,1,metals_energy_metals,zinc germanium
+600521,Huahai Pharma,1,innovative_drug_medical_device,API and generic
+600547,Shandong Gold,1,metals_energy_metals,gold
+600584,JCET,1,ai_compute_semiconductor,advanced packaging
+600711,Silver Lead Zinc Seed,1,metals_energy_metals,silver lead zinc watchlist
+600760,AVIC Shenyang Aircraft,1,defense_ship_equipment,aircraft
+600761,Anhui Heli,1,robotics_highend_manufacturing,forklift
+600835,Shanghai Mechanical,1,robotics_highend_manufacturing,elevator equipment
+600862,AVIC Hi-Tech,1,defense_ship_equipment,aero composite material
+600867,Tonghua Dongbao,1,innovative_drug_medical_device,diabetes drug
+600879,Aerospace Electronics Watch,1,defense_ship_equipment,aerospace seed
+600884,Shanshan,1,power_solid_state_battery,anode material
+600893,Aerospace Electronics,1,defense_ship_equipment,defense electronics
+600967,Inner Mongolia First Machinery,1,defense_ship_equipment,ground equipment
+600988,Chifeng Gold,1,metals_energy_metals,gold
+601100,Hengli Hydraulic,1,robotics_highend_manufacturing,hydraulic component
+601168,Western Mining,1,metals_energy_metals,copper lead zinc
+601212,Baiyin Nonferrous,1,metals_energy_metals,nonferrous metal
+601369,Shaanxi Construction Machinery,1,robotics_highend_manufacturing,equipment cycle
+601600,Aluminum Corp of China,1,metals_energy_metals,aluminum
+601609,Jintian Copper,1,metals_energy_metals,copper processing
+601677,Mingtai Aluminum,1,metals_energy_metals,aluminum processing
+601899,Zijin Mining,1,metals_energy_metals,copper gold lithium
+601989,China Heavy Industry,1,defense_ship_equipment,shipbuilding
+603019,Sugon,1,ai_compute_semiconductor,HPC and server
+603212,Battery Material Seed,1,power_solid_state_battery,battery material seed
+603259,WuXi AppTec,1,innovative_drug_medical_device,CXO
+603283,Saiteng,1,robotics_highend_manufacturing,precision automation
+603338,Zhejiang Dingli,1,robotics_highend_manufacturing,aerial work platform
+603416,Xinjie Electric,1,robotics_highend_manufacturing,PLC and servo
+603501,WillSemi,1,ai_compute_semiconductor,semiconductor sensor
+603611,Noblelift,1,robotics_highend_manufacturing,smart warehousing equipment
+603659,Putailai,1,power_solid_state_battery,anode coating separator
+603662,Keli Sensing,1,robotics_highend_manufacturing,sensor
+603728,Mingzhi Technology,1,robotics_highend_manufacturing,precision casting equipment
+603876,Dingsheng New Materials,1,metals_energy_metals,aluminum foil
+603882,KingMed Diagnostics,1,innovative_drug_medical_device,medical testing
+603893,Rockchip,1,ai_compute_semiconductor,AIoT chip
+603986,GigaDevice,1,ai_compute_semiconductor,memory and MCU
+603993,CMOC,1,metals_energy_metals,copper cobalt
+688005,Ronbay Technology,1,power_solid_state_battery,cathode material
+688006,Hangke Technology,1,power_solid_state_battery,battery equipment
+688008,Montage Technology,1,ai_compute_semiconductor,memory interface chip
+688012,Advanced Micro-Fab,1,ai_compute_semiconductor,semiconductor equipment
+688017,Green Harmonic,1,robotics_highend_manufacturing,robot reducer
+688019,Anji Micro,1,ai_compute_semiconductor,semiconductor material
+688029,Nanwei Medical,1,innovative_drug_medical_device,endoscope device
+688037,Kingsemi,1,ai_compute_semiconductor,lithography process equipment
+688041,Hygon,1,ai_compute_semiconductor,AI compute chip
+688047,Loongson,1,ai_compute_semiconductor,domestic CPU
+688063,Pylontech,1,power_solid_state_battery,energy storage battery
+688066,PIESAT,1,defense_ship_equipment,satellite application
+688072,Piotech,1,ai_compute_semiconductor,thin film equipment;domestic deposition equipment
+688099,Amlogic,1,ai_compute_semiconductor,AIoT SoC
+688110,Dongxin,1,ai_compute_semiconductor,memory chip
+688116,TnTech,1,power_solid_state_battery,carbon nanotube
+688120,Hwatsing,1,ai_compute_semiconductor,CMP equipment
+688122,Western Superconducting,1,defense_ship_equipment,aero material
+688126,National Silicon,1,ai_compute_semiconductor,semiconductor wafer
+688139,Oncology Drug Seed,1,innovative_drug_medical_device,innovative drug seed
+688160,Kinco Automation,1,robotics_highend_manufacturing,servo drive
+688180,Junshi Biosciences,1,innovative_drug_medical_device,innovative antibody
+688185,CanSino,1,innovative_drug_medical_device,vaccine
+688200,Huafeng Test,1,ai_compute_semiconductor,semiconductor test equipment
+688234,Tianyue Advanced,1,ai_compute_semiconductor,SiC substrate
+688235,BeiGene,1,innovative_drug_medical_device,innovative oncology
+688256,Cambricon,1,ai_compute_semiconductor,AI accelerator
+688266,Zelgen,1,innovative_drug_medical_device,innovative drug
+688271,United Imaging,1,innovative_drug_medical_device,medical imaging
+688278,Healthcare Seed,1,innovative_drug_medical_device,healthcare seed
+688301,Medical Equipment Seed,1,innovative_drug_medical_device,medical equipment seed
+688305,KSEC Intelligent,1,robotics_highend_manufacturing,motion control
+688331,RemeGen,1,innovative_drug_medical_device,innovative drug
+688347,Hua Hong,1,ai_compute_semiconductor,specialty foundry
+688385,Fudan Microelectronics,1,ai_compute_semiconductor,FPGA and MCU
+688388,Jiayuan Technology,1,power_solid_state_battery,copper foil
+688396,China Resources Micro,1,ai_compute_semiconductor,power semiconductor
+688409,Fortune Precision,1,ai_compute_semiconductor,semiconductor equipment parts
+688520,Sinocelltech,1,innovative_drug_medical_device,biotech
+688521,VeriSilicon,1,ai_compute_semiconductor,chip design service
+688525,Siglent,1,ai_compute_semiconductor,electronic measurement
+688567,Farasis Energy,1,power_solid_state_battery,solid-state battery watchlist
+688568,Geovis Technology,1,defense_ship_equipment,satellite data
+688575,YHLO Biotech,1,innovative_drug_medical_device,IVD
+688608,Bestechnic,1,ai_compute_semiconductor,wireless audio chip
+688617,APT Medical,1,innovative_drug_medical_device,medical device
+688698,Weihong,1,robotics_highend_manufacturing,CNC control
+688707,Zhenhua New Material,1,power_solid_state_battery,cathode
+688778,XTC New Energy,1,power_solid_state_battery,battery material
+688779,Changyuan Lico,1,power_solid_state_battery,cathode material
+688981,SMIC,1,ai_compute_semiconductor,foundry

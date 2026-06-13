@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "requested_days": 20,
+  "no_live": true,
+  "reasons": [
+    "order_value_exceeds_limit",
+    "target_weight_exceeds_limit",
+    "order_value_exceeds_limit",
+    "target_weight_exceeds_limit",
+    "order_value_exceeds_limit",
+    "target_weight_exceeds_limit"
+  ]
+}

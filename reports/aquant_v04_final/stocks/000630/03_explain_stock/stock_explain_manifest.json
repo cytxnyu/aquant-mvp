@@ -1,0 +1,15 @@
+{
+  "symbol": "000630",
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 80,
+    "event_factor_rows": 81,
+    "event_types": [
+      "buyback_dividend",
+      "commodity_shock",
+      "general_news",
+      "shareholder_change"
+    ],
+    "latest_event_title": "关于选举第十届董事会职工董事的公告"
+  }
+}

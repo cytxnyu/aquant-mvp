@@ -1,0 +1,48 @@
+{
+  "symbol": "600362",
+  "latest_date": "2026-06-10",
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "source": "baostock",
+  "model_type": "ensemble",
+  "data_version": "5c3fea71183b",
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "lightgbm",
+      "train_rows": 24879,
+      "valid_rows": 6229,
+      "valid_accuracy": 0.49462192968373736,
+      "valid_brier": 0.2548879664775731,
+      "valid_auc": 0.49900722745835996,
+      "valid_return_ic": 0.02225293002778333,
+      "feature_count": 177,
+      "embargo_days": 5
+    },
+    "horizon_5d": {
+      "method": "lightgbm",
+      "train_rows": 24819,
+      "valid_rows": 6209,
+      "valid_accuracy": 0.4746335963923337,
+      "valid_brier": 0.26718622523721347,
+      "valid_auc": 0.533951586357076,
+      "valid_return_ic": 0.08185474658445822,
+      "feature_count": 177,
+      "embargo_days": 5
+    },
+    "horizon_20d": {
+      "method": "lightgbm",
+      "train_rows": 24579,
+      "valid_rows": 6149,
+      "valid_accuracy": 0.39908928281021305,
+      "valid_brier": 0.3241778036449211,
+      "valid_auc": 0.5488116743099537,
+      "valid_return_ic": 0.06523405846725959,
+      "feature_count": 177,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves."
+}

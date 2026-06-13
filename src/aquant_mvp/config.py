@@ -55,7 +55,11 @@ class StrategyConfig:
     top_n: int = 5
     min_amount: float = 0.0
     max_single_weight: float = 0.30
+    max_theme_weight: float = 0.45
     max_turnover: float = 1.0
+    volatility_target: float = 0.35
+    volatility_lookback_days: int = 20
+    drawdown_de_risk_multiplier: float = 0.0
     factor_weights: dict[str, float] = field(default_factory=lambda: dict(DEFAULT_FACTOR_WEIGHTS))
 
 
@@ -97,6 +101,13 @@ class RiskConfig:
     max_drawdown: float = 0.10
     blacklist: list[str] = field(default_factory=list)
     allow_live_orders: bool = False
+    event_risk_enabled: bool = True
+    event_risk_max_count: int = 0
+    event_risk_min_negative_impact: float = -0.20
+    event_risk_min_confidence: float = 0.45
+    event_risk_weight_multiplier: float = 0.50
+    event_risk_block_new_buy: bool = True
+    event_risk_max_age_days: int = 30
 
 
 @dataclass(frozen=True)
@@ -170,7 +181,11 @@ def load_config(path: str | Path) -> AppConfig:
             top_n=int(strategy_raw.get("top_n", 5)),
             min_amount=float(strategy_raw.get("min_amount", 0.0)),
             max_single_weight=float(strategy_raw.get("max_single_weight", 0.30)),
+            max_theme_weight=float(strategy_raw.get("max_theme_weight", 0.45)),
             max_turnover=float(strategy_raw.get("max_turnover", 1.0)),
+            volatility_target=float(strategy_raw.get("volatility_target", 0.35)),
+            volatility_lookback_days=int(strategy_raw.get("volatility_lookback_days", 20)),
+            drawdown_de_risk_multiplier=float(strategy_raw.get("drawdown_de_risk_multiplier", 0.0)),
             factor_weights={
                 str(name): float(weight)
                 for name, weight in strategy_raw.get("factor_weights", DEFAULT_FACTOR_WEIGHTS).items()
@@ -202,6 +217,13 @@ def load_config(path: str | Path) -> AppConfig:
             max_drawdown=float(risk_raw.get("max_drawdown", 0.10)),
             blacklist=[str(symbol).zfill(6) for symbol in risk_raw.get("blacklist", [])],
             allow_live_orders=bool(risk_raw.get("allow_live_orders", False)),
+            event_risk_enabled=bool(risk_raw.get("event_risk_enabled", True)),
+            event_risk_max_count=int(risk_raw.get("event_risk_max_count", 0)),
+            event_risk_min_negative_impact=float(risk_raw.get("event_risk_min_negative_impact", -0.20)),
+            event_risk_min_confidence=float(risk_raw.get("event_risk_min_confidence", 0.45)),
+            event_risk_weight_multiplier=float(risk_raw.get("event_risk_weight_multiplier", 0.50)),
+            event_risk_block_new_buy=bool(risk_raw.get("event_risk_block_new_buy", True)),
+            event_risk_max_age_days=int(risk_raw.get("event_risk_max_age_days", 30)),
         ),
         broker=BrokerConfig(
             mode=broker_raw.get("mode", "none"),

@@ -1,0 +1,27 @@
+{
+  "symbol": "000630",
+  "source": "sample",
+  "model_type": "event_aware_ensemble",
+  "days": 10,
+  "history_days": 80,
+  "latest_date": "2025-12-31",
+  "latest_close": 33.63435124611308,
+  "forecast_rows": 30,
+  "scenarios": [
+    "bearish",
+    "base",
+    "bullish"
+  ],
+  "horizons": [
+    1,
+    5,
+    10,
+    20,
+    60
+  ],
+  "data_version": "274ffa65b083",
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "note": "Predicted K-line is a probability scenario chart, not a deterministic forecast."
+}

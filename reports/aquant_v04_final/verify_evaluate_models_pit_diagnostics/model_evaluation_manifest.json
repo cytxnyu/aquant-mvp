@@ -1,0 +1,28 @@
+{
+  "registry_dir": "models\\registry",
+  "registry_records": 37,
+  "walk_forward_prediction_rows": 128765,
+  "walk_forward_artifacts": [
+    "reports\\walk_forward\\walk_forward_predictions.csv",
+    "reports\\full_run\\23_walk_forward\\walk_forward_predictions.csv",
+    "reports\\tongling_000630_full\\04_walk_forward\\walk_forward_predictions.csv",
+    "reports\\tongling_000630_full\\04_walk_forward_fixed\\walk_forward_predictions.csv",
+    "reports\\aquant_v02_final\\verify_walk_forward\\walk_forward_predictions.csv",
+    "reports\\aquant_v03_final\\verify_walk_forward\\walk_forward_predictions.csv",
+    "reports\\aquant_v04_final\\verify_walk_forward_event_sample\\walk_forward_predictions.csv",
+    "reports\\aquant_v04_final\\verify_walk_forward_220_sample_trust_gate\\walk_forward_predictions.csv",
+    "reports\\aquant_v04_final\\verify_walk_forward_pit_diagnostics_sample\\walk_forward_predictions.csv"
+  ],
+  "slice_reports": [
+    "evaluation_by_year.csv",
+    "evaluation_by_industry.csv",
+    "evaluation_by_theme.csv",
+    "evaluation_by_size.csv",
+    "evaluation_by_regime.csv"
+  ],
+  "notes": [
+    "industry is a curated hot-theme proxy unless historical industry data has been synced",
+    "size uses market_cap when available, otherwise liquidity proxy or unavailable",
+    "regime slices are ex-post OOS diagnostics for evaluation only, not training features"
+  ]
+}

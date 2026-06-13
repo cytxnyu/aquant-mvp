@@ -1,0 +1,72 @@
+{
+  "symbol": "000630",
+  "latest_date": "2026-06-10",
+  "horizons": [
+    1,
+    5,
+    10,
+    20,
+    60
+  ],
+  "source": "sample",
+  "model_type": "ensemble",
+  "data_version": "61e7cf0398d2",
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "lightgbm",
+      "train_rows": 26880,
+      "valid_rows": 6720,
+      "valid_accuracy": 0.5084821428571429,
+      "valid_brier": 0.2507962520818922,
+      "valid_auc": 0.506779770478509,
+      "valid_return_ic": -0.00030902974205335886,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_5d": {
+      "method": "lightgbm",
+      "train_rows": 26800,
+      "valid_rows": 6720,
+      "valid_accuracy": 0.5037202380952381,
+      "valid_brier": 0.2522970301010268,
+      "valid_auc": 0.5056535863015135,
+      "valid_return_ic": 0.004720363058585551,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_10d": {
+      "method": "lightgbm",
+      "train_rows": 26720,
+      "valid_rows": 6700,
+      "valid_accuracy": 0.5192537313432836,
+      "valid_brier": 0.25377793767497747,
+      "valid_auc": 0.5239501702409711,
+      "valid_return_ic": 0.005400702180299842,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_20d": {
+      "method": "lightgbm",
+      "train_rows": 26560,
+      "valid_rows": 6660,
+      "valid_accuracy": 0.5124624624624624,
+      "valid_brier": 0.2560028953093602,
+      "valid_auc": 0.5213078764260608,
+      "valid_return_ic": 0.0586324741244198,
+      "feature_count": 237,
+      "embargo_days": 5
+    },
+    "horizon_60d": {
+      "method": "lightgbm",
+      "train_rows": 25920,
+      "valid_rows": 6500,
+      "valid_accuracy": 0.5167692307692308,
+      "valid_brier": 0.26181001707996193,
+      "valid_auc": 0.5364852515798413,
+      "valid_return_ic": 0.003194118917645291,
+      "feature_count": 237,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves."
+}

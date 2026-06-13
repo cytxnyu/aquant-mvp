@@ -1,0 +1,22 @@
+{
+  "source": "sample",
+  "feature_version": "4dd3a0d97961",
+  "rows": 3129,
+  "symbols": 3,
+  "start_date": "2022-01-03",
+  "end_date": "2025-12-31",
+  "feature_count": 244,
+  "base_factor_count": 237,
+  "event_feature_count": 7,
+  "event_features": [
+    "event_count_3d",
+    "event_count_20d",
+    "positive_event_count",
+    "negative_event_count",
+    "event_risk_count",
+    "event_impact_score",
+    "event_confidence_mean"
+  ],
+  "event_factor_rows": 15,
+  "low_coverage_features": []
+}

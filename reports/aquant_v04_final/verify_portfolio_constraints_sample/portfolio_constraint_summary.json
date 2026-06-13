@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "target_dates": 209,
+  "symbols": 3,
+  "adjustment_rows": 1306,
+  "constraints_triggered": [
+    "drawdown_circuit_breaker",
+    "max_single_weight",
+    "max_theme_weight"
+  ],
+  "max_gross_weight_after": 0.44999999999999996,
+  "min_gross_weight_after": 0.0,
+  "max_single_weight_after": 0.15,
+  "max_theme_weight_after": 0.44999999999999996,
+  "config": {
+    "max_single_weight": 0.2,
+    "max_theme_weight": 0.45,
+    "max_turnover": 1.0,
+    "volatility_target": 0.35,
+    "volatility_lookback_days": 20,
+    "max_drawdown": 0.1,
+    "drawdown_de_risk_multiplier": 0.0,
+    "blacklist": []
+  }
+}

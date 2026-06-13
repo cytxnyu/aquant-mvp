@@ -1,0 +1,97 @@
+{
+  "data": {
+    "source": "sample",
+    "symbols": [
+      "000630",
+      "601899",
+      "600362"
+    ],
+    "start_date": "2022-01-01",
+    "end_date": "2025-12-31",
+    "adjust": "qfq",
+    "cache_dir": "data\\cache\\daily",
+    "vendor": "akshare"
+  },
+  "storage": {
+    "engine": "duckdb",
+    "root_dir": "data\\warehouse",
+    "file_format": "auto"
+  },
+  "universe": {
+    "min_history_days": 120,
+    "min_amount": 0.0,
+    "max_missing_ratio": 0.2,
+    "exclude_symbols": []
+  },
+  "strategy": {
+    "rebalance": "W-FRI",
+    "top_n": 5,
+    "min_amount": 0.0,
+    "max_single_weight": 0.3,
+    "max_turnover": 1.0,
+    "factor_weights": {
+      "momentum_20": 0.3,
+      "momentum_60": 0.2,
+      "reversal_5": 0.15,
+      "reversal_10": 0.1,
+      "volatility_20": -0.15,
+      "volatility_60": -0.1,
+      "amount_mean_20": 0.1,
+      "turnover_mean_20": 0.08,
+      "volume_ratio_5_20": 0.08,
+      "price_position_60": 0.08,
+      "ma_bias_20": 0.06,
+      "max_drawdown_60": -0.1,
+      "downside_volatility_20": -0.08
+    }
+  },
+  "backtest": {
+    "initial_cash": 1000000.0,
+    "fee_rate": 0.0003,
+    "tax_rate": 0.001,
+    "slippage_rate": 0.0005,
+    "lot_size": 100,
+    "min_trade_value": 1000.0
+  },
+  "analysis": {
+    "label_horizons": [
+      5,
+      20
+    ],
+    "quantiles": 5
+  },
+  "model": {
+    "model_type": "ensemble",
+    "horizons": [
+      1,
+      5,
+      20
+    ],
+    "embargo_days": 5,
+    "registry_dir": "models\\registry"
+  },
+  "risk": {
+    "max_capital": 1000000.0,
+    "max_single_weight": 0.2,
+    "max_order_value": 200000.0,
+    "max_daily_loss": 0.03,
+    "max_drawdown": 0.1,
+    "blacklist": [],
+    "allow_live_orders": false,
+    "event_risk_enabled": true,
+    "event_risk_max_count": 0,
+    "event_risk_min_negative_impact": -0.2,
+    "event_risk_min_confidence": 0.45,
+    "event_risk_weight_multiplier": 0.5,
+    "event_risk_block_new_buy": true,
+    "event_risk_max_age_days": 30
+  },
+  "broker": {
+    "mode": "none",
+    "account_id": "",
+    "qmt_path": "."
+  },
+  "report": {
+    "output_dir": "reports"
+  }
+}

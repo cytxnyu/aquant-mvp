@@ -1,0 +1,29 @@
+{
+  "source": "baostock",
+  "requested_symbols": 20,
+  "loaded_symbols": 20,
+  "min_symbols": 20,
+  "warnings": [
+    "000002: loaded from baostock.",
+    "000012: loaded from baostock.",
+    "000031: loaded from baostock.",
+    "000034: loaded from baostock.",
+    "000050: loaded from baostock.",
+    "000069: loaded from baostock.",
+    "000088: loaded from baostock.",
+    "000100: loaded from baostock.",
+    "000157: loaded from baostock.",
+    "000301: loaded from baostock.",
+    "000333: loaded from baostock.",
+    "000338: loaded from baostock.",
+    "000401: loaded from baostock.",
+    "000402: loaded from baostock.",
+    "000425: loaded from baostock.",
+    "000426: loaded from baostock.",
+    "000524: loaded from baostock.",
+    "000526: loaded from baostock.",
+    "000537: loaded from baostock.",
+    "000539: loaded from baostock."
+  ],
+  "note": "Large free-source walk-forward uses resilient per-symbol loading; failed symbols remain audited."
+}

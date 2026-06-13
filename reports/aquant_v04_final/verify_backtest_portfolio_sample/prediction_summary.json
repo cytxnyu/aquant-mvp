@@ -1,0 +1,29 @@
+{
+  "latest_date": "2025-12-31",
+  "horizon_days": 5,
+  "method": "lightgbm",
+  "model_quality": {
+    "train_rows": 1875,
+    "valid_rows": 462,
+    "valid_rank_ic": -0.06480461251524251,
+    "valid_mae": 0.031425342449588216
+  },
+  "top_symbols": [
+    {
+      "symbol": "600362",
+      "prediction_rank": 1,
+      "signal": "候选"
+    },
+    {
+      "symbol": "601899",
+      "prediction_rank": 2,
+      "signal": "观察"
+    },
+    {
+      "symbol": "000630",
+      "prediction_rank": 3,
+      "signal": "回避"
+    }
+  ],
+  "note": "Predictions are research signals, not investment advice."
+}

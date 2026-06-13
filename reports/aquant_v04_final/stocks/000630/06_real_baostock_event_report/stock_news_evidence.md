@@ -1,0 +1,99 @@
+# News And Event Evidence Report
+
+## Summary
+
+- Events: 80
+- Symbols: 1
+- Event factors are structured research inputs, not direct trading advice.
+
+## Latest Event Factor Snapshot
+
+- `000630` 2025-12-31 00:00:00: impact=-0.046, positive=1, negative=0, risk=0
+
+## Evidence Items
+
+- `000630` 2025-12-31 00:00:00 [akshare] general_news/neutral impact=0.00: 关于选举第十届董事会职工董事的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224907663&orgId=gssz0000630&announcementTime=2025-12-31 00:00:00)
+- `000630` 2025-12-30 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 2025年第三次临时股东会决议的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224904792&orgId=gssz0000630&announcementTime=2025-12-30 00:00:00)
+- `000630` 2025-12-30 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 安徽承义律师事务所关于铜陵有色金属集团股份有限公司召开2025年第三次临时股东会的法律意见书 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224904793&orgId=gssz0000630&announcementTime=2025-12-30 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于铜陵有色金属集团财务有限公司为关联方提供金融服务的风险处置预案 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881678&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 投资者关系管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881668&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事会专门委员会工作细则 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881677&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 关于2025年第三次临时股东会增加临时提案暨股东会补充通知 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881660&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 2025年第五次独立董事专门会议决议 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881662&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事和高级管理人员薪酬管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881663&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 子公司管理办法 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881664&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 内部审计制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881665&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事会授权管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881666&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事会决议跟踪落实及后评估制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881667&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 十届二十八次董事会会议决议公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881659&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 信息披露暂缓与豁免管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881669&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 独立董事工作制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881674&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 经理工作细则 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881670&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事和高级管理人员所持本公司股份及其变动管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881676&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事和高级管理人员离职管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881675&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 关于2026年度日常关联交易预计的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881661&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 信息披露事务管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881672&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 内幕信息知情人管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881671&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-17 00:00:00 [akshare] general_news/neutral impact=0.00: 董事会秘书工作细则 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224881673&orgId=gssz0000630&announcementTime=2025-12-17 00:00:00)
+- `000630` 2025-12-05 00:00:00 [akshare] general_news/neutral impact=0.00: 关于向有色财务公司增资事项获得批复的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224850826&orgId=gssz0000630&announcementTime=2025-12-05 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] general_news/neutral impact=0.00: 对外投资管理办法 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816613&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] general_news/neutral impact=0.00: 募集资金管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816616&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] general_news/neutral impact=0.00: 对外担保管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816615&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] general_news/neutral impact=0.00: 关联交易管理制度 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816614&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 关于召开2025年第三次临时股东会的通知 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816612&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-21 00:00:00 [akshare] general_news/neutral impact=0.00: 十届二十七次董事会会议决议公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224816611&orgId=gssz0000630&announcementTime=2025-11-21 00:00:00)
+- `000630` 2025-11-15 00:00:00 [akshare] general_news/neutral impact=0.00: 关于独立董事辞职的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224805175&orgId=gssz0000630&announcementTime=2025-11-15 00:00:00)
+- `000630` 2025-11-15 00:00:00 [akshare] general_news/neutral impact=0.00: 2025年半年度权益分派实施公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224805686&orgId=gssz0000630&announcementTime=2025-11-15 00:00:00)
+- `000630` 2025-11-06 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于竞拍取得安徽省铜陵市鸡冠山—胡村铜金钼矿勘查探矿权的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224788752&orgId=gssz0000630&announcementTime=2025-11-06 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 关于独立董事无法履职的提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742900&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 关于计提资产减值准备的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742899&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 关于增补董事的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742898&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 关于董事长退休离任暨选举新任董事长的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742897&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 关于董事辞职的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742896&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 十届二十六次董事会会议决议公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742895&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-28 00:00:00 [akshare] general_news/neutral impact=0.00: 2025年三季度报告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224742893&orgId=gssz0000630&announcementTime=2025-10-28 00:00:00)
+- `000630` 2025-10-17 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于铜陵定02摘牌的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224717319&orgId=gssz0000630&announcementTime=2025-10-17 00:00:00)
+- `000630` 2025-10-17 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于铜陵定02赎回结果的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224717320&orgId=gssz0000630&announcementTime=2025-10-17 00:00:00)
+- `000630` 2025-10-16 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 安徽承义律师事务所关于铜陵有色金属集团股份有限公司召开2025年第二次临时股东大会的法律意见书 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224713845&orgId=gssz0000630&announcementTime=2025-10-16 00:00:00)
+- `000630` 2025-10-16 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 2025年第二次临时股东大会决议的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224713844&orgId=gssz0000630&announcementTime=2025-10-16 00:00:00)
+- `000630` 2025-10-10 11:44:11 [akshare] commodity_shock/positive impact=0.20: 关于铜陵定02即将停止转股暨赎回前最后半个交易日的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224703916&orgId=gssz0000630&announcementTime=2025-10-10 11:44:11)
+- `000630` 2025-10-10 00:00:00 [akshare] general_news/neutral impact=0.00: 股票交易异常波动公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224702863&orgId=gssz0000630&announcementTime=2025-10-10 00:00:00)
+- `000630` 2025-10-10 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转股的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224701542&orgId=gssz0000630&announcementTime=2025-10-10 00:00:00)
+- `000630` 2025-10-10 00:00:00 [akshare] general_news/neutral impact=0.00: 关于2025年第三季度可转换公司债券转股情况的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224701541&orgId=gssz0000630&announcementTime=2025-10-10 00:00:00)
+- `000630` 2025-10-09 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转股的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224694716&orgId=gssz0000630&announcementTime=2025-10-09 00:00:00)
+- `000630` 2025-09-30 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转股的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224689110&orgId=gssz0000630&announcementTime=2025-09-30 00:00:00)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 关于2025年半年度利润分配预案的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687949&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 十届二十五次董事会会议决议公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687946&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 十届十五次监事会会议决议公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687947&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 关于增补董事的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687948&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 董事会议事规则 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687953&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] general_news/neutral impact=0.00: 公司章程 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687951&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] shareholder_change/neutral impact=-0.15: 股东会议事规则 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687952&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:11 [akshare] shareholder_change/neutral impact=-0.15: 关于召开2025年第二次临时股东大会通知的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687954&orgId=gssz0000630&announcementTime=2025-09-29 11:54:11)
+- `000630` 2025-09-29 11:54:09 [akshare] general_news/neutral impact=0.00: 关于聘任总经理的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687955&orgId=gssz0000630&announcementTime=2025-09-29 11:54:09)
+- `000630` 2025-09-29 11:54:09 [akshare] general_news/neutral impact=0.00: 关于修订《公司章程》及其附件的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224687950&orgId=gssz0000630&announcementTime=2025-09-29 11:54:09)
+- `000630` 2025-09-27 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转让的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224683627&orgId=gssz0000630&announcementTime=2025-09-27 00:00:00)
+- `000630` 2025-09-26 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转让的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224680875&orgId=gssz0000630&announcementTime=2025-09-26 00:00:00)
+- `000630` 2025-09-25 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02实施暨即将停止转让的重要提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224678352&orgId=gssz0000630&announcementTime=2025-09-25 00:00:00)
+- `000630` 2025-09-24 00:00:00 [akshare] shareholder_change/neutral impact=-0.15: 关于控股股东因可转债转股持股比例被动稀释触及1%整数倍的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224677051&orgId=gssz0000630&announcementTime=2025-09-24 00:00:00)
+- `000630` 2025-09-24 00:00:00 [akshare] general_news/neutral impact=0.00: 关于债券持有人持有可转债比例变动达到10%的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224676499&orgId=gssz0000630&announcementTime=2025-09-24 00:00:00)
+- `000630` 2025-09-24 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第十三次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224676498&orgId=gssz0000630&announcementTime=2025-09-24 00:00:00)
+- `000630` 2025-09-23 00:00:00 [akshare] buyback_dividend/positive impact=0.45: 关于股份回购实施结果暨已回购股份处理完成的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224673511&orgId=gssz0000630&announcementTime=2025-09-23 00:00:00)
+- `000630` 2025-09-23 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第十二次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224673085&orgId=gssz0000630&announcementTime=2025-09-23 00:00:00)
+- `000630` 2025-09-20 00:00:00 [akshare] general_news/neutral impact=0.00: 关于债券持有人持有可转债比例变动达到10%的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224670086&orgId=gssz0000630&announcementTime=2025-09-20 00:00:00)
+- `000630` 2025-09-20 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第十一次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224670085&orgId=gssz0000630&announcementTime=2025-09-20 00:00:00)
+- `000630` 2025-09-19 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第十次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224667505&orgId=gssz0000630&announcementTime=2025-09-19 00:00:00)
+- `000630` 2025-09-18 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第九次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224665445&orgId=gssz0000630&announcementTime=2025-09-18 00:00:00)
+- `000630` 2025-09-17 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第八次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224662698&orgId=gssz0000630&announcementTime=2025-09-17 00:00:00)
+- `000630` 2025-09-16 00:00:00 [akshare] general_news/neutral impact=0.00: 关于债券持有人持有可转债比例变动达到10%的公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224660765&orgId=gssz0000630&announcementTime=2025-09-16 00:00:00)
+- `000630` 2025-09-16 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第七次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224660764&orgId=gssz0000630&announcementTime=2025-09-16 00:00:00)
+- `000630` 2025-09-15 00:00:00 [akshare] general_news/neutral impact=0.00: 关于可转换公司债券2025年付息公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224655478&orgId=gssz0000630&announcementTime=2025-09-15 00:00:00)
+- `000630` 2025-09-13 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第六次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224654206&orgId=gssz0000630&announcementTime=2025-09-13 00:00:00)
+- `000630` 2025-09-12 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第五次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224651649&orgId=gssz0000630&announcementTime=2025-09-12 00:00:00)
+- `000630` 2025-09-11 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第四次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224648959&orgId=gssz0000630&announcementTime=2025-09-11 00:00:00)
+- `000630` 2025-09-10 00:00:00 [akshare] commodity_shock/positive impact=0.20: 关于提前赎回铜陵定02的第三次提示性公告 (http://www.cninfo.com.cn/new/disclosure/detail?stockCode=000630&announcementId=1224646346&orgId=gssz0000630&announcementTime=2025-09-10 00:00:00)
+
+## Guardrails
+
+- Unlinked news is excluded from individual-stock event factors.
+- Source failures must be written as warnings, not silently filled with fake events.

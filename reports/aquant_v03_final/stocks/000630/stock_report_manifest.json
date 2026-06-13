@@ -1,0 +1,45 @@
+{
+  "symbol": "000630",
+  "source": "baostock",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "with_kline": true,
+  "forecast_rows": 4,
+  "explanation_rows": 4,
+  "similar_history_rows": 58,
+  "backtest_rows": 6106,
+  "backtest_metric_rows": 4,
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "files": [
+    "forecast_kline.csv",
+    "forecast_kline.html",
+    "forecast_kline.json",
+    "forecast_kline.png",
+    "history_kline.csv",
+    "similar_history.csv",
+    "stock_explanation.csv",
+    "stock_explanation.md",
+    "stock_forecast.csv",
+    "stock_forecast.json",
+    "stock_forecast_backtest.csv",
+    "stock_forecast_metrics.csv",
+    "stock_prediction_report.md"
+  ],
+  "kline_files": {
+    "stock_forecast": "reports\\aquant_v03_final\\stocks\\000630\\stock_forecast.csv",
+    "stock_forecast_json": "reports\\aquant_v03_final\\stocks\\000630\\stock_forecast.json",
+    "forecast_kline": "reports\\aquant_v03_final\\stocks\\000630\\forecast_kline.csv",
+    "forecast_kline_json": "reports\\aquant_v03_final\\stocks\\000630\\forecast_kline.json",
+    "history_kline": "reports\\aquant_v03_final\\stocks\\000630\\history_kline.csv",
+    "forecast_kline_png": "reports\\aquant_v03_final\\stocks\\000630\\forecast_kline.png",
+    "forecast_kline_html": "reports\\aquant_v03_final\\stocks\\000630\\forecast_kline.html",
+    "stock_prediction_report": "reports\\aquant_v03_final\\stocks\\000630\\stock_prediction_report.md"
+  },
+  "note": "Research reports only; not investment advice. Live trading remains disabled."
+}

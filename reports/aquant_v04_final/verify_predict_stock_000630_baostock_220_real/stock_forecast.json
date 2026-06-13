@@ -1,0 +1,45 @@
+{
+  "symbol": "000630",
+  "latest_date": "2026-06-10",
+  "horizons": [
+    5
+  ],
+  "source": "baostock",
+  "model_type": "factor_score",
+  "data_version": "aa7a1473dc83",
+  "event_feature_count": 0,
+  "event_features": [],
+  "walk_forward_evidence_count": 29,
+  "diagnostics": {
+    "horizon_5d": {
+      "method": "score_baseline",
+      "history_rows": 128181,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128181
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128181
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128181
+      },
+      "valid_accuracy": 0.521284046692607,
+      "valid_brier": 0.24971322609939983,
+      "valid_auc": 0.48746080842074935,
+      "calibration_rows": 25700,
+      "calibration_bins": 1,
+      "calibration_ece": 0.013171368999984945,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves.",
+  "news_summary": {
+    "with_news": false
+  },
+  "news_files": {}
+}

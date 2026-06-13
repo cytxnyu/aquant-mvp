@@ -38,6 +38,8 @@ def save_run_outputs(
         "trades": output_dir / "trades.csv",
         "holdings": output_dir / "holdings.csv",
         "rebalances": output_dir / "rebalances.csv",
+        "yearly_metrics": output_dir / "yearly_metrics.csv",
+        "theme_metrics": output_dir / "theme_metrics.csv",
         "metrics": output_dir / "metrics.json",
         "manifest": output_dir / "manifest.json",
         "config": output_dir / "config.json",
@@ -51,6 +53,7 @@ def save_run_outputs(
         "factor_ic_series": output_dir / "factor_ic_series.csv",
         "factor_quantile_returns": output_dir / "factor_quantile_returns.csv",
         "factor_coverage": output_dir / "factor_coverage.csv",
+        "factor_yearly_stability": output_dir / "factor_yearly_stability.csv",
         "factor_analysis_json": output_dir / "factor_analysis.json",
         "predictions": output_dir / "predictions.csv",
         "prediction_summary": output_dir / "prediction_summary.json",
@@ -67,6 +70,8 @@ def save_run_outputs(
     result.trades.to_csv(paths["trades"], index=False)
     result.holdings.to_csv(paths["holdings"], index=False)
     result.rebalances.to_csv(paths["rebalances"], index=False)
+    _build_yearly_metrics(result.equity_curve).to_csv(paths["yearly_metrics"], index=False)
+    _build_theme_metrics(result.holdings).to_csv(paths["theme_metrics"], index=False)
     data_quality.summary.to_csv(paths["data_quality_summary"], index=False)
     data_quality.issues.to_csv(paths["data_quality_issues"], index=False)
     universe_report.detail.to_csv(paths["universe"], index=False)
@@ -76,11 +81,13 @@ def save_run_outputs(
     factor_analysis.ic_series.to_csv(paths["factor_ic_series"], index=False)
     factor_analysis.quantile_returns.to_csv(paths["factor_quantile_returns"], index=False)
     factor_analysis.coverage.to_csv(paths["factor_coverage"], index=False)
+    factor_analysis.stability.to_csv(paths["factor_yearly_stability"], index=False)
     paths["factor_analysis_json"].write_text(
         json.dumps(
             {
                 "ic_summary": factor_analysis.ic_summary.to_dict(orient="records"),
                 "coverage": factor_analysis.coverage.to_dict(orient="records"),
+                "stability_rows": int(len(factor_analysis.stability)),
                 "quantile_return_rows": int(len(factor_analysis.quantile_returns)),
                 "ic_series_rows": int(len(factor_analysis.ic_series)),
             },
@@ -188,6 +195,37 @@ def _save_quantile_returns_plot(quantile_returns: pd.DataFrame, path: Path) -> N
     fig.tight_layout()
     fig.savefig(path, dpi=150)
     plt.close(fig)
+
+
+def _build_yearly_metrics(equity_curve: pd.DataFrame) -> pd.DataFrame:
+    if equity_curve.empty or "date" not in equity_curve.columns:
+        return pd.DataFrame(columns=["year", "return", "max_drawdown", "volatility", "sharpe"])
+    frame = equity_curve.copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    frame["year"] = frame["date"].dt.year
+    rows = []
+    for year, part in frame.groupby("year", sort=True):
+        equity = part["equity"].astype(float)
+        returns = part["daily_return"].astype(float) if "daily_return" in part.columns else equity.pct_change().fillna(0.0)
+        running_max = equity.cummax()
+        drawdown = equity / running_max - 1
+        total_return = float(equity.iloc[-1] / equity.iloc[0] - 1) if len(equity) > 1 and equity.iloc[0] else 0.0
+        vol = float(returns.std(ddof=0) * (252 ** 0.5)) if len(returns) > 1 else 0.0
+        sharpe = float(returns.mean() / returns.std(ddof=0) * (252 ** 0.5)) if returns.std(ddof=0) > 0 else 0.0
+        rows.append({"year": int(year), "return": total_return, "max_drawdown": float(drawdown.min()), "volatility": vol, "sharpe": sharpe})
+    return pd.DataFrame(rows)
+
+
+def _build_theme_metrics(holdings: pd.DataFrame) -> pd.DataFrame:
+    if holdings.empty:
+        return pd.DataFrame(columns=["theme", "rows", "avg_weight", "max_weight"])
+    frame = holdings.copy()
+    frame["theme"] = "unclassified_theme_free_mode"
+    return (
+        frame.groupby("theme", as_index=False)
+        .agg(rows=("symbol", "size"), avg_weight=("weight", "mean"), max_weight=("weight", "max"))
+        .sort_values("theme")
+    )
 
 
 def _get_pyplot():

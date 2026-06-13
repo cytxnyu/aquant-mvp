@@ -74,6 +74,18 @@ def discover_domestic_sources() -> pd.DataFrame:
             limitations="PDF/HTML parsing is noisy; structured fields need extraction",
         ),
         SourceCapability(
+            source="cninfo_direct",
+            domestic=True,
+            installed=True,
+            credential_ready=True,
+            free_level="public_free",
+            tables="announcement_metadata,direct_source_url,announce_date",
+            frequencies="event",
+            point_in_time="announce_date_available",
+            start_year_estimate="varies_by_issuer",
+            limitations="direct public endpoint can rate-limit or change schema; PDF body parsing is not yet implemented",
+        ),
+        SourceCapability(
             source="eastmoney_public",
             domestic=True,
             installed=True,

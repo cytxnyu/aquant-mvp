@@ -58,6 +58,72 @@ def load_daily_bars(config: DataConfig) -> tuple[dict[str, pd.DataFrame], LoadRe
     return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=notes)
 
 
+def load_daily_bars_resilient(config: DataConfig) -> tuple[dict[str, pd.DataFrame], LoadReport]:
+    """Load many symbols while auditing per-symbol free-source failures."""
+    source = config.source.lower()
+    if source == "sample" or len(config.symbols) <= 1:
+        return load_daily_bars(config)
+    if source not in {"free_real", "research", "baostock", "tushare", "akshare"}:
+        return load_daily_bars(config)
+    if source == "akshare":
+        vendors = ["akshare"]
+        cache_source = "akshare"
+    elif source == "baostock":
+        vendors = ["baostock"]
+        cache_source = "baostock"
+    elif source == "tushare":
+        vendors = ["tushare"]
+        cache_source = "tushare"
+    else:
+        vendors = ["akshare", "baostock", "tushare"]
+        cache_source = source
+
+    from aquant_mvp.vendors import FreeDataRouter, VendorUnavailable
+
+    loaded: dict[str, pd.DataFrame] = {}
+    notes: list[str] = []
+    with FreeDataRouter(vendors) as router:
+        total = len(config.symbols)
+        for index, symbol in enumerate(config.symbols, start=1):
+            cache_path = _cache_path(config.cache_dir / cache_source, symbol, config.start_date, config.end_date, config.adjust)
+            if cache_path.exists():
+                loaded[symbol] = _read_cached(cache_path)
+                notes.append(f"{symbol}: loaded cached {cache_source} daily bars.")
+                if index == total or index % 20 == 0:
+                    print(f"free data load progress: {index}/{total} symbols checked; loaded={len(loaded)}", flush=True)
+                continue
+            try:
+                result = router.fetch_daily_bars(symbol, config.start_date, config.end_date, config.adjust)
+                loaded[symbol] = _finalize_bars(result.data)
+                _write_cached(cache_path, loaded[symbol])
+                notes.append(f"{symbol}: loaded from {result.vendor}.")
+                notes.extend(f"{symbol}: {warning}" for warning in result.warnings)
+            except VendorUnavailable as exc:
+                if source == "research":
+                    message = f"{symbol}: free vendor load failed ({exc}); using sample data for research only."
+                    notes.append(message)
+                    warnings.warn(message, RuntimeWarning, stacklevel=2)
+                    sample_config = DataConfig(
+                        source="sample",
+                        symbols=[symbol],
+                        start_date=config.start_date,
+                        end_date=config.end_date,
+                        adjust=config.adjust,
+                        cache_dir=config.cache_dir,
+                        vendor=config.vendor,
+                    )
+                    loaded[symbol] = _load_sample_bars(sample_config)[symbol]
+                    if index == total or index % 20 == 0:
+                        print(f"free data load progress: {index}/{total} symbols checked; loaded={len(loaded)}", flush=True)
+                    continue
+                notes.append(f"{symbol}: failed to load ({exc})")
+            except Exception as exc:  # noqa: BLE001
+                notes.append(f"{symbol}: failed to load ({exc})")
+            if index == total or index % 20 == 0:
+                print(f"free data load progress: {index}/{total} symbols checked; loaded={len(loaded)}", flush=True)
+    return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=notes)
+
+
 def _load_free_vendor_bars(config: DataConfig, source: str) -> tuple[dict[str, pd.DataFrame], LoadReport]:
     from aquant_mvp.vendors import FreeDataRouter, VendorUnavailable
 
@@ -68,38 +134,38 @@ def _load_free_vendor_bars(config: DataConfig, source: str) -> tuple[dict[str, p
     else:
         vendors = ["akshare", "baostock", "tushare"]
 
-    router = FreeDataRouter(vendors)
     loaded: dict[str, pd.DataFrame] = {}
     notes: list[str] = []
-    for symbol in config.symbols:
-        cache_path = _cache_path(config.cache_dir / source, symbol, config.start_date, config.end_date, config.adjust)
-        if cache_path.exists():
-            loaded[symbol] = _read_cached(cache_path)
-            notes.append(f"{symbol}: loaded cached {source} daily bars.")
-            continue
-        try:
-            result = router.fetch_daily_bars(symbol, config.start_date, config.end_date, config.adjust)
-            loaded[symbol] = _finalize_bars(result.data)
-            _write_cached(cache_path, loaded[symbol])
-            notes.append(f"{symbol}: loaded from {result.vendor}.")
-            notes.extend(f"{symbol}: {warning}" for warning in result.warnings)
-        except VendorUnavailable as exc:
-            if source == "research":
-                message = f"{symbol}: free vendor load failed ({exc}); using sample data for research only."
-                notes.append(message)
-                warnings.warn(message, RuntimeWarning, stacklevel=2)
-                sample_config = DataConfig(
-                    source="sample",
-                    symbols=[symbol],
-                    start_date=config.start_date,
-                    end_date=config.end_date,
-                    adjust=config.adjust,
-                    cache_dir=config.cache_dir,
-                    vendor=config.vendor,
-                )
-                loaded[symbol] = _load_sample_bars(sample_config)[symbol]
+    with FreeDataRouter(vendors) as router:
+        for symbol in config.symbols:
+            cache_path = _cache_path(config.cache_dir / source, symbol, config.start_date, config.end_date, config.adjust)
+            if cache_path.exists():
+                loaded[symbol] = _read_cached(cache_path)
+                notes.append(f"{symbol}: loaded cached {source} daily bars.")
                 continue
-            raise RuntimeError(f"{symbol}: free_real data load failed and sample fallback is forbidden: {exc}") from exc
+            try:
+                result = router.fetch_daily_bars(symbol, config.start_date, config.end_date, config.adjust)
+                loaded[symbol] = _finalize_bars(result.data)
+                _write_cached(cache_path, loaded[symbol])
+                notes.append(f"{symbol}: loaded from {result.vendor}.")
+                notes.extend(f"{symbol}: {warning}" for warning in result.warnings)
+            except VendorUnavailable as exc:
+                if source == "research":
+                    message = f"{symbol}: free vendor load failed ({exc}); using sample data for research only."
+                    notes.append(message)
+                    warnings.warn(message, RuntimeWarning, stacklevel=2)
+                    sample_config = DataConfig(
+                        source="sample",
+                        symbols=[symbol],
+                        start_date=config.start_date,
+                        end_date=config.end_date,
+                        adjust=config.adjust,
+                        cache_dir=config.cache_dir,
+                        vendor=config.vendor,
+                    )
+                    loaded[symbol] = _load_sample_bars(sample_config)[symbol]
+                    continue
+                raise RuntimeError(f"{symbol}: free_real data load failed and sample fallback is forbidden: {exc}") from exc
 
     return loaded, LoadReport(source=source, symbols_loaded=sorted(loaded), warnings=notes)
 

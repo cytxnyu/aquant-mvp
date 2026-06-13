@@ -1,0 +1,4 @@
+symbol,side,shares,price,order_value,target_weight,passed,reasons
+000630,BUY,8900,33.63435124611308,299345.72609040636,0.3,False,order_value_exceeds_limit;target_weight_exceeds_limit
+600362,BUY,3500,84.95228237935595,297332.9883277458,0.3,False,order_value_exceeds_limit;target_weight_exceeds_limit
+601899,BUY,5900,50.595982408088005,298516.29620771925,0.3,False,order_value_exceeds_limit;target_weight_exceeds_limit

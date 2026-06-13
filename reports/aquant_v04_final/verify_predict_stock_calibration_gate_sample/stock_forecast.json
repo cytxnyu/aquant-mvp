@@ -1,0 +1,45 @@
+{
+  "symbol": "000630",
+  "latest_date": "2025-12-31",
+  "horizons": [
+    5
+  ],
+  "source": "sample",
+  "model_type": "factor_score",
+  "data_version": "274ffa65b083",
+  "event_feature_count": 0,
+  "event_features": [],
+  "walk_forward_evidence_count": 26,
+  "diagnostics": {
+    "horizon_5d": {
+      "method": "score_baseline",
+      "history_rows": 3114,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "valid_accuracy": 0.5416666666666666,
+      "valid_brier": 0.24549390661188902,
+      "valid_auc": 0.583916083916084,
+      "calibration_rows": 624,
+      "calibration_bins": 1,
+      "calibration_ece": 0.013152610441767076,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves.",
+  "news_summary": {
+    "with_news": false
+  },
+  "news_files": {}
+}

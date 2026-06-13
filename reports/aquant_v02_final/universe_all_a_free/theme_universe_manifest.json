@@ -1,0 +1,21 @@
+{
+  "requested_themes": "all-a-free",
+  "universe_mode": "all_a_free",
+  "theme_count": 13,
+  "rows": 5527,
+  "unique_symbols": 5527,
+  "duplicate_theme_rows": 0,
+  "multi_theme_symbols": 0,
+  "minimum_symbols_for_trusted_prediction": 200,
+  "warehouse_universe": {
+    "table": "universe",
+    "path": "data\\warehouse\\universe.parquet",
+    "rows": "5527",
+    "file_format": "parquet"
+  },
+  "notes": [
+    "This is a curated hot-sector seed universe, not an official industry classifier.",
+    "mega-hot is augmented with free all-A names when domestic sources are available to support large-sample modeling.",
+    "Use --universe all-a for maximum market coverage when free source availability allows it."
+  ]
+}

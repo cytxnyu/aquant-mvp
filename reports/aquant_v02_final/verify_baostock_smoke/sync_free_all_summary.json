@@ -1,0 +1,21 @@
+{
+  "source": "baostock",
+  "requested_symbols": 1,
+  "loaded_symbols": 1,
+  "failed_symbols": 0,
+  "daily_bar": {
+    "table": "daily_bar",
+    "path": "data\\warehouse\\daily_bar.parquet",
+    "rows": "346",
+    "file_format": "parquet"
+  },
+  "source_audit": {
+    "table": "source_audit",
+    "path": "data\\warehouse\\source_audit.parquet",
+    "rows": "1",
+    "file_format": "parquet"
+  },
+  "warnings": [
+    "000630: loaded from baostock."
+  ]
+}

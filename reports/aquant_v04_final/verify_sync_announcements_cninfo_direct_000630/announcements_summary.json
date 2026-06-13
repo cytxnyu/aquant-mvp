@@ -1,0 +1,9 @@
+{
+  "mode": "announcements",
+  "source": "cninfo_direct",
+  "symbols": 1,
+  "rows": 0,
+  "warnings": [
+    "000630: cninfo_direct unexpected schema"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "requested_days": 20,
+  "no_live": true,
+  "metadata": {
+    "broker": "paper",
+    "cash_after": 10768.887136319885
+  }
+}
