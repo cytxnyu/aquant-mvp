@@ -1,0 +1,79 @@
+{
+  "symbol": "000630",
+  "latest_date": "2025-12-31",
+  "source": "sample",
+  "horizons": 3,
+  "final_status_set": [
+    "data_insufficient"
+  ],
+  "gate_rows": 33,
+  "blocking_gate_count": 16,
+  "blocking_gate_names": [
+    "local_signal_quality",
+    "minimum_universe_size",
+    "probability_calibration",
+    "sample_data_block",
+    "walk_forward_evidence_present",
+    "walk_forward_rows",
+    "walk_forward_trusted"
+  ],
+  "by_horizon": {
+    "1": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_status=data_insufficient; reasons=",
+        "walk_forward_rows=340",
+        "confidence=0.0736; sample_rank_ic=0.0000"
+      ]
+    },
+    "5": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_trusted",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_status=weak; reasons=auc_above_052;brier_below_025;rank_ic_positive",
+        "confidence=0.1501; sample_rank_ic=0.0000"
+      ]
+    },
+    "20": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_evidence_present",
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "probability_calibration",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_evidence_missing",
+        "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+        "walk_forward_rows=0",
+        "calibration_status=calibration_failed; ece=0.1160; rows=615; method=identity",
+        "confidence=0.2178; sample_rank_ic=0.0000"
+      ]
+    }
+  },
+  "news_summary": {
+    "with_news": false
+  },
+  "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice."
+}

@@ -1,0 +1,35 @@
+{
+  "symbol": "000630",
+  "source": "sample",
+  "model_type": "factor_score",
+  "requested_days": 8,
+  "days": 20,
+  "history_days": 80,
+  "latest_date": "2025-12-31",
+  "latest_close": 33.63435124611308,
+  "forecast_rows": 60,
+  "intraday_forecast_rows": 18,
+  "horizon_summary_rows": 4,
+  "scenarios": [
+    "bearish",
+    "base",
+    "bullish"
+  ],
+  "required_kline_horizons": [
+    "intraday_next_day",
+    "1d",
+    "5d",
+    "20d"
+  ],
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "data_version": "274ffa65b083",
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "note": "Predicted K-line is a probability scenario chart, not a deterministic forecast."
+}

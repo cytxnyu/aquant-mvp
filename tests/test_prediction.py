@@ -69,13 +69,27 @@ def test_kline_forecast_outputs_valid_scenarios(tmp_path) -> None:
         history_days=60,
         allow_sample=True,
     )
-    assert len(result.forecast) == 30
+    assert int(result.summary["requested_days"]) == 10
+    assert int(result.summary["days"]) >= 20
+    assert len(result.forecast) == int(result.summary["days"]) * 3
+    assert len(result.intraday_forecast) == 18
+    assert set(result.intraday_forecast["scenario"]) == {"bearish", "base", "bullish"}
+    assert {"intraday_next_day", "1d", "5d", "20d"}.issubset(set(result.horizon_summary["horizon"]))
     assert set(result.forecast["scenario"]) == {"bearish", "base", "bullish"}
     assert result.forecast["high"].ge(result.forecast[["open", "close"]].max(axis=1)).all()
     assert result.forecast["low"].le(result.forecast[["open", "close"]].min(axis=1)).all()
+    assert result.intraday_forecast["high"].ge(result.intraday_forecast[["open", "close"]].max(axis=1)).all()
+    assert result.intraday_forecast["low"].le(result.intraday_forecast[["open", "close"]].min(axis=1)).all()
     assert result.forecast["p10_close"].le(result.forecast["p50_close"]).all()
     assert result.forecast["p50_close"].le(result.forecast["p90_close"]).all()
     paths = save_kline_forecast_outputs(result, tmp_path)
     assert paths["forecast_kline"].exists()
+    assert paths["intraday_kline"].exists()
+    assert paths["horizon_kline_summary"].exists()
+    assert paths["horizon_kline_summary_json"].exists()
+    assert paths["intraday_kline_png"].exists()
     assert paths["forecast_kline_html"].exists()
     assert paths["stock_prediction_report"].exists()
+    html = paths["forecast_kline_html"].read_text(encoding="utf-8")
+    assert "Next-session Intraday Forecast" in html
+    assert "1/5/20 Day Forecast Nodes" in html

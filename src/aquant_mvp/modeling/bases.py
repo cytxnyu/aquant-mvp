@@ -87,7 +87,7 @@ def discover_model_bases() -> pd.DataFrame:
         version = base.version
         if base.package != "builtin" and available:
             try:
-                version = importlib.metadata.version(base.package)
+                version = importlib.metadata.version(_distribution_name(base.package))
             except importlib.metadata.PackageNotFoundError:
                 version = "unknown"
         rows.append(
@@ -104,6 +104,10 @@ def discover_model_bases() -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+def _distribution_name(import_name: str) -> str:
+    return {"sklearn": "scikit-learn"}.get(import_name, import_name)
 
 
 def write_model_base_report(output_dir: Path, frame: pd.DataFrame | None = None) -> dict[str, Path]:
@@ -128,4 +132,3 @@ def write_model_base_report(output_dir: Path, frame: pd.DataFrame | None = None)
         )
     paths["md"].write_text("\n".join(lines), encoding="utf-8")
     return paths
-

@@ -18,10 +18,11 @@ The current implementation uses AKShare wrappers when available:
 Direct public-source adapters now include:
 
 - `cninfo_direct`: direct CNINFO announcement metadata query with source URL, announcement timestamp, symbol link, optional bounded announcement body extraction, raw warning audit, and no sample fallback.
+- official public index-page adapters: `sse_public`, `szse_public`, `bse_public`, `csrc_public`, `ndrc_public`, `miit_public`, `mofcom_public`, `pbc_public`, `customs_public`, and `stats_nbs_public`. These fetch URL-backed headline/index snippets and preserve `published_at`, `source_url`, source reliability, and entity-link evidence. `--max-pages N` enables bounded generic pagination per seed URL. With `--fetch-announcement-text`, they also attempt bounded body-text extraction and record `source_text_status`, length, and hash. Official-source headlines are rule-classified before entering the event bus, using title-first matching to avoid neighboring headline contamination. The adapters are intentionally conservative: source-specific pagination calibration, source-specific schemas, and supervised event classifiers still need expansion.
 
 If a source fails, the failure must be recorded. The system may use deterministic sample fallback only when explicitly using sample/demo mode.
 
-Use `--fetch-announcement-text` with direct announcement sources to try HTML/text/PDF body extraction. HTML/text bodies are parsed directly. PDF text is parsed only when a compatible local PDF parser such as `pypdf` is installed; otherwise the event records `pdf_parser_unavailable` instead of fabricating content.
+Use `--fetch-announcement-text` with direct announcement or official public sources to try HTML/text/PDF body extraction. Use `--max-pages` with official public sources to request bounded index pagination. HTML/text bodies are parsed directly. PDF text is parsed only when a compatible local PDF parser such as `pypdf` is installed; otherwise the event records `pdf_parser_unavailable` instead of fabricating content.
 
 ## Required Event Schema
 
@@ -79,6 +80,32 @@ The event bus now assigns a conservative source reliability score before events 
 
 `weighted_impact_score = impact_score * confidence * source_reliability`. Models and risk reports keep both the raw impact and the weighted impact so the system can inspect strong headlines without treating every source as equally reliable.
 
+## Text Intelligence And Similar Events
+
+`discover-text-intelligence` now writes an audit registry for optional text bases: sentence-transformer/BGE-style embeddings, transformer event classifiers, PyTorch text runtimes, FAISS/LanceDB vector stores, and local Qwen/DeepSeek summary paths. These are deliberately marked as evidence/retrieval aids only. They cannot enter trusted event factors until PIT labels and walk-forward evidence prove value.
+
+The event layer also includes a local PIT-safe similar-event retrieval report:
+
+- `build-event-store` writes `similar_events.csv/json/md`.
+- `report-stock --with-news`, `predict-stock --with-news`, `predict-kline --with-news`, and `explain-stock --with-news` write `stock_similar_events.csv/json/md`.
+- Retrieval uses TF-IDF character n-gram cosine similarity with a deterministic Jaccard fallback when optional sklearn text components are unavailable.
+- Each query event can only match events published earlier than the query event.
+- Forward returns are written only when the full return window ended before the query event, so the explanation does not look into the future.
+- Similar-event evidence is explanatory only and has `can_enter_event_factors=False`; it does not issue buy/sell advice and cannot promote a forecast to `trusted`.
+
+## Event Impact Study
+
+`analyze-event-impact` adds a stricter news-factor validation layer. It joins structured events with future stock returns and writes:
+
+- `event_impact_study_returns.csv`: event-level 1/5/20/60d forward returns and excess-return proxies.
+- `event_impact_study_cohorts.csv`: cohorts by event type, sentiment, event type + sentiment, event type + source reliability, and source category.
+- `event_impact_study_pit_priors.csv`: for each event, prior cohort evidence using only earlier events whose outcome window was already complete before the query event.
+- `event_impact_study.md/json`: summary, PIT guardrails, sample sufficiency, and evidence status.
+
+Stock reports with `--with-news` also write `stock_event_impact_study.*`, `stock_event_impact_returns.csv`, and `stock_event_impact_pit_priors.csv`, with the summary embedded in `stock_report_manifest.json`.
+
+This layer is deliberately skeptical. Small cohorts become `data_insufficient`; weak reliability or weak entity links stay `weak`; even stronger-looking cohorts are only `candidate_for_walk_forward`, never directly trusted. The event factor can affect trusted predictions only after large-universe walk-forward validation beats the baseline.
+
 ## Event Types
 
 Current rule-based classifier covers:
@@ -89,7 +116,12 @@ Current rule-based classifier covers:
 - shareholder changes
 - buyback/dividend
 - regulatory inquiry
+- regulatory penalty
+- litigation risk
 - capacity/operation
+- export control
+- monetary liquidity
+- macro indicator
 - commodity shock
 - industry policy
 - fund flow
@@ -124,9 +156,27 @@ event_warnings.json
 stock_event_store.csv
 stock_event_factors.csv
 stock_news_evidence.md
+free_source_coverage.csv
+source_gap_report.csv
+source_gap_report.md
 ```
 
 The event engine is a research input layer. It does not issue trading instructions.
+
+## Source Coverage And Gaps
+
+`discover-sources --domestic-only` writes a broader source matrix for market data, announcements, exchange/regulator pages, macro policy sources, public finance news, commodity exchanges, and QMT read-only state.
+
+The matrix intentionally separates:
+
+- implemented sources that may enter event factors
+- partial sources with explicit limitations
+- candidate direct adapters that are not allowed to influence stock-level factors yet
+- credential/local-client limited sources
+
+Current critical gaps are now narrower but still material: official SSE/SZSE/BSE/CSRC/NDRC/MIIT/MOFCOM/PBC/customs/NBS index-page adapters exist with bounded generic pagination and optional body-text audit, but still need site-specific pagination calibration, source-specific field extraction, and stronger PIT release-calendar handling. Richer direct commodity exchange inventory/notice feeds, direct Sina/Tencent/NetEase finance adapters, Tushare token permissions, and QMT local-client state also remain explicit follow-up items. These gaps are recorded in `source_gap_report.md` instead of being filled with fake events.
+
+Rule: a source may influence stock-level event factors only when it has timestamps, source URLs, entity links, and an implemented or explicitly partial adapter.
 
 ## Event Risk Guardrail
 
@@ -198,10 +248,23 @@ Latest smoke outputs:
 - `reports/aquant_v04_final/verify_commodity_event_store_metals`
 - `reports/aquant_v04_final/verify_event_reliability_weighting_sample`
 - `reports/aquant_v04_final/verify_discover_sources_cninfo_direct`
+- `reports/aquant_v04_final/verify_source_gap_matrix`
 - `reports/aquant_v04_final/verify_sync_announcements_cninfo_direct_000630`
 - `reports/aquant_v04_final/verify_event_store_cninfo_direct_000630`
 - `reports/aquant_v04_final/verify_sync_announcements_cninfo_text_000630`
 - `reports/aquant_v04_final/verify_event_store_cninfo_text_000630`
+- `reports/aquant_v04_final/verify_official_public_sync_csrc`
+- `reports/aquant_v04_final/verify_official_public_event_store_csrc`
+- `reports/aquant_v04_final/verify_official_public_sync_csrc_text`
+- `reports/aquant_v04_final/verify_official_public_event_store_csrc_text`
+- `reports/aquant_v04_final/verify_official_public_sync_csrc_structured`
+- `reports/aquant_v04_final/verify_official_public_event_store_csrc_structured`
+- `reports/aquant_v04_final/verify_text_intelligence_registry`
+- `reports/aquant_v04_final/verify_event_store_text_intelligence_sample`
+- `reports/aquant_v04_final/verify_similar_event_store_sample`
+- `reports/aquant_v04_final/verify_report_stock_similar_events_000630`
+- `reports/aquant_v04_final/verify_event_impact_study_sample`
+- `reports/aquant_v04_final/verify_report_stock_event_impact_000630`
 - `reports/aquant_v04_final/verify_event_major_announcement_summary_sample`
 - `reports/aquant_v04_final/verify_theme_entity_link_sample`
 - `reports/aquant_v04_final/verify_feature_store_theme_entity_link_sample`

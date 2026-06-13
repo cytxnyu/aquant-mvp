@@ -1,0 +1,10 @@
+source_group,sources,ready_sources,critical_gaps,followup_sources,gap_notes
+macro_policy,6,6,5,ndrc_public;miit_public;mofcom_public;pbc_public;customs_public,official NDRC index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and PIT release calendar still need expansion; official MIIT index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and industry-policy fields still need expansion; official MOFCOM index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and trade-policy fields still need expansion; official PBC index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and structured liquidity-operation fields still need expansion; official customs index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and monthly import/export PIT fields still need expansion
+exchange_regulator,3,3,2,sse_public;szse_public,official SSE index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and structured regulatory fields still need expansion; official SZSE index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and structured regulatory-letter fields still need expansion
+broker_readonly,1,0,1,qmt_readonly,requires local MiniQMT/XtQuant and broker account; no live submit in this project
+multi_source_data,2,1,1,tushare_free,free quota and fields vary by token score; token required
+regulator_policy,1,1,1,csrc_public,official CSRC index-page adapter implemented with bounded generic pagination and optional body text audit; site-specific pagination calibration and penalty/policy field extraction still need expansion
+announcement,2,2,0,,
+commodity_exchange,6,3,0,,
+market_data,1,1,0,,
+news_capital_flow,4,1,0,,

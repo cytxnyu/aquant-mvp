@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import importlib.util
 import json
 from pathlib import Path
 
@@ -59,19 +60,47 @@ def _train_one_horizon(
         "direction_label": direction_col,
         "train_rows": int(len(dataset)),
         "artifact_path": str(artifact_path),
+        "requested_model_type": model_type,
+        "effective_model_type": model_type,
+        "model_base_status": "requested",
+        "fallback_reason": "",
     }
-    lgbm_record = None
-    if model_type in {"lightgbm_regressor", "lightgbm_classifier", "lightgbm_ranker", "ensemble", "lightgbm"}:
-        lgbm_record = _try_train_lightgbm(dataset, features, model_type, label_col, direction_col, output_dir, model_id)
-    if lgbm_record is None:
+    trained_record = _try_train_requested_model(dataset, features, model_type, label_col, direction_col, output_dir, model_id)
+    if trained_record is None:
         baseline = _baseline_metrics(scores, labels, horizon)
         metadata["model_family"] = "factor_score_baseline"
+        metadata["effective_model_type"] = "factor_score"
+        metadata["model_base_status"] = "fallback"
+        metadata["fallback_reason"] = _fallback_reason(dataset, features, model_type, direction_col)
         metadata["metrics"] = baseline
         artifact_path.write_text(json.dumps({"model": "factor_score_baseline", "weights": DEFAULT_FACTOR_WEIGHTS}, indent=2), encoding="utf-8")
     else:
-        metadata.update(lgbm_record)
+        metadata.update(trained_record)
     record = register_model(registry_dir, metadata)
     return record
+
+
+def _try_train_requested_model(
+    dataset: pd.DataFrame,
+    features: list[str],
+    model_type: str,
+    label_col: str,
+    direction_col: str,
+    output_dir: Path,
+    model_id: str,
+) -> dict[str, object] | None:
+    normalized = model_type.lower().replace("-", "_")
+    if len(features) < 5 or len(dataset) < 200:
+        return None
+    if normalized in {"lightgbm_regressor", "lightgbm_classifier", "lightgbm_ranker", "ensemble", "event_aware_ensemble", "lightgbm"}:
+        return _try_train_lightgbm(dataset, features, normalized, label_col, direction_col, output_dir, model_id)
+    if normalized in {"xgboost", "xgb"}:
+        return _try_train_xgboost(dataset, features, label_col, direction_col, output_dir, model_id)
+    if normalized in {"catboost", "cat"}:
+        return _try_train_catboost(dataset, features, label_col, direction_col, output_dir, model_id)
+    if normalized in {"logistic", "ridge", "linear", "sklearn", "sklearn_linear"}:
+        return _try_train_sklearn(dataset, features, normalized, label_col, direction_col, output_dir, model_id)
+    return None
 
 
 def _try_train_lightgbm(
@@ -83,8 +112,6 @@ def _try_train_lightgbm(
     output_dir: Path,
     model_id: str,
 ) -> dict[str, object] | None:
-    if len(features) < 5 or len(dataset) < 200:
-        return None
     try:
         from lightgbm import LGBMClassifier, LGBMRanker, LGBMRegressor  # type: ignore
     except ImportError:
@@ -119,7 +146,167 @@ def _try_train_lightgbm(
             metrics["valid_rank_ic"] = _safe_corr(pred, valid[label_col], "spearman")
             metrics["valid_mae"] = float((pred - valid[label_col]).abs().mean())
     model.booster_.save_model(str(artifact))
-    return {"model_family": "lightgbm", "metrics": metrics, "artifact_path": str(artifact)}
+    return {
+        "model_family": "lightgbm",
+        "effective_model_type": model_type,
+        "model_base_status": "trained",
+        "metrics": metrics,
+        "artifact_path": str(artifact),
+    }
+
+
+def _try_train_xgboost(
+    dataset: pd.DataFrame,
+    features: list[str],
+    label_col: str,
+    direction_col: str,
+    output_dir: Path,
+    model_id: str,
+) -> dict[str, object] | None:
+    try:
+        from xgboost import XGBClassifier, XGBRegressor  # type: ignore
+    except ImportError:
+        return None
+
+    train, valid = _time_split(dataset)
+    if train.empty:
+        return None
+    fill_values = train[features].median(numeric_only=True)
+    X_train = train[features].fillna(fill_values)
+    X_valid = valid[features].fillna(fill_values) if not valid.empty else valid[features]
+    artifact = output_dir / f"{model_id}.xgb.json"
+    metrics: dict[str, float] = {}
+    if train[direction_col].nunique() >= 2:
+        clf = XGBClassifier(
+            n_estimators=120,
+            max_depth=3,
+            learning_rate=0.05,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            random_state=45,
+            eval_metric="logloss",
+        )
+        clf.fit(X_train, train[direction_col].astype(int))
+        if not valid.empty:
+            prob = pd.Series(clf.predict_proba(X_valid)[:, 1], index=valid.index)
+            metrics["valid_accuracy"] = float(((prob >= 0.5).astype(int) == valid[direction_col].astype(int)).mean())
+            metrics["valid_brier"] = float(((prob - valid[direction_col]) ** 2).mean())
+    reg = XGBRegressor(
+        n_estimators=120,
+        max_depth=3,
+        learning_rate=0.05,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        random_state=46,
+    )
+    reg.fit(X_train, train[label_col])
+    if not valid.empty:
+        pred = pd.Series(reg.predict(X_valid), index=valid.index)
+        metrics["valid_rank_ic"] = _safe_corr(pred, valid[label_col], "spearman")
+        metrics["valid_mae"] = float((pred - valid[label_col]).abs().mean())
+    reg.save_model(str(artifact))
+    return {
+        "model_family": "xgboost",
+        "effective_model_type": "xgboost",
+        "model_base_status": "trained",
+        "metrics": metrics,
+        "artifact_path": str(artifact),
+    }
+
+
+def _try_train_catboost(
+    dataset: pd.DataFrame,
+    features: list[str],
+    label_col: str,
+    direction_col: str,
+    output_dir: Path,
+    model_id: str,
+) -> dict[str, object] | None:
+    try:
+        from catboost import CatBoostClassifier, CatBoostRegressor  # type: ignore
+    except ImportError:
+        return None
+
+    train, valid = _time_split(dataset)
+    if train.empty:
+        return None
+    artifact = output_dir / f"{model_id}.cbm"
+    metrics: dict[str, float] = {}
+    if train[direction_col].nunique() >= 2:
+        clf = CatBoostClassifier(iterations=120, depth=4, learning_rate=0.05, loss_function="Logloss", verbose=False, random_seed=47)
+        clf.fit(train[features], train[direction_col].astype(int))
+        if not valid.empty:
+            prob = pd.Series(clf.predict_proba(valid[features])[:, 1], index=valid.index)
+            metrics["valid_accuracy"] = float(((prob >= 0.5).astype(int) == valid[direction_col].astype(int)).mean())
+            metrics["valid_brier"] = float(((prob - valid[direction_col]) ** 2).mean())
+    reg = CatBoostRegressor(iterations=120, depth=4, learning_rate=0.05, loss_function="RMSE", verbose=False, random_seed=48)
+    reg.fit(train[features], train[label_col])
+    if not valid.empty:
+        pred = pd.Series(reg.predict(valid[features]), index=valid.index)
+        metrics["valid_rank_ic"] = _safe_corr(pred, valid[label_col], "spearman")
+        metrics["valid_mae"] = float((pred - valid[label_col]).abs().mean())
+    reg.save_model(str(artifact))
+    return {
+        "model_family": "catboost",
+        "effective_model_type": "catboost",
+        "model_base_status": "trained",
+        "metrics": metrics,
+        "artifact_path": str(artifact),
+    }
+
+
+def _try_train_sklearn(
+    dataset: pd.DataFrame,
+    features: list[str],
+    model_type: str,
+    label_col: str,
+    direction_col: str,
+    output_dir: Path,
+    model_id: str,
+) -> dict[str, object] | None:
+    try:
+        import joblib  # type: ignore
+        from sklearn.impute import SimpleImputer  # type: ignore
+        from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge  # type: ignore
+        from sklearn.pipeline import make_pipeline  # type: ignore
+        from sklearn.preprocessing import StandardScaler  # type: ignore
+    except ImportError:
+        return None
+
+    train, valid = _time_split(dataset)
+    if train.empty:
+        return None
+    artifact = output_dir / f"{model_id}.joblib"
+    reg_model = LinearRegression() if model_type == "linear" else Ridge(alpha=1.0)
+    reg = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(), reg_model)
+    reg.fit(train[features], train[label_col])
+    metrics: dict[str, float] = {}
+    if not valid.empty:
+        pred = pd.Series(reg.predict(valid[features]), index=valid.index)
+        metrics["valid_rank_ic"] = _safe_corr(pred, valid[label_col], "spearman")
+        metrics["valid_mae"] = float((pred - valid[label_col]).abs().mean())
+    if train[direction_col].nunique() >= 2:
+        clf = make_pipeline(
+            SimpleImputer(strategy="median"),
+            StandardScaler(),
+            LogisticRegression(max_iter=1000, class_weight="balanced"),
+        )
+        clf.fit(train[features], train[direction_col].astype(int))
+        if not valid.empty:
+            prob = pd.Series(clf.predict_proba(valid[features])[:, 1], index=valid.index)
+            metrics["valid_accuracy"] = float(((prob >= 0.5).astype(int) == valid[direction_col].astype(int)).mean())
+            metrics["valid_brier"] = float(((prob - valid[direction_col]) ** 2).mean())
+        artifact_payload = {"regressor": reg, "classifier": clf, "features": features}
+    else:
+        artifact_payload = {"regressor": reg, "classifier": None, "features": features}
+    joblib.dump(artifact_payload, artifact)
+    return {
+        "model_family": "sklearn_linear",
+        "effective_model_type": model_type,
+        "model_base_status": "trained",
+        "metrics": metrics,
+        "artifact_path": str(artifact),
+    }
 
 
 def _baseline_metrics(scores: pd.DataFrame, labels: pd.DataFrame, horizon: int) -> dict[str, float]:
@@ -138,6 +325,25 @@ def _baseline_metrics(scores: pd.DataFrame, labels: pd.DataFrame, horizon: int) 
 def _select_features(dataset: pd.DataFrame) -> list[str]:
     coverage = dataset[FACTOR_COLUMNS].notna().mean()
     return coverage[coverage >= 0.55].index.tolist()
+
+
+def _fallback_reason(dataset: pd.DataFrame, features: list[str], model_type: str, direction_col: str) -> str:
+    normalized = model_type.lower().replace("-", "_")
+    if len(dataset) < 200:
+        return "insufficient_training_rows"
+    if len(features) < 5:
+        return "insufficient_feature_coverage"
+    if normalized in {"lightgbm_regressor", "lightgbm_classifier", "lightgbm_ranker", "ensemble", "event_aware_ensemble", "lightgbm"} and importlib.util.find_spec("lightgbm") is None:
+        return "lightgbm_not_installed"
+    if normalized in {"xgboost", "xgb"} and importlib.util.find_spec("xgboost") is None:
+        return "xgboost_not_installed"
+    if normalized in {"catboost", "cat"} and importlib.util.find_spec("catboost") is None:
+        return "catboost_not_installed"
+    if normalized in {"logistic", "ridge", "linear", "sklearn", "sklearn_linear"} and importlib.util.find_spec("sklearn") is None:
+        return "sklearn_not_installed"
+    if "classifier" in normalized and dataset[direction_col].nunique() < 2:
+        return "single_class_direction_label"
+    return "requested_model_failed_or_unsupported"
 
 
 def _time_split(dataset: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import json
 import math
 from pathlib import Path
 
@@ -12,13 +13,35 @@ from aquant_mvp.config import DEFAULT_FACTOR_WEIGHTS
 from aquant_mvp.features import merge_event_factors_into_panel
 from aquant_mvp.factors import FACTOR_COLUMNS, compute_factor_panel
 from aquant_mvp.labels import compute_stock_prediction_labels
+from aquant_mvp.modeling.calibration import calibrate_probability, calibration_result_to_metrics
 from aquant_mvp.strategy import score_factors
+
+
+_TRUST_GATE_COLUMNS = [
+    "latest_date",
+    "symbol",
+    "horizon_days",
+    "trust_status",
+    "gate",
+    "passed",
+    "severity",
+    "reason",
+    "model_id",
+    "data_version",
+]
 
 
 @dataclass(frozen=True)
 class StockForecastResult:
     forecast: pd.DataFrame
     summary: dict[str, object]
+
+
+@dataclass(frozen=True)
+class StockTrustGateReport:
+    gates: pd.DataFrame
+    summary: dict[str, object]
+    markdown: str
 
 
 def build_stock_forecast(
@@ -82,6 +105,16 @@ def build_stock_forecast(
         row["sample_oos_auc"] = quality.get("valid_auc", 0.0)
         row["sample_oos_brier"] = quality.get("valid_brier", 0.0)
         row["sample_rank_ic"] = quality.get("valid_return_ic", quality.get("valid_rank_ic", 0.0))
+        row["raw_prob_up"] = quality.get("raw_prob_up", row.get("prob_up", 0.5))
+        row["calibrated_prob_up"] = quality.get("calibrated_prob_up", row.get("prob_up", 0.5))
+        row["probability_calibration_method"] = quality.get("probability_calibration_method", "identity_missing")
+        row["probability_calibration_status"] = quality.get("probability_calibration_status", quality.get("calibration_status", "calibration_missing"))
+        row["probability_raw_brier"] = quality.get("probability_raw_brier", quality.get("valid_brier", 1.0))
+        row["probability_calibrated_brier"] = quality.get("probability_calibrated_brier", quality.get("valid_brier", 1.0))
+        row["probability_raw_ece"] = quality.get("probability_raw_ece", quality.get("calibration_ece", 1.0))
+        row["probability_calibrated_ece"] = quality.get("probability_calibrated_ece", quality.get("calibration_ece", 1.0))
+        row["probability_calibration_improvement_brier"] = quality.get("probability_calibration_improvement_brier", 0.0)
+        row["probability_calibration_improvement_ece"] = quality.get("probability_calibration_improvement_ece", 0.0)
         row["calibration_rows"] = quality.get("calibration_rows", 0)
         row["calibration_bins"] = quality.get("calibration_bins", 0)
         row["calibration_ece"] = quality.get("calibration_ece", 1.0)
@@ -105,6 +138,8 @@ def build_stock_forecast(
         "symbol",
         "horizon_days",
         "prob_up",
+        "raw_prob_up",
+        "calibrated_prob_up",
         "expected_return",
         "expected_excess_return",
         "direction",
@@ -126,6 +161,14 @@ def build_stock_forecast(
         "sample_oos_auc",
         "sample_oos_brier",
         "sample_rank_ic",
+        "probability_calibration_method",
+        "probability_calibration_status",
+        "probability_raw_brier",
+        "probability_calibrated_brier",
+        "probability_raw_ece",
+        "probability_calibrated_ece",
+        "probability_calibration_improvement_brier",
+        "probability_calibration_improvement_ece",
         "calibration_rows",
         "calibration_bins",
         "calibration_ece",
@@ -164,6 +207,70 @@ def build_stock_forecast(
         "note": "Predictions are probabilistic research signals, not guaranteed price moves.",
     }
     return StockForecastResult(forecast=forecast, summary=summary)
+
+
+def build_stock_trust_gate_report(
+    forecast: pd.DataFrame,
+    *,
+    source: str = "",
+    news_summary: dict[str, object] | None = None,
+) -> StockTrustGateReport:
+    """Build a horizon-by-horizon trust gate report for stock forecasts."""
+    rows: list[dict[str, object]] = []
+    if forecast.empty:
+        summary = {
+            "horizons": 0,
+            "final_status_set": [],
+            "blocking_gate_count": 0,
+            "note": "No forecast rows were available for trust-gate evaluation.",
+        }
+        return StockTrustGateReport(pd.DataFrame(columns=_TRUST_GATE_COLUMNS), summary, _trust_gate_markdown(pd.DataFrame(), summary))
+
+    news = news_summary or {}
+    for row in forecast.to_dict(orient="records"):
+        rows.extend(_trust_gate_rows(row, source=source, news_summary=news))
+    gates = pd.DataFrame(rows, columns=_TRUST_GATE_COLUMNS)
+    blocking = gates[(~gates["passed"].astype(bool)) & (gates["severity"] == "block")]
+    by_horizon = {}
+    for horizon, part in gates.groupby("horizon_days", sort=True):
+        failed = part[(~part["passed"].astype(bool)) & (part["severity"] == "block")]
+        by_horizon[str(int(horizon))] = {
+            "trust_status": str(part["trust_status"].iloc[0]),
+            "blocking_gates": failed["gate"].astype(str).tolist(),
+            "blocking_reasons": failed["reason"].astype(str).tolist(),
+        }
+    summary = {
+        "symbol": str(forecast["symbol"].iloc[0]).zfill(6) if "symbol" in forecast.columns else "",
+        "latest_date": str(forecast["latest_date"].iloc[0]) if "latest_date" in forecast.columns else "",
+        "source": source,
+        "horizons": int(forecast["horizon_days"].nunique()) if "horizon_days" in forecast.columns else int(len(forecast)),
+        "final_status_set": sorted(forecast["trust_status"].dropna().astype(str).unique().tolist()) if "trust_status" in forecast.columns else [],
+        "gate_rows": int(len(gates)),
+        "blocking_gate_count": int(len(blocking)),
+        "blocking_gate_names": sorted(blocking["gate"].dropna().astype(str).unique().tolist()),
+        "by_horizon": by_horizon,
+        "news_summary": news,
+        "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice.",
+    }
+    return StockTrustGateReport(gates, summary, _trust_gate_markdown(gates, summary))
+
+
+def write_stock_trust_gate_outputs(
+    output_dir: Path,
+    report: StockTrustGateReport,
+    *,
+    prefix: str = "stock_trust_gates",
+) -> dict[str, Path]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    paths = {
+        "csv": output_dir / f"{prefix}.csv",
+        "json": output_dir / f"{prefix}.json",
+        "md": output_dir / f"{prefix}.md",
+    }
+    report.gates.to_csv(paths["csv"], index=False)
+    paths["json"].write_text(json.dumps(report.summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    paths["md"].write_text(report.markdown, encoding="utf-8")
+    return paths
 
 
 def _forecast_one_horizon(
@@ -282,14 +389,18 @@ def _try_lightgbm_models(
     expected_return = float(regressor.predict(latest_frame)[0])
     expected_excess = float(excess_regressor.predict(latest_frame)[0])
     quality = {"method": "lightgbm", "train_rows": int(len(train)), "valid_rows": int(len(valid))}
+    raw_prob_up = prob_up
     if not valid.empty and valid[direction_col].nunique() >= 2:
         valid_prob = pd.Series(classifier.predict_proba(valid[feature_columns])[:, 1], index=valid.index)
         valid_pred = pd.Series(regressor.predict(valid[feature_columns]), index=valid.index)
         quality.update(_classification_metrics(valid_prob, valid[direction_col]))
+        prob_up = _apply_probability_calibration(valid_prob, valid[direction_col], raw_prob_up, quality)
         quality["valid_return_ic"] = _safe_corr(valid_pred, valid[future_col], "spearman")
     return (
         {
             "prob_up": prob_up,
+            "raw_prob_up": raw_prob_up,
+            "calibrated_prob_up": prob_up,
             "expected_return": expected_return,
             "expected_excess_return": expected_excess,
             "prediction_method": "lightgbm",
@@ -333,9 +444,15 @@ def _score_baseline(
             clamp=True,
         )
         quality.update(_classification_metrics(valid_prob, valid[direction_col]))
+        raw_prob_up = float(np.clip(prob_up, 0.05, 0.95))
+        prob_up = _apply_probability_calibration(valid_prob, valid[direction_col], raw_prob_up, quality)
+    else:
+        raw_prob_up = float(np.clip(prob_up, 0.05, 0.95))
     return (
         {
             "prob_up": float(np.clip(prob_up, 0.05, 0.95)),
+            "raw_prob_up": raw_prob_up,
+            "calibrated_prob_up": float(np.clip(prob_up, 0.05, 0.95)),
             "expected_return": float(expected_return),
             "expected_excess_return": float(expected_excess),
             "prediction_method": "score_baseline",
@@ -398,6 +515,25 @@ def _last_validation_slice(history: pd.DataFrame) -> pd.DataFrame:
         return history.iloc[0:0]
     valid_dates = dates[int(len(dates) * 0.8) :]
     return history[history.index.get_level_values("date").isin(valid_dates)]
+
+
+def _apply_probability_calibration(
+    prob: pd.Series,
+    target: pd.Series,
+    latest_prob: float,
+    quality: dict[str, object],
+) -> float:
+    result = calibrate_probability(prob, target, latest_prob)
+    metrics = calibration_result_to_metrics(result)
+    quality.update(metrics)
+    quality["raw_valid_brier"] = quality.get("valid_brier", result.raw_brier)
+    quality["raw_calibration_ece"] = quality.get("calibration_ece", result.raw_ece)
+    quality["valid_brier"] = result.calibrated_brier
+    quality["calibration_rows"] = result.rows
+    quality["calibration_bins"] = quality.get("calibration_bins", 0)
+    quality["calibration_ece"] = result.calibrated_ece
+    quality["calibration_status"] = result.status
+    return result.calibrated_latest_prob
 
 
 def _classification_metrics(prob: pd.Series, target: pd.Series) -> dict[str, float | int | str]:
@@ -577,8 +713,8 @@ def _forecast_trust_status(
     confidence = float(row.get("confidence", 0.0))
     rank_ic = float(row.get("sample_rank_ic", 0.0) or 0.0)
     brier = float(row.get("sample_oos_brier", 1.0) or 1.0)
-    calibration_status = str(row.get("calibration_status", "calibration_missing"))
-    calibration_ece = float(row.get("calibration_ece", 1.0) or 1.0)
+    calibration_status = str(row.get("probability_calibration_status", row.get("calibration_status", "calibration_missing")))
+    calibration_ece = float(row.get("probability_calibrated_ece", row.get("calibration_ece", 1.0)) or 1.0)
     if calibration_status in {"calibration_missing", "calibration_sparse", "calibration_low_coverage"}:
         return "weak"
     if calibration_status == "calibration_failed" or calibration_ece > 0.10:
@@ -588,6 +724,194 @@ def _forecast_trust_status(
     if confidence >= 0.55 and (rank_ic > 0 or brier < 0.25):
         return "trusted"
     return "weak"
+
+
+def _trust_gate_rows(row: dict[str, object], *, source: str, news_summary: dict[str, object]) -> list[dict[str, object]]:
+    horizon = int(row.get("horizon_days", 0) or 0)
+    status = str(row.get("trust_status", ""))
+    symbol = str(row.get("symbol", "")).zfill(6)
+    gates = [
+        _gate_row(row, horizon, symbol, status, "sample_data_block", source != "sample", "block", "sample_source_cannot_be_trusted"),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "minimum_universe_size",
+            int(row.get("universe_symbol_count", 0) or 0) >= int(row.get("minimum_trusted_symbols", 200) or 200),
+            "block",
+            f"universe_symbols={row.get('universe_symbol_count', 0)}, minimum={row.get('minimum_trusted_symbols', 200)}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "walk_forward_evidence_present",
+            bool(str(row.get("walk_forward_model_id", "")).strip()),
+            "block",
+            str(row.get("walk_forward_gate_reasons", "walk_forward_evidence_missing")),
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "walk_forward_trusted",
+            str(row.get("walk_forward_status", "")) == "trusted",
+            "block",
+            f"walk_forward_status={row.get('walk_forward_status', 'missing')}; reasons={row.get('walk_forward_gate_reasons', '')}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "walk_forward_rows",
+            int(float(row.get("walk_forward_rows", 0) or 0)) >= 5000,
+            "block",
+            f"walk_forward_rows={row.get('walk_forward_rows', 0)}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "probability_calibration",
+            str(row.get("probability_calibration_status", row.get("calibration_status", ""))) in {"calibrated", "calibration_watch"},
+            "block",
+            f"calibration_status={row.get('probability_calibration_status', row.get('calibration_status', ''))}; ece={_safe_float(row.get('probability_calibrated_ece', row.get('calibration_ece', 1.0))):.4f}; rows={row.get('calibration_rows', 0)}; method={row.get('probability_calibration_method', '')}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "probability_error",
+            _safe_float(row.get("sample_oos_brier", 1.0)) <= 0.25,
+            "block",
+            f"sample_oos_brier={_safe_float(row.get('sample_oos_brier', 1.0)):.4f}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "conformal_interval_ready",
+            str(row.get("conformal_status", "")) == "conformal_ready",
+            "block",
+            f"conformal_status={row.get('conformal_status', '')}; rows={row.get('conformal_rows', 0)}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "local_signal_quality",
+            _safe_float(row.get("confidence", 0.0)) >= 0.55
+            and (_safe_float(row.get("sample_rank_ic", 0.0)) > 0 or _safe_float(row.get("sample_oos_brier", 1.0)) < 0.25),
+            "block",
+            f"confidence={_safe_float(row.get('confidence', 0.0)):.4f}; sample_rank_ic={_safe_float(row.get('sample_rank_ic', 0.0)):.4f}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "risk_flags_clear",
+            _risk_flags_pass(str(row.get("risk_flags", ""))),
+            "warn",
+            f"risk_flags={row.get('risk_flags', '')}",
+        ),
+        _gate_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "news_evidence_available",
+            int(news_summary.get("event_rows", 0) or 0) > 0 if news_summary.get("with_news") else False,
+            "warn",
+            f"with_news={news_summary.get('with_news', False)}; event_rows={news_summary.get('event_rows', 0)}; event_factor_rows={news_summary.get('event_factor_rows', 0)}",
+        ),
+    ]
+    return gates
+
+
+def _gate_row(
+    row: dict[str, object],
+    horizon: int,
+    symbol: str,
+    trust_status: str,
+    gate: str,
+    passed: bool,
+    severity: str,
+    reason: str,
+) -> dict[str, object]:
+    if trust_status == "trusted" and severity == "block" and not passed:
+        reason = f"INCONSISTENT_TRUSTED_STATUS:{reason}"
+    return {
+        "latest_date": row.get("latest_date", ""),
+        "symbol": symbol,
+        "horizon_days": horizon,
+        "trust_status": trust_status,
+        "gate": gate,
+        "passed": bool(passed),
+        "severity": severity,
+        "reason": reason if not passed else "passed",
+        "model_id": row.get("model_id", ""),
+        "data_version": row.get("data_version", ""),
+    }
+
+
+def _risk_flags_pass(flags: str) -> bool:
+    normalized = (flags or "none").strip().lower()
+    if normalized in {"", "none", "nan"}:
+        return True
+    hard_flags = {"short_history", "may_include_fallback_data", "high_volatility", "data_gap"}
+    return not any(flag in normalized for flag in hard_flags)
+
+
+def _safe_float(value: object) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _trust_gate_markdown(gates: pd.DataFrame, summary: dict[str, object]) -> str:
+    lines = [
+        f"# Stock Trust Gate Report: {summary.get('symbol', '')}",
+        "",
+        "This report explains why each probabilistic forecast is or is not trusted. A failed block gate prevents `trusted`; warning gates are evidence gaps or risk notes. This is not investment advice.",
+        "",
+        "## Summary",
+        "",
+        f"- Source: `{summary.get('source', '')}`",
+        f"- Horizons: `{summary.get('horizons', 0)}`",
+        f"- Final status set: `{', '.join(summary.get('final_status_set', [])) if summary.get('final_status_set') else 'none'}`",
+        f"- Blocking gate count: `{summary.get('blocking_gate_count', 0)}`",
+        f"- Blocking gates: `{', '.join(summary.get('blocking_gate_names', [])) if summary.get('blocking_gate_names') else 'none'}`",
+        "",
+    ]
+    if gates.empty:
+        lines.append("- No gate rows were generated.")
+        return "\n".join(lines)
+    lines.extend(["## Horizon Gates", ""])
+    for horizon, part in gates.groupby("horizon_days", sort=True):
+        status = str(part["trust_status"].iloc[0])
+        failed = part[(~part["passed"].astype(bool)) & (part["severity"] == "block")]
+        warnings = part[(~part["passed"].astype(bool)) & (part["severity"] == "warn")]
+        lines.append(f"### {int(horizon)}d - `{status}`")
+        if failed.empty:
+            lines.append("- Block gates: passed")
+        else:
+            for row in failed.itertuples(index=False):
+                lines.append(f"- Block `{row.gate}`: {row.reason}")
+        if not warnings.empty:
+            for row in warnings.itertuples(index=False):
+                lines.append(f"- Warn `{row.gate}`: {row.reason}")
+        lines.append("")
+    return "\n".join(lines).rstrip()
 
 
 def _load_walk_forward_evidence(registry_dir: Path | None) -> list[dict[str, object]]:

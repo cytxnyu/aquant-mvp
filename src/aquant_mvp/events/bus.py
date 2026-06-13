@@ -9,7 +9,7 @@ import re
 import numpy as np
 import pandas as pd
 
-from aquant_mvp.sources import fetch_cninfo_announcements_direct
+from aquant_mvp.sources import fetch_cninfo_announcements_direct, fetch_official_public_events, official_public_source_ids
 
 
 REQUIRED_EVENT_COLUMNS = [
@@ -67,6 +67,15 @@ EVENT_FACTOR_CONTEXT_COLUMNS = [
 
 EVENT_FACTOR_COLUMNS = EVENT_FACTOR_NUMERIC_COLUMNS + EVENT_FACTOR_CONTEXT_COLUMNS
 
+EVENT_RISK_TYPES = {
+    "regulatory_inquiry",
+    "regulatory_penalty",
+    "public_opinion_risk",
+    "performance_miss",
+    "litigation_risk",
+    "export_control",
+}
+
 
 COMMODITY_CONTRACTS: dict[str, dict[str, object]] = {
     "copper": {"contract": "CU0", "name": "沪铜主连", "keywords": ["copper", "铜"]},
@@ -116,6 +125,7 @@ def sync_public_events(
     source: str = "akshare",
     max_events_per_symbol: int = 80,
     fetch_announcement_text: bool = False,
+    max_pages: int = 1,
 ) -> tuple[pd.DataFrame, list[str]]:
     normalized = [str(symbol).zfill(6) for symbol in symbols]
     warnings: list[str] = []
@@ -128,6 +138,17 @@ def sync_public_events(
             end_date,
             max_events_per_symbol=max_events_per_symbol,
             fetch_text=fetch_announcement_text,
+        )
+        return result.events, result.warnings
+    if source in official_public_source_ids():
+        result = fetch_official_public_events(
+            normalized,
+            start_date,
+            end_date,
+            source=source,
+            max_events_per_source=max_events_per_symbol,
+            fetch_text=fetch_announcement_text,
+            max_pages_per_seed=max_pages,
         )
         return result.events, result.warnings
     events: list[dict[str, object]] = []
@@ -331,7 +352,7 @@ def audit_event_coverage(event_store: pd.DataFrame, event_factors: pd.DataFrame,
             event_types = ",".join(sorted(symbol_events["event_type"].astype(str).unique().tolist()))
             positive = int((symbol_events["sentiment"].astype(str) == "positive").sum())
             negative = int((symbol_events["sentiment"].astype(str) == "negative").sum())
-            risk = int(symbol_events["event_type"].isin(["regulatory_inquiry", "public_opinion_risk", "performance_miss"]).sum())
+            risk = int(symbol_events["event_type"].isin(EVENT_RISK_TYPES).sum())
             if "source_reliability" in symbol_events.columns:
                 reliability = pd.to_numeric(symbol_events["source_reliability"], errors="coerce").fillna(0.0)
                 avg_reliability = float(reliability.mean())
@@ -899,7 +920,7 @@ def _build_event_factors(event_store: pd.DataFrame) -> pd.DataFrame:
                     "event_count_20d": int(len(trailing20)),
                     "positive_event_count": int((trailing20["sentiment"] == "positive").sum()),
                     "negative_event_count": int((trailing20["sentiment"] == "negative").sum()),
-                    "event_risk_count": int(trailing20["event_type"].isin(["regulatory_inquiry", "public_opinion_risk", "performance_miss"]).sum()),
+                    "event_risk_count": int(trailing20["event_type"].isin(EVENT_RISK_TYPES).sum()),
                     "event_impact_score": impact,
                     "event_weighted_impact_score": weighted_event_impact,
                     "event_confidence_mean": float(confidence.mean()),

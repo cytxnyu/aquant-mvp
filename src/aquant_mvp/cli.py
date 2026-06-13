@@ -12,7 +12,19 @@ from aquant_mvp.broker import PaperBroker, QMTReadOnlyBroker, build_order_plan_f
 from aquant_mvp.config import load_config
 from aquant_mvp.data import add_source_audit_columns, audit_point_in_time_tables, check_daily_bars, load_daily_bars, load_daily_bars_resilient
 from aquant_mvp.data.providers import LoadReport
-from aquant_mvp.events import audit_event_coverage, build_event_store, build_news_evidence_report, sync_public_events, write_event_outputs
+from aquant_mvp.events import (
+    analyze_event_impact,
+    audit_event_coverage,
+    build_event_store,
+    build_news_evidence_report,
+    build_similar_event_report,
+    discover_text_intelligence,
+    sync_public_events,
+    write_event_outputs,
+    write_event_impact_outputs,
+    write_similar_event_outputs,
+    write_text_intelligence_report,
+)
 from aquant_mvp.features import build_point_in_time_feature_store
 from aquant_mvp.factors import FACTOR_COLUMNS, analyze_factor_trust, compute_factor_panel, write_factor_trust_report
 from aquant_mvp.foundations import discover_foundations, write_foundation_report
@@ -24,11 +36,18 @@ from aquant_mvp.analysis import (
     load_walk_forward_prediction_artifacts,
     summarize_model_registry,
 )
-from aquant_mvp.modeling import train_model, train_walk_forward
+from aquant_mvp.modeling import discover_model_bases, train_model, train_walk_forward, write_model_base_report
 from aquant_mvp.pipeline import run_pipeline
-from aquant_mvp.prediction import build_kline_forecast, build_stock_forecast, explain_stock_forecast, save_kline_forecast_outputs
+from aquant_mvp.prediction import (
+    build_kline_forecast,
+    build_stock_forecast,
+    build_stock_trust_gate_report,
+    explain_stock_forecast,
+    save_kline_forecast_outputs,
+    write_stock_trust_gate_outputs,
+)
 from aquant_mvp.risk import EventRiskConfig, TradingRiskConfig, apply_event_risk_guard, check_order_plan, event_context_by_symbol
-from aquant_mvp.sources import discover_domestic_sources, write_source_coverage
+from aquant_mvp.sources import discover_domestic_sources, official_public_source_ids, write_source_coverage
 from aquant_mvp.storage import LocalWarehouse
 from aquant_mvp.strategy import (
     apply_portfolio_constraints,
@@ -66,6 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
             "live-trade",
             "discover-sources",
             "discover-foundations",
+            "discover-text-intelligence",
             "discover-tools",
             "sync-free-all",
             "audit-data",
@@ -74,6 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
             "sync-announcements",
             "build-event-store",
             "audit-news",
+            "analyze-event-impact",
             "build-feature-store",
             "train-walk-forward",
             "backtest-portfolio",
@@ -85,7 +106,28 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", default="configs/mvp.json", help="Path to JSON/YAML config.")
     parser.add_argument(
         "--source",
-        choices=["sample", "akshare", "auto", "free_real", "research", "baostock", "tushare", "cninfo", "cninfo_direct", "direct_cninfo"],
+        choices=[
+            "sample",
+            "akshare",
+            "auto",
+            "free_real",
+            "research",
+            "baostock",
+            "tushare",
+            "cninfo",
+            "cninfo_direct",
+            "direct_cninfo",
+            "sse_public",
+            "szse_public",
+            "bse_public",
+            "csrc_public",
+            "ndrc_public",
+            "miit_public",
+            "mofcom_public",
+            "pbc_public",
+            "customs_public",
+            "stats_nbs_public",
+        ],
         default=None,
         help="Override data source.",
     )
@@ -103,7 +145,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--start", default=None, help="Override start date for sync-free-all.")
     parser.add_argument("--universe", default=None, help="Universe name: all-a, hot, mega-hot, professional, core-hot, config, or comma-separated symbols.")
     parser.add_argument("--max-symbols", type=int, default=0, help="Optional safety limit for large free sync jobs.")
+    parser.add_argument("--max-pages", type=int, default=1, help="Optional max official public index pages per seed URL.")
     parser.add_argument("--min-symbols", type=int, default=0, help="Minimum universe size required before walk-forward can emit trusted candidates.")
+    parser.add_argument("--min-prior-rows", type=int, default=20, help="Minimum prior event outcomes required before an event cohort is PIT-ready.")
     parser.add_argument("--train-years", type=int, default=0, help="Override walk-forward rolling train window in years.")
     parser.add_argument("--test-months", type=int, default=0, help="Override walk-forward rolling test step in months.")
     parser.add_argument("--strict-pit", action="store_true", help="Treat missing point-in-time metadata as audit issues.")
@@ -135,6 +179,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "discover-foundations":
         return _cmd_discover_foundations(output_dir)
 
+    if args.command == "discover-text-intelligence":
+        return _cmd_discover_text_intelligence(output_dir)
+
     if args.command == "discover-tools":
         return _cmd_discover_tools(output_dir)
 
@@ -158,6 +205,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "audit-news":
         return _cmd_audit_news(config, args, source, output_dir)
+
+    if args.command == "analyze-event-impact":
+        return _cmd_analyze_event_impact(config, args, source, output_dir)
 
     if args.command == "build-feature-store":
         return _cmd_build_feature_store(config, args, source, output_dir)
@@ -380,6 +430,16 @@ def _cmd_discover_foundations(output_dir: Path | None) -> int:
     return 0
 
 
+def _cmd_discover_text_intelligence(output_dir: Path | None) -> int:
+    frame = discover_text_intelligence()
+    out_dir = output_dir or Path("reports/text_intelligence")
+    paths = write_text_intelligence_report(out_dir, frame)
+    print("Text intelligence discovery finished.")
+    print(f"Capabilities: {len(frame)}; installed and ready: {int(frame['installed'].sum()) if not frame.empty else 0}")
+    print(f"Report: {paths['md']}")
+    return 0
+
+
 def _cmd_discover_tools(output_dir: Path | None) -> int:
     frame = discover_tools()
     out_dir = output_dir or Path("reports/tools")
@@ -514,6 +574,7 @@ def _cmd_sync_events(config, args: argparse.Namespace, source: str | None, outpu
         config.data.end_date,
         source=event_source,
         fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+        max_pages=int(getattr(args, "max_pages", 1) or 1),
     )
     if mode == "announcements" and "source" in raw.columns:
         raw = raw[raw["source"].astype(str).str.contains("cninfo|notice|announcement|sample_announcement", case=False, regex=True)].copy()
@@ -524,6 +585,7 @@ def _cmd_sync_events(config, args: argparse.Namespace, source: str | None, outpu
         out_dir / f"{mode}_summary.json",
         {"mode": mode, "source": event_source, "symbols": len(symbols), "rows": len(raw), "warnings": warnings},
     )
+    _write_json(out_dir / "event_warnings.json", {"warnings": warnings})
     if event_source != "sample":
         try:
             LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
@@ -552,6 +614,12 @@ def _cmd_build_event_store(config, args: argparse.Namespace, source: str | None,
         result = replace(result, warnings=[*source_warnings, *result.warnings])
     out_dir = output_dir or Path("reports/event_store")
     paths = write_event_outputs(result, out_dir)
+    text_intelligence_paths = write_text_intelligence_report(out_dir, discover_text_intelligence())
+    similar_event_result = build_similar_event_report(
+        result.event_store,
+        symbol=args.symbol.zfill(6) if args.symbol else None,
+    )
+    similar_event_paths = write_similar_event_outputs(out_dir, similar_event_result)
     if not _uses_sample_events(config, args, source):
         try:
             warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
@@ -564,6 +632,8 @@ def _cmd_build_event_store(config, args: argparse.Namespace, source: str | None,
     print(f"Event store: {paths['event_store']}")
     print(f"Event factors: {paths['event_factors']}")
     print(f"Evidence: {paths['news_evidence']}")
+    print(f"Text intelligence: {text_intelligence_paths['md']}")
+    print(f"Similar events: {similar_event_paths['md']}")
     return 0
 
 
@@ -600,6 +670,71 @@ def _cmd_audit_news(config, args: argparse.Namespace, source: str | None, output
     print(f"Symbols: {len(symbols)}; events: {len(result.event_store)}; event factor rows: {len(result.event_factors)}")
     print(audit["coverage_status"].value_counts().to_string() if not audit.empty else "No symbols audited.")
     print(f"Audit: {audit_path}")
+    return 0
+
+
+def _cmd_analyze_event_impact(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
+    data_config = _data_config_with_source(config, args, source, ensure_symbol=args.symbol if args.symbol else None)
+    bars_by_symbol, load_report = _load_command_bars(data_config)
+    symbols = list(bars_by_symbol)
+    if args.symbol:
+        symbol = args.symbol.zfill(6)
+        if symbol not in symbols:
+            symbols.append(symbol)
+    raw, source_warnings = _load_or_sync_events_with_warnings(config, args, source, symbols)
+    event_result = build_event_store(raw, symbols)
+    if source_warnings:
+        event_result = replace(event_result, warnings=[*source_warnings, *event_result.warnings])
+    horizons = tuple(_parse_horizons(args, [1, 5, 20, 60]))
+    impact = analyze_event_impact(
+        event_result.event_store,
+        bars_by_symbol,
+        horizons=horizons,
+        min_prior_rows=int(args.min_prior_rows or 20),
+    )
+    out_dir = output_dir or Path("reports/event_impact_study")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    event_paths = write_event_outputs(event_result, out_dir)
+    impact_paths = write_event_impact_outputs(out_dir, impact)
+    similar = build_similar_event_report(
+        event_result.event_store,
+        bars_by_symbol=bars_by_symbol,
+        symbol=args.symbol.zfill(6) if args.symbol else None,
+        horizons=horizons,
+    )
+    similar_paths = write_similar_event_outputs(out_dir, similar)
+    _write_json(
+        out_dir / "event_impact_manifest.json",
+        {
+            "source": load_report.source,
+            "event_source": _event_source_from_data_source(config, args, source),
+            "symbols": len(symbols),
+            "horizons": list(horizons),
+            "warnings": event_result.warnings,
+            "impact_summary": impact.summary,
+            "event_files": {key: str(value) for key, value in event_paths.items()},
+            "impact_files": {key: str(value) for key, value in impact_paths.items()},
+            "similar_event_files": {key: str(value) for key, value in similar_paths.items()},
+            "note": "Event impact statistics are audit evidence only, not investment advice.",
+        },
+    )
+    if not _uses_sample_events(config, args, source):
+        try:
+            warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
+            warehouse.write_table("event_impact_return", add_source_audit_columns(impact.event_returns, "event_impact_study"))
+            warehouse.write_table("event_impact_cohort", add_source_audit_columns(impact.cohorts, "event_impact_study"))
+            warehouse.write_table("event_impact_pit_prior", add_source_audit_columns(impact.pit_priors, "event_impact_study"))
+        except Exception:  # noqa: BLE001
+            pass
+    print("Event impact study finished.")
+    print(f"Source: {load_report.source}; symbols: {len(symbols)}; horizons: {list(horizons)}")
+    print(
+        f"Event-return rows: {impact.summary.get('event_return_rows', 0)}; "
+        f"available: {impact.summary.get('available_return_rows', 0)}; "
+        f"cohorts: {impact.summary.get('cohort_rows', 0)}; "
+        f"PIT-ready priors: {impact.summary.get('pit_ready_rows', 0)}"
+    )
+    print(f"Report: {impact_paths['md']}")
     return 0
 
 
@@ -761,6 +896,7 @@ def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None
 def _cmd_evaluate_models(config, args: argparse.Namespace, output_dir: Path | None) -> int:
     out_dir = output_dir or Path("reports/model_evaluation")
     out_dir.mkdir(parents=True, exist_ok=True)
+    model_base_paths = write_model_base_report(out_dir, discover_model_bases())
     records = _read_model_registry(config.model.registry_dir)
     evaluation = summarize_model_registry(records)
     evaluation.to_csv(out_dir / "model_evaluation.csv", index=False)
@@ -789,6 +925,7 @@ def _cmd_evaluate_models(config, args: argparse.Namespace, output_dir: Path | No
                 "evaluation_by_size.csv",
                 "evaluation_by_regime.csv",
             ],
+            "model_base_availability": {key: str(value) for key, value in model_base_paths.items()},
             "notes": [
                 "industry is a curated hot-theme proxy unless historical industry data has been synced",
                 "size uses market_cap when available, otherwise PIT liquidity proxy or unavailable",
@@ -814,7 +951,15 @@ def _cmd_explain_stock(config, args: argparse.Namespace, source: str | None, out
     event_factors = None
     news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
     if args.with_news:
-        event_factors, _news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
+        event_factors, _news_paths, news_summary = _build_stock_news_context(
+            config,
+            args,
+            source,
+            list(bars_by_symbol),
+            args.symbol,
+            out_dir,
+            bars_by_symbol=bars_by_symbol,
+        )
     forecast = build_stock_forecast(
         bars_by_symbol,
         args.symbol,
@@ -884,6 +1029,8 @@ def _cmd_train_model(config, args: argparse.Namespace, source: str | None, outpu
     data_config = _data_config_with_source(config, args, source)
     bars_by_symbol, load_report = load_daily_bars(data_config)
     out_dir = output_dir or Path("reports/model_train")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    write_model_base_report(out_dir, discover_model_bases())
     model_type = args.model or config.model.model_type
     horizons = _parse_horizons(args, config.model.horizons)
     summary = train_model(bars_by_symbol, model_type, horizons, out_dir, config.model.registry_dir)
@@ -915,7 +1062,15 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
     news_paths: dict[str, Path] = {}
     news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
     if args.with_news:
-        event_factors, news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
+        event_factors, news_paths, news_summary = _build_stock_news_context(
+            config,
+            args,
+            source,
+            list(bars_by_symbol),
+            args.symbol,
+            out_dir,
+            bars_by_symbol=bars_by_symbol,
+        )
     result = build_stock_forecast(
         bars_by_symbol,
         args.symbol,
@@ -932,6 +1087,9 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
     summary["news_summary"] = news_summary
     summary["news_files"] = {key: str(value) for key, value in news_paths.items()}
     _write_json(out_dir / "stock_forecast.json", summary)
+    trust_gates = build_stock_trust_gate_report(result.forecast, source=load_report.source, news_summary=news_summary)
+    trust_gate_paths = write_stock_trust_gate_outputs(out_dir, trust_gates)
+    _write_json(out_dir / "stock_forecast_trust_summary.json", {**summary, "trust_gates": trust_gates.summary})
     try:
         LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
             "stock_forecast",
@@ -946,6 +1104,7 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
             ["horizon_days", "prob_up", "expected_return", "direction", "trend_label", "universe_symbol_count", "trust_status"]
         ].to_string(index=False)
     )
+    print(f"Trust gates: {trust_gate_paths['md']}")
     print(f"Output: {out_dir}")
     if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
         print("trusted-only requested, but no trusted signal was produced.")
@@ -963,7 +1122,15 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
     out_dir.mkdir(parents=True, exist_ok=True)
     event_factors = None
     if args.with_news:
-        event_factors, _news_paths, _news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), args.symbol, out_dir)
+        event_factors, _news_paths, _news_summary = _build_stock_news_context(
+            config,
+            args,
+            source,
+            list(bars_by_symbol),
+            args.symbol,
+            out_dir,
+            bars_by_symbol=bars_by_symbol,
+        )
     result = build_kline_forecast(
         bars_by_symbol,
         args.symbol,
@@ -983,12 +1150,23 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
             "forecast_kline",
             add_source_audit_columns(result.forecast, load_report.source),
         )
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "intraday_kline",
+            add_source_audit_columns(result.intraday_forecast, load_report.source),
+        )
+        LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+            "horizon_kline_summary",
+            add_source_audit_columns(result.horizon_summary, load_report.source),
+        )
     except Exception:  # noqa: BLE001
         pass
     base = result.forecast[result.forecast["scenario"] == "base"]
     last = base.iloc[-1] if not base.empty else None
     print("Predicted K-line forecast finished.")
-    print(f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; days: {args.days}; horizons: {horizons}")
+    print(
+        f"Symbol: {args.symbol.zfill(6)}; source: {load_report.source}; "
+        f"requested_days: {result.summary.get('requested_days')}; generated_days: {result.summary.get('days')}; horizons: {horizons}"
+    )
     if last is not None:
         print(
             "Base path: "
@@ -997,6 +1175,9 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
             f"prob_up={float(last['prob_up']):.3f}, trust={last['trust_status']}"
         )
     print(f"PNG: {paths['forecast_kline_png']}")
+    print(f"Intraday PNG: {paths['intraday_kline_png']}")
+    print(f"Intraday CSV: {paths['intraday_kline']}")
+    print(f"1/5/20 summary: {paths['horizon_kline_summary']}")
     print(f"HTML: {paths['forecast_kline_html']}")
     print(f"Report: {paths['stock_prediction_report']}")
     if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
@@ -1046,7 +1227,15 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
     news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
     event_factors = None
     if args.with_news:
-        event_factors, news_paths, news_summary = _build_stock_news_context(config, args, source, list(bars_by_symbol), symbol, out_dir)
+        event_factors, news_paths, news_summary = _build_stock_news_context(
+            config,
+            args,
+            source,
+            list(bars_by_symbol),
+            symbol,
+            out_dir,
+            bars_by_symbol=bars_by_symbol,
+        )
 
     forecast = build_stock_forecast(
         bars_by_symbol,
@@ -1057,9 +1246,14 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
         embargo_days=config.model.embargo_days,
         allow_sample=args.allow_sample,
         event_factors=event_factors,
+        model_registry_dir=config.model.registry_dir,
     )
     forecast.forecast.to_csv(out_dir / "stock_forecast.csv", index=False)
-    _write_json(out_dir / "stock_forecast.json", forecast.summary)
+    forecast_summary = dict(forecast.summary)
+    forecast_summary["news_summary"] = news_summary
+    _write_json(out_dir / "stock_forecast.json", forecast_summary)
+    trust_gates = build_stock_trust_gate_report(forecast.forecast, source=load_report.source, news_summary=news_summary)
+    trust_gate_paths = write_stock_trust_gate_outputs(out_dir, trust_gates)
 
     explanation = explain_stock_forecast(bars_by_symbol, forecast, symbol, horizons)
     explanation.report.to_csv(out_dir / "stock_explanation.csv", index=False)
@@ -1086,10 +1280,24 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
             model_registry_dir=config.model.registry_dir,
         )
         kline_paths = save_kline_forecast_outputs(kline, out_dir)
+        kline.stock_forecast.forecast.to_csv(out_dir / "kline_stock_forecast.csv", index=False)
+        _write_json(out_dir / "kline_stock_forecast.json", kline.stock_forecast.summary)
+        kline_paths["kline_stock_forecast"] = out_dir / "kline_stock_forecast.csv"
+        kline_paths["kline_stock_forecast_json"] = out_dir / "kline_stock_forecast.json"
+        forecast.forecast.to_csv(out_dir / "stock_forecast.csv", index=False)
+        _write_json(out_dir / "stock_forecast.json", forecast_summary)
         try:
             LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
                 "forecast_kline",
                 add_source_audit_columns(kline.forecast, load_report.source),
+            )
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "intraday_kline",
+                add_source_audit_columns(kline.intraday_forecast, load_report.source),
+            )
+            LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
+                "horizon_kline_summary",
+                add_source_audit_columns(kline.horizon_summary, load_report.source),
             )
         except Exception:  # noqa: BLE001
             pass
@@ -1110,6 +1318,8 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
         "files": sorted(path.name for path in out_dir.iterdir() if path.is_file()),
         "kline_files": {key: str(value) for key, value in kline_paths.items()},
         "news_files": {key: str(value) for key, value in news_paths.items()},
+        "trust_gate_files": {key: str(value) for key, value in trust_gate_paths.items()},
+        "trust_gate_summary": trust_gates.summary,
         "note": "Research reports only; not investment advice. Live trading remains disabled.",
     }
     _write_json(out_dir / "stock_report_manifest.json", manifest)
@@ -1322,6 +1532,7 @@ def _load_or_sync_events_with_warnings(config, args: argparse.Namespace, source:
                     config.data.end_date,
                     source=event_source,
                     fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+                    max_pages=int(getattr(args, "max_pages", 1) or 1),
                 )
                 combined = pd.concat([filtered, fetched], ignore_index=True, sort=False) if not fetched.empty else filtered
                 if event_source != "sample" and not fetched.empty:
@@ -1338,6 +1549,7 @@ def _load_or_sync_events_with_warnings(config, args: argparse.Namespace, source:
         config.data.end_date,
         source=event_source,
         fetch_announcement_text=bool(getattr(args, "fetch_announcement_text", False)),
+        max_pages=int(getattr(args, "max_pages", 1) or 1),
     )
     if event_source != "sample":
         try:
@@ -1383,6 +1595,8 @@ def _event_source_mask(frame: pd.DataFrame, event_source: str) -> pd.Series:
         return sample_like | source_text.eq("sample")
     if event_source in {"cninfo", "cninfo_direct", "direct_cninfo"}:
         return source_text.str.contains("cninfo_direct|direct_cninfo", na=False)
+    if event_source in official_public_source_ids():
+        return source_text.eq(event_source)
     return ~sample_like
 
 
@@ -1392,6 +1606,8 @@ def _event_source_from_data_source(config, args: argparse.Namespace, source: str
     data_source = str(source or config.data.source or "akshare").lower()
     if data_source in {"cninfo", "cninfo_direct", "direct_cninfo"}:
         return "cninfo_direct"
+    if data_source in official_public_source_ids():
+        return data_source
     return "akshare"
 
 
@@ -1406,6 +1622,7 @@ def _build_stock_news_context(
     symbols: list[str],
     symbol: str,
     output_dir: Path,
+    bars_by_symbol: dict[str, pd.DataFrame] | None = None,
 ) -> tuple[pd.DataFrame | None, dict[str, Path], dict[str, object]]:
     symbol = symbol.zfill(6)
     event_symbols = [str(item).zfill(6) for item in symbols]
@@ -1422,6 +1639,29 @@ def _build_stock_news_context(
     symbol_factors = event_result.event_factors[event_result.event_factors["symbol"].astype(str).str.zfill(6) == symbol]
     symbol_events.to_csv(output_dir / "stock_event_store.csv", index=False)
     symbol_factors.to_csv(output_dir / "stock_event_factors.csv", index=False)
+    similar_events = build_similar_event_report(
+        event_result.event_store,
+        bars_by_symbol=bars_by_symbol or {},
+        symbol=symbol,
+        horizons=tuple(_parse_horizons(args, [1, 5, 20])),
+    )
+    similar_paths = write_similar_event_outputs(output_dir, similar_events, prefix="stock_similar_events")
+    impact_horizons = tuple(_parse_horizons(args, [1, 5, 20, 60]))
+    impact_result = analyze_event_impact(
+        event_result.event_store,
+        bars_by_symbol or {},
+        horizons=impact_horizons,
+        min_prior_rows=int(getattr(args, "min_prior_rows", 20) or 20),
+    )
+    impact_paths = write_event_impact_outputs(output_dir, impact_result, prefix="stock_event_impact_study")
+    symbol_impact_returns = impact_result.event_returns[
+        impact_result.event_returns["symbol"].astype(str).str.zfill(6) == symbol
+    ] if not impact_result.event_returns.empty and "symbol" in impact_result.event_returns.columns else pd.DataFrame()
+    symbol_pit_priors = impact_result.pit_priors[
+        impact_result.pit_priors["symbol"].astype(str).str.zfill(6) == symbol
+    ] if not impact_result.pit_priors.empty and "symbol" in impact_result.pit_priors.columns else pd.DataFrame()
+    symbol_impact_returns.to_csv(output_dir / "stock_event_impact_returns.csv", index=False)
+    symbol_pit_priors.to_csv(output_dir / "stock_event_impact_pit_priors.csv", index=False)
     if not _uses_sample_events(config, args, source):
         try:
             warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
@@ -1435,7 +1675,19 @@ def _build_stock_news_context(
         "event_factor_rows": int(len(symbol_factors)),
         "event_types": sorted(symbol_events["event_type"].astype(str).unique().tolist()) if not symbol_events.empty else [],
         "latest_event_title": str(symbol_events.sort_values("published_at")["title"].iloc[-1]) if not symbol_events.empty else "",
+        "similar_event_rows": int(len(similar_events.matches)),
+        "similar_event_known_return_rows_5d": int(similar_events.summary.get("known_return_rows_5d", 0) or 0),
+        "similar_event_positive_rate_5d": float(similar_events.summary.get("positive_rate_5d", 0.0) or 0.0),
+        "similar_event_summary": similar_events.summary,
+        "event_impact_rows": int(len(symbol_impact_returns)),
+        "event_impact_pit_prior_rows": int(len(symbol_pit_priors)),
+        "event_impact_pit_ready_rows": int(symbol_pit_priors["pit_ready"].astype(bool).sum()) if not symbol_pit_priors.empty and "pit_ready" in symbol_pit_priors.columns else 0,
+        "event_impact_summary": impact_result.summary,
     }
+    news_paths.update({f"similar_{key}": value for key, value in similar_paths.items()})
+    news_paths.update({f"impact_{key}": value for key, value in impact_paths.items()})
+    news_paths["stock_event_impact_returns"] = output_dir / "stock_event_impact_returns.csv"
+    news_paths["stock_event_impact_pit_priors"] = output_dir / "stock_event_impact_pit_priors.csv"
     return event_result.event_factors, news_paths, news_summary
 
 

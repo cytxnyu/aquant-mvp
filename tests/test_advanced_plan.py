@@ -9,19 +9,37 @@ import pytest
 from aquant_mvp.broker import PaperBroker, build_order_plan_from_targets
 from aquant_mvp.config import DataConfig, RiskConfig, StrategyConfig
 from aquant_mvp.data import add_source_audit_columns, audit_point_in_time_tables
-from aquant_mvp.events import audit_event_coverage, build_event_store, commodity_symbol_map, sync_commodity_events, sync_public_events
+from aquant_mvp.events import (
+    analyze_event_impact,
+    audit_event_coverage,
+    build_event_store,
+    build_similar_event_report,
+    commodity_symbol_map,
+    discover_text_intelligence,
+    sync_commodity_events,
+    sync_public_events,
+    write_event_impact_outputs,
+    write_similar_event_outputs,
+    write_text_intelligence_report,
+)
 from aquant_mvp.factors import FACTOR_COLUMNS, analyze_factor_trust, build_factor_registry
 from aquant_mvp.analysis import analyze_factors, attribute_portfolio_events, evaluate_walk_forward_slices, summarize_model_registry
 from aquant_mvp.features import build_point_in_time_feature_store
 from aquant_mvp.labels import compute_return_labels
 from aquant_mvp.foundations import discover_foundations
-from aquant_mvp.modeling import train_walk_forward
+from aquant_mvp.modeling import discover_model_bases, train_model, train_walk_forward
 from aquant_mvp.modeling import register_model
 from aquant_mvp.modeling.walk_forward import _trust_status
-from aquant_mvp.prediction import build_stock_forecast, explain_stock_forecast
+from aquant_mvp.prediction import build_stock_forecast, build_stock_trust_gate_report, explain_stock_forecast, write_stock_trust_gate_outputs
 from aquant_mvp.prediction.stock import _forecast_trust_status, _load_walk_forward_evidence, _match_walk_forward_evidence
 from aquant_mvp.risk import EventRiskConfig, TradingRiskConfig, apply_event_risk_guard, check_order_plan, event_context_by_symbol
-from aquant_mvp.sources import discover_domestic_sources, fetch_cninfo_announcements_direct
+from aquant_mvp.sources import (
+    discover_domestic_sources,
+    fetch_cninfo_announcements_direct,
+    fetch_official_public_events,
+    official_public_source_ids,
+    write_source_coverage,
+)
 from aquant_mvp.storage import LocalWarehouse
 from aquant_mvp.strategy import apply_portfolio_constraints, write_portfolio_constraint_outputs
 from aquant_mvp.tooling import discover_tools
@@ -72,13 +90,158 @@ def test_foundation_and_tool_registries_cover_external_bases() -> None:
     foundations = discover_foundations()
     required_foundations = {"qlib", "backtrader", "vectorbt", "lightgbm", "xgboost", "catboost", "akshare", "baostock", "qmt_xtquant"}
     assert required_foundations.issubset(set(foundations["foundation_id"]))
+    assert {"sentence_transformers", "transformers_text_models", "faiss", "lancedb"}.issubset(set(foundations["foundation_id"]))
     assert {"native_supported", "candidate_adapter", "read_only_supported_live_blocked"}.intersection(set(foundations["integration_status"]))
 
     tools = discover_tools()
-    required_tools = {"foundation_registry", "tool_registry", "mega_hot_universe", "stock_forecast", "paper_trade", "qmt_readonly", "live_trade_blocker"}
+    required_tools = {"foundation_registry", "text_intelligence_registry", "tool_registry", "mega_hot_universe", "stock_forecast", "paper_trade", "qmt_readonly", "live_trade_blocker"}
     assert required_tools.issubset(set(tools["tool_id"]))
     live_blocker = tools[tools["tool_id"] == "live_trade_blocker"].iloc[0]
     assert live_blocker["live_trading_allowed"] is False or live_blocker["live_trading_allowed"] == 0
+
+    model_bases = discover_model_bases()
+    assert {"factor_score", "lightgbm", "xgboost", "catboost", "sklearn_linear"}.issubset(set(model_bases["model_base_id"]))
+    assert bool(model_bases[model_bases["model_base_id"] == "factor_score"]["available"].iloc[0]) is True
+    assert {"train_model_supported", "walk_forward_supported", "fallback_policy"}.issubset(model_bases.columns)
+
+    text_bases = discover_text_intelligence()
+    required_text_bases = {
+        "sentence_transformers_bge_m3",
+        "transformers_finbert_roberta",
+        "faiss_vector_store",
+        "lancedb_vector_store",
+        "qwen_local_summary",
+        "deepseek_local_summary",
+    }
+    assert required_text_bases.issubset(set(text_bases["capability_id"]))
+    assert {"fallback_policy", "can_enter_event_factors", "decision_rule"}.issubset(text_bases.columns)
+    assert text_bases["can_enter_event_factors"].eq(False).all()
+
+
+def test_text_intelligence_report_is_auditable(tmp_path: Path) -> None:
+    frame = discover_text_intelligence()
+    paths = write_text_intelligence_report(tmp_path, frame)
+    assert paths["csv"].exists()
+    assert paths["md"].exists()
+    text = paths["md"].read_text(encoding="utf-8")
+    assert "Text Intelligence Registry" in text
+    assert "do not issue trading instructions" in text
+    assert "sentence_transformers_bge_m3" in text
+
+
+def test_similar_event_report_is_pit_safe_and_auditable(tmp_path: Path) -> None:
+    raw = pd.DataFrame(
+        [
+            {
+                "source": "cninfo_disclosure",
+                "published_at": "2024-01-03",
+                "symbol": "000630",
+                "related_symbols": "000630",
+                "title": "000630 copper capacity expansion announcement",
+                "summary": "copper capacity expansion order contract and production progress",
+                "source_url": "https://www.cninfo.com.cn/a",
+                "quality_flag": "test",
+            },
+            {
+                "source": "eastmoney_stock_news",
+                "published_at": "2024-01-10",
+                "symbol": "000630",
+                "related_symbols": "000630",
+                "title": "000630 copper production progress and order contract",
+                "summary": "capacity expansion and copper order contract remain the key event",
+                "source_url": "https://finance.eastmoney.com/a",
+                "quality_flag": "test",
+            },
+            {
+                "source": "cninfo_disclosure",
+                "published_at": "2024-02-20",
+                "symbol": "000630",
+                "related_symbols": "000630",
+                "title": "000630 copper capacity expansion order contract update",
+                "summary": "production progress and order contract update for copper business",
+                "source_url": "https://www.cninfo.com.cn/b",
+                "quality_flag": "test",
+            },
+        ]
+    )
+    event_result = build_event_store(raw, ["000630"])
+    similar = build_similar_event_report(
+        event_result.event_store,
+        bars_by_symbol={"000630": _bars("000630", periods=100)},
+        symbol="000630",
+        horizons=(1, 5, 20),
+        query_events=1,
+        top_k=3,
+        min_similarity=0.01,
+    )
+    assert not similar.matches.empty
+    assert similar.matches["pit_ok"].astype(bool).all()
+    assert (
+        pd.to_datetime(similar.matches["match_published_at"])
+        < pd.to_datetime(similar.matches["query_published_at"])
+    ).all()
+    assert bool(similar.matches["return_available_1d"].any())
+    assert similar.summary["can_enter_event_factors"] is False
+    assert similar.summary["known_return_rows_1d"] >= 1
+    assert "Similar Event Evidence Report" in similar.markdown
+    paths = write_similar_event_outputs(tmp_path, similar)
+    assert paths["csv"].exists()
+    assert paths["json"].exists()
+    assert paths["md"].exists()
+
+
+def test_event_impact_study_builds_cohorts_and_pit_priors(tmp_path: Path) -> None:
+    dates = pd.bdate_range("2024-01-01", periods=90)
+    close = pd.Series(range(90), dtype="float64") * 0.10 + 10.0
+    bars = {
+        "000630": pd.DataFrame(
+            {
+                "date": dates,
+                "symbol": "000630",
+                "open": close,
+                "high": close * 1.01,
+                "low": close * 0.99,
+                "close": close,
+                "volume": 100000.0,
+                "amount": close * 100000.0,
+                "turnover": 1.0,
+            }
+        )
+    }
+    raw = pd.DataFrame(
+        [
+            {
+                "source": "cninfo_disclosure",
+                "published_at": date,
+                "symbol": "000630",
+                "related_symbols": "000630",
+                "title": f"000630 order contract event {idx}",
+                "summary": "order contract and production progress",
+                "source_url": f"https://www.cninfo.com.cn/{idx}",
+                "quality_flag": "test",
+            }
+            for idx, date in enumerate(pd.bdate_range("2024-01-03", periods=12, freq="5B"))
+        ]
+    )
+    event_result = build_event_store(raw, ["000630"])
+    study = analyze_event_impact(event_result.event_store, bars, horizons=(1, 5), min_prior_rows=2)
+    assert not study.event_returns.empty
+    assert not study.cohorts.empty
+    assert not study.pit_priors.empty
+    assert {"event_type", "event_type_sentiment"}.issubset(set(study.cohorts["cohort_level"]))
+    assert study.summary["no_future_leakage"] is True
+    assert study.pit_priors["no_future_leakage"].astype(bool).all()
+    assert study.pit_priors["pit_ready"].astype(bool).any()
+    ready = study.pit_priors[study.pit_priors["pit_ready"].astype(bool)].iloc[0]
+    assert ready["prior_sample_count"] >= 2
+    assert pd.Timestamp(ready["prior_outcome_cutoff"]) < pd.Timestamp(ready["published_at"])
+    assert study.cohorts["can_enter_trusted_model"].eq(False).all()
+    assert "Event Impact Study" in study.markdown
+    paths = write_event_impact_outputs(tmp_path, study)
+    assert paths["event_returns"].exists()
+    assert paths["cohorts"].exists()
+    assert paths["pit_priors"].exists()
+    assert paths["md"].exists()
 
 
 def test_stock_forecast_outputs_required_fields_with_sample_opt_in() -> None:
@@ -112,15 +275,47 @@ def test_stock_forecast_outputs_required_fields_with_sample_opt_in() -> None:
         "minimum_trusted_symbols",
         "walk_forward_status",
         "walk_forward_gate_reasons",
+        "raw_prob_up",
+        "calibrated_prob_up",
+        "probability_calibration_method",
+        "probability_calibration_status",
+        "probability_raw_brier",
+        "probability_calibrated_brier",
+        "probability_raw_ece",
+        "probability_calibrated_ece",
+        "probability_calibration_improvement_brier",
+        "probability_calibration_improvement_ece",
         "calibration_rows",
         "calibration_ece",
         "calibration_status",
     }
     assert required.issubset(result.forecast.columns)
     assert result.forecast["prob_up"].between(0, 1).all()
+    assert result.forecast["raw_prob_up"].between(0, 1).all()
+    assert result.forecast["calibrated_prob_up"].between(0, 1).all()
+    assert (result.forecast["prob_up"] == result.forecast["calibrated_prob_up"]).all()
     assert result.forecast["return_p10"].le(result.forecast["return_p50"]).all()
     assert result.forecast["return_p50"].le(result.forecast["return_p90"]).all()
     assert set(result.forecast["conformal_status"]).issubset({"conformal_ready", "conformal_sparse"})
+    gate_report = build_stock_trust_gate_report(result.forecast, source="sample", news_summary={"with_news": False})
+    assert {"sample_data_block", "minimum_universe_size", "walk_forward_trusted"}.issubset(set(gate_report.gates["gate"]))
+    assert gate_report.summary["blocking_gate_count"] > 0
+    assert "not investment advice" in gate_report.markdown
+
+
+def test_stock_trust_gate_outputs_are_written(tmp_path: Path) -> None:
+    bars = {
+        "000630": _bars("000630", 0),
+        "601899": _bars("601899", 10),
+        "600362": _bars("600362", 20),
+    }
+    forecast = build_stock_forecast(bars, "000630", [5], source="sample", allow_sample=True)
+    gates = build_stock_trust_gate_report(forecast.forecast, source="sample", news_summary={"with_news": True, "event_rows": 2, "event_factor_rows": 1})
+    paths = write_stock_trust_gate_outputs(tmp_path, gates)
+    assert paths["csv"].exists()
+    assert paths["json"].exists()
+    assert paths["md"].exists()
+    assert "Stock Trust Gate Report" in paths["md"].read_text(encoding="utf-8")
 
 
 def test_stock_forecast_requires_walk_forward_evidence_for_trusted(tmp_path: Path) -> None:
@@ -232,15 +427,44 @@ def test_registry_and_warehouse_write(tmp_path: Path) -> None:
     assert not warehouse.read_table("daily_bar").empty
 
 
+def test_train_model_records_requested_effective_and_fallback(tmp_path: Path) -> None:
+    bars = {
+        "000630": _bars("000630", periods=180),
+        "601899": _bars("601899", 10, periods=180),
+        "600362": _bars("600362", 20, periods=180),
+    }
+    summary = train_model(
+        bars,
+        model_type="unsupported_model_base",
+        horizons=[5],
+        output_dir=tmp_path / "train",
+        registry_dir=tmp_path / "registry",
+    )
+    record = summary["records"][0]
+    assert record["requested_model_type"] == "unsupported_model_base"
+    assert record["effective_model_type"] == "factor_score"
+    assert record["model_base_status"] == "fallback"
+    assert record["fallback_reason"]
+
+
 def test_tushare_free_adapter_requires_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("TUSHARE_TOKEN", raising=False)
     with pytest.raises(VendorNotConfigured):
         TushareFreeAdapter().fetch_daily_bars("601899", "2024-01-01", "2024-02-01", "qfq")
 
 
-def test_source_discovery_and_data_audit() -> None:
+def test_source_discovery_and_data_audit(tmp_path: Path) -> None:
     sources = discover_domestic_sources()
     assert {"akshare", "baostock", "cninfo", "cninfo_direct"}.issubset(set(sources["source"]))
+    assert {"exchange_regulator", "macro_policy", "commodity_exchange"}.issubset(set(sources["source_group"]))
+    assert {"sse_public", "szse_public", "csrc_public", "shfe_public", "pbc_public"}.issubset(set(sources["source"]))
+    assert sources[sources["source"] == "sse_public"]["ready_for_event_factor"].iloc[0] in {True, 1}
+    assert sources[sources["source"] == "sse_public"]["requires_followup"].iloc[0] in {True, 1}
+    assert sources[sources["source"] == "cninfo_direct"]["ready_for_event_factor"].iloc[0] in {True, 1}
+    assert sources[sources["source"] == "shfe_public"]["implementation_status"].iloc[0] == "partial_via_akshare_sina_futures"
+    write_source_coverage(tmp_path, sources)
+    assert (tmp_path / "source_gap_report.md").exists()
+    assert "Missing sources are explicit gaps" in (tmp_path / "source_gap_report.md").read_text(encoding="utf-8")
 
     audited = add_source_audit_columns(_bars("601899", periods=10), "sample")
     result = audit_point_in_time_tables({"daily_bar": audited}, strict_pit=True)
@@ -357,6 +581,224 @@ def test_event_store_accepts_empty_direct_source_schema() -> None:
     assert event_result.warnings == ["event_store_empty"]
 
 
+def test_official_public_source_fetches_url_backed_events() -> None:
+    assert "csrc_public" in official_public_source_ids()
+
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        assert "csrc.gov.cn" in url
+        assert headers["User-Agent"].startswith("Mozilla")
+        assert timeout > 0
+        return """
+        <html><body>
+          <div class="item"><span>2026年06月12日</span>
+            <a href="/csrc/c100028/test-policy.html">支持半导体和人工智能产业政策发布 300308</a>
+          </div>
+          <div class="item"><span>2026-06-11</span>
+            <a href="/csrc/c100035/test-risk.html">对上市公司监管问询 000630</a>
+          </div>
+        </body></html>
+        """.encode("utf-8")
+
+    result = fetch_official_public_events(
+        ["000630", "300308"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        http_get=fake_get,
+    )
+    assert result.warnings == []
+    assert len(result.events) >= 2
+    assert set(result.events["source"]) == {"csrc_public"}
+    assert result.events["source_url"].astype(str).str.startswith("https://www.csrc.gov.cn/").all()
+    assert "000630" in ";".join(result.events["related_symbols"].astype(str))
+    assert "300308" in ";".join(result.events["related_symbols"].astype(str))
+    assert result.events["quality_flag"].astype(str).str.contains("official_public:csrc").all()
+
+    event_result = build_event_store(result.events, ["000630", "300308"])
+    assert {"000630", "300308"}.issubset(set(event_result.event_store["symbol"]))
+    assert event_result.event_store["source_reliability"].min() >= 0.85
+    assert set(event_result.event_store["entity_link_method"]).issubset({"provided_related_symbols", "code_mention", "explicit_symbol"})
+    assert not event_result.event_factors.empty
+
+
+def test_official_public_source_can_attach_body_text() -> None:
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        assert timeout > 0
+        if url.endswith("common_list.shtml"):
+            return """
+            <html><body>
+              <span>2026年06月12日</span>
+              <a href="/csrc/c100028/policy-body.html">支持人工智能产业政策 300308</a>
+            </body></html>
+            """.encode("utf-8")
+        if url.endswith("policy-body.html"):
+            return """
+            <html><body>
+              <h1>支持人工智能产业政策 300308</h1>
+              <p>政策正文披露，支持算力、半导体、先进制造等方向，并提示投资风险。</p>
+            </body></html>
+            """.encode("utf-8")
+        return b""
+
+    result = fetch_official_public_events(
+        ["300308"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        fetch_text=True,
+        http_get=fake_get,
+    )
+    assert result.warnings == []
+    row = result.events.iloc[0]
+    assert row["source_text_status"] == "official_text_ok_html"
+    assert int(row["source_text_length"]) > 30
+    assert row["source_text_hash"]
+    assert "advanced" not in str(row["summary"]).lower()
+    assert "300308" in row["related_symbols"]
+
+    event_result = build_event_store(result.events, ["300308"])
+    event_row = event_result.event_store.iloc[0]
+    assert event_row["source_text_status"] == "official_text_ok_html"
+    assert int(event_row["source_text_length"]) > 30
+    assert "text=official_text_ok_html" in event_result.evidence_markdown
+
+
+def test_official_public_text_failure_keeps_audited_headline() -> None:
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        if url.endswith("common_list.shtml"):
+            return """
+            <html><body>
+              <span>2026-06-11</span>
+              <a href="/csrc/c100035/risk-body.html">对上市公司监管问询 000630</a>
+            </body></html>
+            """.encode("utf-8")
+        raise RuntimeError("body blocked")
+
+    result = fetch_official_public_events(
+        ["000630"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        fetch_text=True,
+        http_get=fake_get,
+    )
+    assert len(result.events) == 1
+    assert result.warnings and "official text download failed" in result.warnings[0]
+    row = result.events.iloc[0]
+    assert row["source_text_status"].startswith("official_text_download_failed")
+    assert int(row["source_text_length"]) == 0
+    assert row["source_text_hash"] == ""
+    assert "监管问询" in row["title"]
+
+    event_result = build_event_store(result.events, ["000630"])
+    assert len(event_result.event_store) == 1
+    assert event_result.event_store["source_text_status"].iloc[0].startswith("official_text_download_failed")
+
+
+def test_official_public_source_supports_bounded_pagination() -> None:
+    seen_urls: list[str] = []
+
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        seen_urls.append(url)
+        if url.endswith("common_list.shtml"):
+            return """
+            <html><body>
+              <span>2026-06-12</span>
+              <a href="/csrc/c100028/page0.html">第一页政策 300308</a>
+            </body></html>
+            """.encode("utf-8")
+        if url.endswith("common_list_1.shtml"):
+            return """
+            <html><body>
+              <span>2026-06-10</span>
+              <a href="/csrc/c100028/page1.html">第二页监管问询 000630</a>
+            </body></html>
+            """.encode("utf-8")
+        return b""
+
+    result = fetch_official_public_events(
+        ["000630", "300308"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        max_pages_per_seed=2,
+        http_get=fake_get,
+    )
+    assert result.warnings == []
+    assert any(url.endswith("common_list_1.shtml") for url in seen_urls)
+    assert {"000630", "300308"}.issubset(set(";".join(result.events["related_symbols"].astype(str)).split(";")))
+    assert result.events["quality_flag"].astype(str).str.contains("page_").all()
+
+    event_result = build_event_store(result.events, ["000630", "300308"])
+    assert {"000630", "300308"}.issubset(set(event_result.event_store["symbol"]))
+
+
+def test_official_public_pagination_failure_is_warning_only() -> None:
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        if url.endswith("common_list.shtml"):
+            return """
+            <html><body>
+              <span>2026-06-12</span>
+              <a href="/csrc/c100028/page0.html">第一页政策 300308</a>
+            </body></html>
+            """.encode("utf-8")
+        raise RuntimeError("page blocked")
+
+    result = fetch_official_public_events(
+        ["300308"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        max_pages_per_seed=2,
+        http_get=fake_get,
+    )
+    assert len(result.events) == 1
+    assert result.warnings and "official page fetch failed page=2" in result.warnings[0]
+    assert set(result.events["related_symbols"]) == {"300308"}
+
+
+def test_official_public_source_classifies_structured_event_types() -> None:
+    def fake_get(url: str, headers: dict[str, str], timeout: int) -> bytes:
+        if "c100028" in url:
+            return """
+            <html><body>
+              <span>2026-06-12</span>
+              <a href="/csrc/c100028/penalty.html">regulatory penalty for listed company 000630</a>
+              <span>2026-06-11</span>
+              <a href="/csrc/c100028/buyback.html">share repurchase and dividend plan 300308</a>
+            </body></html>
+            """.encode("utf-8")
+        return """
+        <html><body>
+          <span>2026-06-10</span>
+          <a href="/csrc/c100035/export.html">export control risk notice 000630</a>
+        </body></html>
+        """.encode("utf-8")
+
+    result = fetch_official_public_events(
+        ["000630", "300308"],
+        "2026-06-01",
+        "2026-06-30",
+        source="csrc_public",
+        http_get=fake_get,
+    )
+    by_title = result.events.set_index("title")
+    penalty = by_title.loc["regulatory penalty for listed company 000630"]
+    buyback = by_title.loc["share repurchase and dividend plan 300308"]
+    export = by_title.loc["export control risk notice 000630"]
+    assert penalty["event_type"] == "regulatory_penalty"
+    assert penalty["sentiment"] == "negative"
+    assert float(penalty["impact_score"]) < -0.5
+    assert buyback["event_type"] == "buyback_dividend"
+    assert buyback["sentiment"] == "positive"
+    assert export["event_type"] == "export_control"
+
+    event_result = build_event_store(result.events, ["000630", "300308"])
+    risk_counts = event_result.event_factors.groupby("symbol")["event_risk_count"].max().to_dict()
+    assert risk_counts["000630"] >= 2
+    assert risk_counts.get("300308", 0) == 0
+
+
 def test_cli_event_source_router_preserves_direct_cninfo() -> None:
     class DummyConfig:
         class data:
@@ -367,6 +809,7 @@ def test_cli_event_source_router_preserves_direct_cninfo() -> None:
 
     assert cli_module._event_source_from_data_source(DummyConfig(), DummyArgs(), "cninfo_direct") == "cninfo_direct"
     assert cli_module._event_source_from_data_source(DummyConfig(), DummyArgs(), "baostock") == "akshare"
+    assert cli_module._event_source_from_data_source(DummyConfig(), DummyArgs(), "csrc_public") == "csrc_public"
 
 
 def test_feature_store_walk_forward_and_explanation(tmp_path: Path) -> None:

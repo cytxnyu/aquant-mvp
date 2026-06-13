@@ -11,17 +11,35 @@ from .bus import (
     sync_public_events,
     write_event_outputs,
 )
+from .text_intelligence import (
+    SimilarEventResult,
+    TextIntelligenceCapability,
+    build_similar_event_report,
+    discover_text_intelligence,
+    write_similar_event_outputs,
+    write_text_intelligence_report,
+)
+from .impact import EventImpactStudyResult, analyze_event_impact, write_event_impact_outputs
 
 __all__ = [
     "EVENT_FACTOR_COLUMNS",
     "EVENT_FACTOR_CONTEXT_COLUMNS",
     "EVENT_FACTOR_NUMERIC_COLUMNS",
     "EventBuildResult",
+    "EventImpactStudyResult",
+    "SimilarEventResult",
+    "TextIntelligenceCapability",
     "audit_event_coverage",
+    "analyze_event_impact",
     "build_event_store",
     "build_news_evidence_report",
+    "build_similar_event_report",
     "commodity_symbol_map",
+    "discover_text_intelligence",
     "sync_commodity_events",
     "sync_public_events",
+    "write_similar_event_outputs",
     "write_event_outputs",
+    "write_event_impact_outputs",
+    "write_text_intelligence_report",
 ]

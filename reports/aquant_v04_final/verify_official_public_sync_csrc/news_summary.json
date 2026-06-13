@@ -1,0 +1,9 @@
+{
+  "mode": "news",
+  "source": "csrc_public",
+  "symbols": 2,
+  "rows": 0,
+  "warnings": [
+    "csrc_public: no official public events parsed"
+  ]
+}

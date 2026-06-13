@@ -1,0 +1,34 @@
+latest_date,symbol,horizon_days,trust_status,gate,passed,severity,reason,model_id,data_version
+2025-12-31,000630,1,data_insufficient,sample_data_block,False,block,sample_source_cannot_be_trusted,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,minimum_universe_size,False,block,"universe_symbols=3, minimum=200",stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,walk_forward_evidence_present,True,block,passed,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,walk_forward_trusted,False,block,walk_forward_status=data_insufficient; reasons=,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,walk_forward_rows,False,block,walk_forward_rows=340,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,probability_calibration,False,block,calibration_status=calibration_low_coverage; ece=0.0059; rows=627,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,probability_error,True,block,passed,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,conformal_interval_ready,True,block,passed,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,local_signal_quality,False,block,confidence=0.0736; sample_rank_ic=0.0000,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,risk_flags_clear,True,warn,passed,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,1,data_insufficient,news_evidence_available,False,warn,with_news=False; event_rows=0; event_factor_rows=0,stock_forecast_factor_score_h1,274ffa65b083
+2025-12-31,000630,5,data_insufficient,sample_data_block,False,block,sample_source_cannot_be_trusted,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,minimum_universe_size,False,block,"universe_symbols=3, minimum=200",stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,walk_forward_evidence_present,True,block,passed,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,walk_forward_trusted,False,block,walk_forward_status=weak; reasons=auc_above_052;brier_below_025;rank_ic_positive,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,walk_forward_rows,True,block,passed,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,probability_calibration,False,block,calibration_status=calibration_low_coverage; ece=0.0132; rows=624,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,probability_error,True,block,passed,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,conformal_interval_ready,True,block,passed,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,local_signal_quality,False,block,confidence=0.1501; sample_rank_ic=0.0000,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,risk_flags_clear,True,warn,passed,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,5,data_insufficient,news_evidence_available,False,warn,with_news=False; event_rows=0; event_factor_rows=0,stock_forecast_factor_score_h5,274ffa65b083
+2025-12-31,000630,20,data_insufficient,sample_data_block,False,block,sample_source_cannot_be_trusted,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,minimum_universe_size,False,block,"universe_symbols=3, minimum=200",stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,walk_forward_evidence_present,False,block,walk_forward_evidence_missing,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,walk_forward_trusted,False,block,walk_forward_status=missing; reasons=walk_forward_evidence_missing,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,walk_forward_rows,False,block,walk_forward_rows=0,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,probability_calibration,False,block,calibration_status=calibration_low_coverage; ece=0.0167; rows=615,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,probability_error,True,block,passed,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,conformal_interval_ready,True,block,passed,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,local_signal_quality,False,block,confidence=0.2178; sample_rank_ic=0.0000,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,risk_flags_clear,True,warn,passed,stock_forecast_factor_score_h20,274ffa65b083
+2025-12-31,000630,20,data_insufficient,news_evidence_available,False,warn,with_news=False; event_rows=0; event_factor_rows=0,stock_forecast_factor_score_h20,274ffa65b083

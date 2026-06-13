@@ -18,6 +18,10 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
             {
                 "model_id": record.get("model_id", ""),
                 "model_type": record.get("model_type", ""),
+                "requested_model_type": record.get("requested_model_type", record.get("model_type", "")),
+                "effective_model_type": record.get("effective_model_type", record.get("model_type", "")),
+                "model_base_status": record.get("model_base_status", ""),
+                "fallback_reason": record.get("fallback_reason", ""),
                 "horizon_days": record.get("horizon_days", ""),
                 "model_family": record.get("model_family", ""),
                 "trust_status": metrics.get("trust_status", record.get("trust_status", "")),
@@ -37,6 +41,10 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
     columns = [
         "model_id",
         "model_type",
+        "requested_model_type",
+        "effective_model_type",
+        "model_base_status",
+        "fallback_reason",
         "horizon_days",
         "model_family",
         "trust_status",

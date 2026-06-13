@@ -1,0 +1,48 @@
+{
+  "source": "sample",
+  "event_source": "sample",
+  "symbols": 3,
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "warnings": [],
+  "impact_summary": {
+    "event_rows": 12,
+    "event_return_rows": 36,
+    "available_return_rows": 13,
+    "cohort_rows": 17,
+    "pit_prior_rows": 36,
+    "pit_ready_rows": 0,
+    "no_future_leakage": true,
+    "horizons": [
+      1,
+      5,
+      20
+    ],
+    "min_prior_rows": 20,
+    "can_enter_trusted_model": false,
+    "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+  },
+  "event_files": {
+    "raw_events": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\raw_events.csv",
+    "event_store": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_store.csv",
+    "event_factors": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_factors.csv",
+    "news_evidence": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\news_evidence.md",
+    "event_warnings": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_warnings.json"
+  },
+  "impact_files": {
+    "event_returns": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_impact_study_returns.csv",
+    "cohorts": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_impact_study_cohorts.csv",
+    "pit_priors": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_impact_study_pit_priors.csv",
+    "json": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_impact_study.json",
+    "md": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\event_impact_study.md"
+  },
+  "similar_event_files": {
+    "csv": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\similar_events.csv",
+    "json": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\similar_events.json",
+    "md": "reports\\aquant_v04_final\\verify_event_impact_study_sample\\similar_events.md"
+  },
+  "note": "Event impact statistics are audit evidence only, not investment advice."
+}

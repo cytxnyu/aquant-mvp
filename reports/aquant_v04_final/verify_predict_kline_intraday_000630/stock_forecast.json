@@ -1,0 +1,143 @@
+{
+  "symbol": "000630",
+  "latest_date": "2025-12-31",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "source": "sample",
+  "model_type": "factor_score",
+  "data_version": "274ffa65b083",
+  "event_feature_count": 0,
+  "event_features": [],
+  "walk_forward_evidence_count": 29,
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "score_baseline",
+      "history_rows": 3126,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3126
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3126
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3126
+      },
+      "valid_accuracy": 0.5167464114832536,
+      "valid_brier": 0.24973181095736394,
+      "valid_auc": 0.5489650816933546,
+      "calibration_rows": 627,
+      "calibration_bins": 1,
+      "calibration_ece": 0.005862632134193246,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 1042,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.024504437099480025,
+      "conformal_status": "conformal_ready"
+    },
+    "horizon_5d": {
+      "method": "score_baseline",
+      "history_rows": 3114,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3114
+      },
+      "valid_accuracy": 0.5416666666666666,
+      "valid_brier": 0.24549390661188902,
+      "valid_auc": 0.583916083916084,
+      "calibration_rows": 624,
+      "calibration_bins": 1,
+      "calibration_ece": 0.013152610441767076,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 1038,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.058354563174194296,
+      "conformal_status": "conformal_ready"
+    },
+    "horizon_20d": {
+      "method": "score_baseline",
+      "history_rows": 3069,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3069
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3069
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 3069
+      },
+      "valid_accuracy": 0.567479674796748,
+      "valid_brier": 0.24220076591895034,
+      "valid_auc": 0.5747661546382906,
+      "calibration_rows": 615,
+      "calibration_bins": 2,
+      "calibration_ece": 0.01669339908136554,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 1023,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.12913904319717895,
+      "conformal_status": "conformal_ready"
+    },
+    "horizon_60d": {
+      "method": "score_baseline",
+      "history_rows": 2949,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 2949
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 2949
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 2949
+      },
+      "valid_accuracy": 0.5651438240270727,
+      "valid_brier": 0.25166041808011724,
+      "valid_auc": 0.546029112829739,
+      "calibration_rows": 591,
+      "calibration_bins": 2,
+      "calibration_ece": 0.06957595153239535,
+      "calibration_status": "calibration_low_coverage",
+      "feature_count": 237,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 983,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.21359098409391153,
+      "conformal_status": "conformal_ready"
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves."
+}

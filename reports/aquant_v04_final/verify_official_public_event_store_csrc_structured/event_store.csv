@@ -1,0 +1,1 @@
+event_id,source,source_url,published_at,fetched_at,related_symbols,symbol,title,summary,entity_link_method,entity_link_confidence,entity_link_keywords,event_type,sentiment,impact_score,confidence,source_category,source_reliability,weighted_impact_score,source_text_status,source_text_length,source_text_hash,effective_date,raw_hash,quality_flag
