@@ -35,15 +35,22 @@ from aquant_mvp.analysis import (
     evaluate_walk_forward_slices,
     load_walk_forward_prediction_artifacts,
     summarize_model_registry,
+    validate_paper_trade,
+    validate_portfolio_backtest,
+    write_paper_trade_validation_outputs,
+    write_portfolio_validation_outputs,
 )
 from aquant_mvp.modeling import discover_model_bases, train_model, train_walk_forward, write_model_base_report
 from aquant_mvp.pipeline import run_pipeline
 from aquant_mvp.prediction import (
+    audit_stock_forecast_evidence,
     build_kline_forecast,
     build_stock_forecast,
     build_stock_trust_gate_report,
     explain_stock_forecast,
     save_kline_forecast_outputs,
+    StockForecastResult,
+    write_stock_evidence_audit_outputs,
     write_stock_trust_gate_outputs,
 )
 from aquant_mvp.risk import EventRiskConfig, TradingRiskConfig, apply_event_risk_guard, check_order_plan, event_context_by_symbol
@@ -56,7 +63,14 @@ from aquant_mvp.strategy import (
     write_portfolio_constraint_outputs,
 )
 from aquant_mvp.tooling import discover_tools, write_tool_report
-from aquant_mvp.universe import build_theme_universe, symbol_theme_membership, symbols_for_themes, theme_universe_summary
+from aquant_mvp.universe import (
+    audit_theme_universe_coverage,
+    build_theme_universe,
+    symbol_theme_membership,
+    symbols_for_themes,
+    theme_universe_summary,
+    write_theme_coverage_audit,
+)
 from aquant_mvp.universe import filter_universe
 
 
@@ -148,6 +162,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-pages", type=int, default=1, help="Optional max official public index pages per seed URL.")
     parser.add_argument("--min-symbols", type=int, default=0, help="Minimum universe size required before walk-forward can emit trusted candidates.")
     parser.add_argument("--min-prior-rows", type=int, default=20, help="Minimum prior event outcomes required before an event cohort is PIT-ready.")
+    parser.add_argument(
+        "--max-event-impact-symbols",
+        type=int,
+        default=80,
+        help="Maximum symbols used by stock report news event-impact diagnostics; 0 means no cap.",
+    )
+    parser.add_argument(
+        "--max-event-impact-events",
+        type=int,
+        default=1500,
+        help="Maximum events used by stock report news event-impact diagnostics; 0 means no cap.",
+    )
     parser.add_argument("--train-years", type=int, default=0, help="Override walk-forward rolling train window in years.")
     parser.add_argument("--test-months", type=int, default=0, help="Override walk-forward rolling test step in months.")
     parser.add_argument("--strict-pit", action="store_true", help="Treat missing point-in-time metadata as audit issues.")
@@ -155,11 +181,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--trusted-only", action="store_true", help="Require trusted/weak-free prediction metadata when available.")
     parser.add_argument("--by-year", action="store_true", help="Write yearly evaluation slices.")
     parser.add_argument("--by-industry", action="store_true", help="Write industry evaluation placeholder slices.")
+    parser.add_argument(
+        "--walk-forward-artifact",
+        default=None,
+        help="Optional comma-separated walk_forward_predictions.csv path(s) to slice instead of registry artifacts.",
+    )
     parser.add_argument("--days", type=int, default=20, help="Forecast/paper-trading days.")
     parser.add_argument("--history-days", type=int, default=120, help="Historical K-line days to include in forecast charts.")
     parser.add_argument("--with-kline", action="store_true", help="Include predicted K-line artifacts in report-stock.")
     parser.add_argument("--with-news", action="store_true", help="Include news/event evidence and event factors where supported.")
     parser.add_argument("--fetch-announcement-text", action="store_true", help="Fetch and parse direct announcement body text where supported.")
+    parser.add_argument("--factor-trust-audit", default=None, help="Optional factor_trust_audit.csv path used to restrict walk-forward features.")
+    parser.add_argument("--factor-trust-status", default="approved", help="Comma-separated factor trust statuses allowed when --factor-trust-audit is set.")
     parser.add_argument("--no-live", action="store_true", help="Explicitly forbid live trading in paper/QMT workflows.")
     return parser
 
@@ -364,6 +397,7 @@ def _cmd_build_universe(config, args: argparse.Namespace, output_dir: Path | Non
     frame = _normalize_universe_output_columns(frame)
     summary = theme_universe_summary(frame)
     membership = symbol_theme_membership(frame)
+    coverage_audit = audit_theme_universe_coverage(frame)
     out_dir = output_dir or Path("reports/hot_universe")
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "theme_universe.csv"
@@ -374,6 +408,12 @@ def _cmd_build_universe(config, args: argparse.Namespace, output_dir: Path | Non
     summary.to_csv(summary_path, index=False)
     membership.to_csv(membership_path, index=False)
     unique_symbols = int(frame["symbol"].nunique()) if not frame.empty else 0
+    coverage_paths = write_theme_coverage_audit(
+        out_dir,
+        coverage_audit,
+        requested_themes=themes,
+        total_unique_symbols=unique_symbols,
+    )
     duplicate_rows = int(len(frame) - unique_symbols)
     warehouse_write = None
     try:
@@ -392,6 +432,14 @@ def _cmd_build_universe(config, args: argparse.Namespace, output_dir: Path | Non
             "duplicate_theme_rows": duplicate_rows,
             "multi_theme_symbols": int((membership["theme_count"] > 1).sum()) if not membership.empty else 0,
             "minimum_symbols_for_trusted_prediction": 200,
+            "coverage_audit": {key: str(value) for key, value in coverage_paths.items()},
+            "coverage_status_counts": coverage_audit["coverage_status"].value_counts().to_dict() if not coverage_audit.empty else {},
+            "themes_supporting_trusted_evidence_after_other_gates": int(coverage_audit["can_support_trusted_evidence"].sum()) if not coverage_audit.empty else 0,
+            "thin_or_blocked_themes": coverage_audit.loc[
+                ~coverage_audit["can_support_trusted_evidence"].astype(bool), "theme"
+            ].head(50).tolist()
+            if not coverage_audit.empty
+            else [],
             "warehouse_universe": warehouse_write,
             "notes": [
                 "This is a curated hot-sector seed universe, not an official industry classifier.",
@@ -405,6 +453,7 @@ def _cmd_build_universe(config, args: argparse.Namespace, output_dir: Path | Non
     print(f"Output: {path}")
     print(f"Summary: {summary_path}")
     print(f"Membership: {membership_path}")
+    print(f"Coverage audit: {coverage_paths['theme_coverage_audit_md']}")
     return 0
 
 
@@ -544,6 +593,25 @@ def _cmd_analyze_factor_trust(config, args: argparse.Namespace, source: str | No
     result = analyze_factor_trust(factors, analysis, FACTOR_COLUMNS, labels=labels, label_column=label_column)
     out_dir = output_dir or Path("reports/factor_trust")
     paths = write_factor_trust_report(result, out_dir)
+    _write_json(
+        out_dir / "factor_trust_load_manifest.json",
+        {
+            "source": load_report.source,
+            "requested_symbols": len(data_config.symbols),
+            "loaded_symbols": len(bars_by_symbol),
+            "requested_symbol_sample": list(data_config.symbols)[:20],
+            "loaded_symbol_sample": list(bars_by_symbol)[:20],
+            "start_date": data_config.start_date,
+            "end_date": data_config.end_date,
+            "horizons": horizons,
+            "label_column": label_column,
+            "factor_count": int(len(result.registry)),
+            "audit_rows": int(len(result.audit)),
+            "trust_counts": result.audit["trust_status"].value_counts().to_dict() if not result.audit.empty else {},
+            "warnings": load_report.warnings[:2000],
+            "note": "Factor trust audit uses PIT labels and resilient free-source loading when multiple domestic/free symbols are requested.",
+        },
+    )
     try:
         warehouse = LocalWarehouse(config.storage.root_dir, config.storage.file_format)
         warehouse.write_table("factor_registry", add_source_audit_columns(result.registry, "factor_registry_v04"))
@@ -613,7 +681,7 @@ def _cmd_build_event_store(config, args: argparse.Namespace, source: str | None,
     if source_warnings:
         result = replace(result, warnings=[*source_warnings, *result.warnings])
     out_dir = output_dir or Path("reports/event_store")
-    paths = write_event_outputs(result, out_dir)
+    paths = write_event_outputs(result, out_dir, symbols=symbols)
     text_intelligence_paths = write_text_intelligence_report(out_dir, discover_text_intelligence())
     similar_event_result = build_similar_event_report(
         result.event_store,
@@ -651,7 +719,7 @@ def _cmd_audit_news(config, args: argparse.Namespace, source: str | None, output
         result = replace(result, warnings=[*source_warnings, *result.warnings])
     audit = audit_event_coverage(result.event_store, result.event_factors, symbols)
     out_dir = output_dir or Path("reports/news_audit")
-    paths = write_event_outputs(result, out_dir)
+    paths = write_event_outputs(result, out_dir, symbols=symbols)
     audit_path = out_dir / "news_coverage_audit.csv"
     audit.to_csv(audit_path, index=False)
     _write_json(
@@ -694,7 +762,7 @@ def _cmd_analyze_event_impact(config, args: argparse.Namespace, source: str | No
     )
     out_dir = output_dir or Path("reports/event_impact_study")
     out_dir.mkdir(parents=True, exist_ok=True)
-    event_paths = write_event_outputs(event_result, out_dir)
+    event_paths = write_event_outputs(event_result, out_dir, symbols=symbols)
     impact_paths = write_event_impact_outputs(out_dir, impact)
     similar = build_similar_event_report(
         event_result.event_store,
@@ -759,6 +827,49 @@ def _cmd_build_feature_store(config, args: argparse.Namespace, source: str | Non
     return 0
 
 
+def _feature_columns_from_factor_trust(args: argparse.Namespace, output_dir: Path) -> tuple[list[str] | None, dict[str, object]]:
+    audit_arg = getattr(args, "factor_trust_audit", None)
+    if not audit_arg:
+        return None, {}
+    audit_path = Path(audit_arg)
+    if not audit_path.exists():
+        raise FileNotFoundError(f"factor trust audit not found: {audit_path}")
+    audit = pd.read_csv(audit_path)
+    factor_column = "factor_id" if "factor_id" in audit.columns else "factor" if "factor" in audit.columns else ""
+    status_column = "trust_status" if "trust_status" in audit.columns else "status" if "status" in audit.columns else ""
+    if not factor_column or not status_column:
+        raise ValueError("factor trust audit must contain factor_id/factor and trust_status/status columns")
+    allowed_statuses = {
+        status.strip()
+        for status in str(getattr(args, "factor_trust_status", "approved") or "approved").split(",")
+        if status.strip()
+    }
+    if not allowed_statuses:
+        allowed_statuses = {"approved"}
+    eligible = audit[audit[status_column].astype(str).isin(allowed_statuses)].copy()
+    eligible_factors = set(eligible[factor_column].dropna().astype(str))
+    columns = [factor for factor in FACTOR_COLUMNS if factor in eligible_factors]
+    if not columns:
+        raise ValueError(
+            f"factor trust audit {audit_path} produced no usable FACTOR_COLUMNS for statuses {sorted(allowed_statuses)}"
+        )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    feature_frame = pd.DataFrame({"factor_id": columns, "feature_order": range(1, len(columns) + 1)})
+    feature_frame.to_csv(output_dir / "factor_trust_feature_set.csv", index=False)
+    metadata = {
+        "factor_trust_audit_path": str(audit_path),
+        "allowed_statuses": sorted(allowed_statuses),
+        "audit_rows": int(len(audit)),
+        "eligible_rows": int(len(eligible)),
+        "selected_feature_count": int(len(columns)),
+        "available_factor_columns": int(len(FACTOR_COLUMNS)),
+        "feature_set_source": f"factor_trust_audit:{audit_path}:statuses={','.join(sorted(allowed_statuses))}",
+        "note": "Only selected factor ids are used as base factors; event factors are appended separately when --with-news/event-aware is enabled.",
+    }
+    _write_json(output_dir / "factor_trust_feature_set.json", metadata)
+    return columns, metadata
+
+
 def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
     data_config = _data_config_with_source(config, args, source)
     if args.max_symbols and args.max_symbols > 0:
@@ -772,6 +883,7 @@ def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None
     model_type = args.model or config.model.model_type
     use_events = args.with_news or "event" in str(model_type).lower()
     event_factors = _load_or_build_event_factors(config, args, source, list(bars_by_symbol), out_dir) if use_events else None
+    feature_columns, feature_metadata = _feature_columns_from_factor_trust(args, out_dir)
     result = train_walk_forward(
         bars_by_symbol,
         model_type,
@@ -783,6 +895,8 @@ def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None
         test_months=args.test_months if args.test_months > 0 else 6,
         embargo_days=config.model.embargo_days,
         event_factors=event_factors,
+        feature_columns=feature_columns,
+        feature_set_source=feature_metadata.get("feature_set_source") if feature_metadata else None,
     )
     try:
         registry_rows = pd.DataFrame(_read_model_registry(config.model.registry_dir))
@@ -796,7 +910,7 @@ def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None
     print("Walk-forward training finished.")
     print(
         f"Source: {load_report.source}; symbols: {len(bars_by_symbol)}; rows: {result.summary['rows']}; "
-        f"event features: {result.summary.get('event_feature_count', 0)}"
+        f"event features: {result.summary.get('event_feature_count', 0)}; feature source: {result.summary.get('feature_set_source', '')}"
     )
     _write_json(
         out_dir / "walk_forward_load_manifest.json",
@@ -805,6 +919,7 @@ def _cmd_train_walk_forward(config, args: argparse.Namespace, source: str | None
             "requested_symbols": len(data_config.symbols),
             "loaded_symbols": len(bars_by_symbol),
             "min_symbols": args.min_symbols if args.min_symbols > 0 else 200,
+            "feature_set": feature_metadata,
             "warnings": load_report.warnings[:2000],
             "note": "Large free-source walk-forward uses resilient per-symbol loading; failed symbols remain audited.",
         },
@@ -825,6 +940,7 @@ def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None
     event_attribution = None
     event_guard = None
     event_guarded_metrics: dict[str, float] | None = None
+    event_attribution_daily = None
     out_path = Path(out_dir)
     constraint = apply_portfolio_constraints(
         payload["targets"],
@@ -844,6 +960,7 @@ def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None
     if args.with_news:
         event_factors = _load_or_build_event_factors(config, args, source, list(data_config.symbols), out_path)
         event_attribution = attribute_portfolio_events(constrained_result.holdings, event_factors)
+        event_attribution_daily = event_attribution.daily
         event_attribution.daily.to_csv(out_path / "portfolio_event_attribution_daily.csv", index=False)
         event_attribution.symbol.to_csv(out_path / "portfolio_event_attribution_symbol.csv", index=False)
         (out_path / "portfolio_event_attribution.md").write_text(event_attribution.markdown, encoding="utf-8")
@@ -863,6 +980,25 @@ def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None
         guarded_attribution.daily.to_csv(out_path / "event_guarded_portfolio_event_attribution_daily.csv", index=False)
         guarded_attribution.symbol.to_csv(out_path / "event_guarded_portfolio_event_attribution_symbol.csv", index=False)
         (out_path / "event_guarded_portfolio_event_attribution.md").write_text(guarded_attribution.markdown, encoding="utf-8")
+    validation = validate_portfolio_backtest(
+        result.equity_curve,
+        result.trades,
+        result.rebalances,
+        result.metrics,
+        constrained_equity_curve=constrained_result.equity_curve,
+        constrained_trades=constrained_result.trades,
+        constrained_rebalances=constrained_result.rebalances,
+        constrained_metrics=constrained_result.metrics,
+        constraint_report=constraint.report,
+        constraint_daily=constraint.daily_summary,
+        event_attribution_daily=event_attribution_daily,
+        event_guard_metadata=event_guard.metadata if event_guard is not None else None,
+        event_attribution_required=bool(args.with_news),
+        backtest_config=config.backtest,
+        strategy_config=config.strategy,
+        risk_config=config.risk,
+    )
+    validation_paths = write_portfolio_validation_outputs(out_path, validation)
     _write_json(
         out_path / "portfolio_backtest_manifest.json",
         {
@@ -878,6 +1014,8 @@ def _cmd_backtest_portfolio(config, args: argparse.Namespace, source: str | None
             "event_attribution_rows": int(len(event_attribution.daily)) if event_attribution is not None else 0,
             "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
             "event_guarded_metrics": event_guarded_metrics or {},
+            "portfolio_validation": validation.summary,
+            "portfolio_validation_report": str(validation_paths["markdown"]),
             "note": "Portfolio research backtest only; live trading remains disabled.",
         },
     )
@@ -900,7 +1038,16 @@ def _cmd_evaluate_models(config, args: argparse.Namespace, output_dir: Path | No
     records = _read_model_registry(config.model.registry_dir)
     evaluation = summarize_model_registry(records)
     evaluation.to_csv(out_dir / "model_evaluation.csv", index=False)
-    predictions, artifacts = load_walk_forward_prediction_artifacts(records, out_dir)
+    explicit_artifacts = [
+        Path(item.strip())
+        for item in str(getattr(args, "walk_forward_artifact", "") or "").split(",")
+        if item.strip()
+    ]
+    predictions, artifacts = load_walk_forward_prediction_artifacts(records, out_dir, extra_candidates=explicit_artifacts)
+    if explicit_artifacts and not predictions.empty and "source_artifact" in predictions.columns:
+        selected = {str(path) for path in explicit_artifacts}
+        predictions = predictions[predictions["source_artifact"].astype(str).isin(selected)].copy()
+        artifacts = [artifact for artifact in artifacts if artifact in selected]
     slices = evaluate_walk_forward_slices(predictions)
     if args.by_year or not args.by_industry:
         slices["year"].to_csv(out_dir / "evaluation_by_year.csv", index=False)
@@ -916,6 +1063,7 @@ def _cmd_evaluate_models(config, args: argparse.Namespace, output_dir: Path | No
         {
             "registry_dir": config.model.registry_dir,
             "registry_records": len(records),
+            "explicit_walk_forward_artifacts": [str(path) for path in explicit_artifacts],
             "walk_forward_prediction_rows": int(len(predictions)),
             "walk_forward_artifacts": artifacts,
             "slice_reports": [
@@ -1089,7 +1237,14 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
     _write_json(out_dir / "stock_forecast.json", summary)
     trust_gates = build_stock_trust_gate_report(result.forecast, source=load_report.source, news_summary=news_summary)
     trust_gate_paths = write_stock_trust_gate_outputs(out_dir, trust_gates)
-    _write_json(out_dir / "stock_forecast_trust_summary.json", {**summary, "trust_gates": trust_gates.summary})
+    evidence_audit = audit_stock_forecast_evidence(result.forecast, source=load_report.source, news_summary=news_summary)
+    evidence_paths = write_stock_evidence_audit_outputs(out_dir, evidence_audit)
+    summary["trust_gates"] = trust_gates.summary
+    summary["trust_gate_files"] = {key: str(value) for key, value in trust_gate_paths.items()}
+    summary["evidence_audit"] = evidence_audit.summary
+    summary["evidence_audit_files"] = {key: str(value) for key, value in evidence_paths.items()}
+    _write_json(out_dir / "stock_forecast.json", summary)
+    _write_json(out_dir / "stock_forecast_trust_summary.json", summary)
     try:
         LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
             "stock_forecast",
@@ -1105,6 +1260,7 @@ def _cmd_predict_stock(config, args: argparse.Namespace, source: str | None, out
         ].to_string(index=False)
     )
     print(f"Trust gates: {trust_gate_paths['md']}")
+    print(f"Evidence audit: {evidence_paths['md']}")
     print(f"Output: {out_dir}")
     if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
         print("trusted-only requested, but no trusted signal was produced.")
@@ -1121,8 +1277,9 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
     out_dir = output_dir or Path("reports/stock_kline")
     out_dir.mkdir(parents=True, exist_ok=True)
     event_factors = None
+    news_summary: dict[str, object] = {"with_news": bool(args.with_news)}
     if args.with_news:
-        event_factors, _news_paths, _news_summary = _build_stock_news_context(
+        event_factors, _news_paths, news_summary = _build_stock_news_context(
             config,
             args,
             source,
@@ -1144,7 +1301,7 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
         event_factors=event_factors,
         model_registry_dir=config.model.registry_dir,
     )
-    paths = save_kline_forecast_outputs(result, out_dir)
+    paths = save_kline_forecast_outputs(result, out_dir, source=load_report.source, news_summary=news_summary)
     try:
         LocalWarehouse(config.storage.root_dir, config.storage.file_format).write_table(
             "forecast_kline",
@@ -1180,6 +1337,7 @@ def _cmd_predict_kline(config, args: argparse.Namespace, source: str | None, out
     print(f"1/5/20 summary: {paths['horizon_kline_summary']}")
     print(f"HTML: {paths['forecast_kline_html']}")
     print(f"Report: {paths['stock_prediction_report']}")
+    print(f"Evidence audit: {paths['stock_evidence_audit_md']}")
     if args.trusted_only and not result.forecast["trust_status"].isin(["trusted"]).any():
         print("trusted-only requested, but no trusted signal was produced.")
         return 2
@@ -1237,10 +1395,13 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
             bars_by_symbol=bars_by_symbol,
         )
 
-    forecast = build_stock_forecast(
+    forecast_horizons = horizons
+    if args.with_kline:
+        forecast_horizons = sorted({1, 5, 20, 60, int(args.days or 0), *[int(item) for item in horizons if int(item) > 0]} - {0})
+    full_forecast = build_stock_forecast(
         bars_by_symbol,
         symbol,
-        horizons,
+        forecast_horizons,
         source=load_report.source,
         model_type=args.model or config.model.model_type,
         embargo_days=config.model.embargo_days,
@@ -1248,12 +1409,20 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
         event_factors=event_factors,
         model_registry_dir=config.model.registry_dir,
     )
+    forecast = _stock_forecast_for_horizons(full_forecast, horizons)
     forecast.forecast.to_csv(out_dir / "stock_forecast.csv", index=False)
     forecast_summary = dict(forecast.summary)
     forecast_summary["news_summary"] = news_summary
     _write_json(out_dir / "stock_forecast.json", forecast_summary)
     trust_gates = build_stock_trust_gate_report(forecast.forecast, source=load_report.source, news_summary=news_summary)
     trust_gate_paths = write_stock_trust_gate_outputs(out_dir, trust_gates)
+    evidence_audit = audit_stock_forecast_evidence(forecast.forecast, source=load_report.source, news_summary=news_summary)
+    evidence_paths = write_stock_evidence_audit_outputs(out_dir, evidence_audit)
+    forecast_summary["trust_gates"] = trust_gates.summary
+    forecast_summary["trust_gate_files"] = {key: str(value) for key, value in trust_gate_paths.items()}
+    forecast_summary["evidence_audit"] = evidence_audit.summary
+    forecast_summary["evidence_audit_files"] = {key: str(value) for key, value in evidence_paths.items()}
+    _write_json(out_dir / "stock_forecast.json", forecast_summary)
 
     explanation = explain_stock_forecast(bars_by_symbol, forecast, symbol, horizons)
     explanation.report.to_csv(out_dir / "stock_explanation.csv", index=False)
@@ -1278,8 +1447,15 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
             allow_sample=args.allow_sample,
             event_factors=event_factors,
             model_registry_dir=config.model.registry_dir,
+            stock_forecast_override=full_forecast,
         )
-        kline_paths = save_kline_forecast_outputs(kline, out_dir)
+        kline_paths = save_kline_forecast_outputs(
+            kline,
+            out_dir,
+            source=load_report.source,
+            news_summary=news_summary,
+            evidence_prefix="kline_stock_evidence_audit",
+        )
         kline.stock_forecast.forecast.to_csv(out_dir / "kline_stock_forecast.csv", index=False)
         _write_json(out_dir / "kline_stock_forecast.json", kline.stock_forecast.summary)
         kline_paths["kline_stock_forecast"] = out_dir / "kline_stock_forecast.csv"
@@ -1320,6 +1496,8 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
         "news_files": {key: str(value) for key, value in news_paths.items()},
         "trust_gate_files": {key: str(value) for key, value in trust_gate_paths.items()},
         "trust_gate_summary": trust_gates.summary,
+        "evidence_audit_files": {key: str(value) for key, value in evidence_paths.items()},
+        "evidence_audit_summary": evidence_audit.summary,
         "note": "Research reports only; not investment advice. Live trading remains disabled.",
     }
     _write_json(out_dir / "stock_report_manifest.json", manifest)
@@ -1346,6 +1524,23 @@ def _cmd_report_stock(config, args: argparse.Namespace, source: str | None, outp
         print("trusted-only requested, but no trusted signal was produced.")
         return 2
     return 0
+
+
+def _stock_forecast_for_horizons(result: StockForecastResult, horizons: list[int]) -> StockForecastResult:
+    requested = [int(item) for item in horizons]
+    forecast = result.forecast[result.forecast["horizon_days"].astype(int).isin(requested)].copy()
+    forecast = forecast.sort_values("horizon_days").reset_index(drop=True)
+    summary = dict(result.summary)
+    summary["horizons"] = requested
+    summary["internal_horizons_available"] = [int(item) for item in result.forecast["horizon_days"].astype(int).tolist()]
+    diagnostics = summary.get("diagnostics")
+    if isinstance(diagnostics, dict):
+        summary["diagnostics"] = {f"horizon_{h}d": diagnostics.get(f"horizon_{h}d", {}) for h in requested}
+    summary["note"] = (
+        f"{summary.get('note', '')} Requested report horizons are preserved; "
+        "extra internal horizons may be computed for K-line charting."
+    ).strip()
+    return StockForecastResult(forecast=forecast, summary=summary)
 
 
 def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, output_dir: Path | None) -> int:
@@ -1417,6 +1612,8 @@ def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, outpu
     order_frame.to_csv(out_dir / "order_plan.csv", index=False)
     decision.report.to_csv(out_dir / "risk_report.csv", index=False)
     targets.to_csv(out_dir / "rebalance_targets.csv")
+    execution = None
+    paper_summary: dict[str, object]
     try:
         paper_frame = order_frame.copy()
         paper_frame["risk_passed"] = decision.passed
@@ -1436,31 +1633,43 @@ def _cmd_paper_trade(config, args: argparse.Namespace, source: str | None, outpu
         )
         execution = broker.submit(order_plan)
         broker.save_report(execution, out_dir)
+        paper_summary = {
+            "passed": True,
+            "requested_days": args.days,
+            "no_live": args.no_live,
+            "with_news": bool(args.with_news),
+            "portfolio_constraints": constraint.metadata,
+            "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
+            "metadata": execution.metadata,
+        }
         _write_json(
             out_dir / "paper_summary.json",
-            {
-                "passed": True,
-                "requested_days": args.days,
-                "no_live": args.no_live,
-                "with_news": bool(args.with_news),
-                "portfolio_constraints": constraint.metadata,
-                "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
-                "metadata": execution.metadata,
-            },
+            paper_summary,
         )
     else:
+        paper_summary = {
+            "passed": False,
+            "requested_days": args.days,
+            "no_live": args.no_live,
+            "with_news": bool(args.with_news),
+            "portfolio_constraints": constraint.metadata,
+            "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
+            "reasons": decision.reasons,
+        }
         _write_json(
             out_dir / "paper_summary.json",
-            {
-                "passed": False,
-                "requested_days": args.days,
-                "no_live": args.no_live,
-                "with_news": bool(args.with_news),
-                "portfolio_constraints": constraint.metadata,
-                "event_risk_guard": event_guard.metadata if event_guard is not None else {"enabled": False},
-                "reasons": decision.reasons,
-            },
+            paper_summary,
         )
+    paper_validation = validate_paper_trade(
+        order_frame,
+        decision.report,
+        paper_summary,
+        executions=execution.executions if execution is not None else None,
+        positions=execution.positions if execution is not None else None,
+        requested_days=max(1, int(args.days or 20)),
+        no_live_required=True,
+    )
+    write_paper_trade_validation_outputs(out_dir, paper_validation)
     print("Paper trade dry-run finished.")
     print(f"Source: {load_report.source}; selected universe: {len(universe_report.selected_symbols)}")
     print(f"Risk passed: {decision.passed}; orders: {len(order_plan.orders)}; requested days: {args.days}; no-live: {args.no_live}")
@@ -1574,7 +1783,7 @@ def _load_or_build_event_factors(
         result = replace(result, warnings=[*source_warnings, *result.warnings])
     if output_dir is not None:
         event_dir = output_dir / "event_inputs"
-        write_event_outputs(result, event_dir)
+        write_event_outputs(result, event_dir, symbols=symbols)
     if not _uses_sample_events(config, args, source):
         try:
             warehouse.write_table("event_store", add_source_audit_columns(result.event_store, "event_store_v04"))
@@ -1632,7 +1841,7 @@ def _build_stock_news_context(
     event_result = build_event_store(raw_events, event_symbols)
     if source_warnings:
         event_result = replace(event_result, warnings=[*source_warnings, *event_result.warnings])
-    news_paths = write_event_outputs(event_result, output_dir)
+    news_paths = write_event_outputs(event_result, output_dir, symbols=event_symbols)
     symbol_evidence = build_news_evidence_report(event_result.event_store, event_result.event_factors, symbol=symbol)
     (output_dir / "stock_news_evidence.md").write_text(symbol_evidence, encoding="utf-8")
     symbol_events = event_result.event_store[event_result.event_store["symbol"].astype(str).str.zfill(6) == symbol]
@@ -1647,9 +1856,16 @@ def _build_stock_news_context(
     )
     similar_paths = write_similar_event_outputs(output_dir, similar_events, prefix="stock_similar_events")
     impact_horizons = tuple(_parse_horizons(args, [1, 5, 20, 60]))
-    impact_result = analyze_event_impact(
+    impact_event_store, impact_bars, impact_limit_summary = _limit_event_impact_scope(
         event_result.event_store,
         bars_by_symbol or {},
+        symbol,
+        int(getattr(args, "max_event_impact_symbols", 80) or 0),
+        int(getattr(args, "max_event_impact_events", 1500) or 0),
+    )
+    impact_result = analyze_event_impact(
+        impact_event_store,
+        impact_bars,
         horizons=impact_horizons,
         min_prior_rows=int(getattr(args, "min_prior_rows", 20) or 20),
     )
@@ -1683,12 +1899,100 @@ def _build_stock_news_context(
         "event_impact_pit_prior_rows": int(len(symbol_pit_priors)),
         "event_impact_pit_ready_rows": int(symbol_pit_priors["pit_ready"].astype(bool).sum()) if not symbol_pit_priors.empty and "pit_ready" in symbol_pit_priors.columns else 0,
         "event_impact_summary": impact_result.summary,
+        "event_impact_scope": impact_limit_summary,
     }
     news_paths.update({f"similar_{key}": value for key, value in similar_paths.items()})
     news_paths.update({f"impact_{key}": value for key, value in impact_paths.items()})
     news_paths["stock_event_impact_returns"] = output_dir / "stock_event_impact_returns.csv"
     news_paths["stock_event_impact_pit_priors"] = output_dir / "stock_event_impact_pit_priors.csv"
     return event_result.event_factors, news_paths, news_summary
+
+
+def _limit_event_impact_scope(
+    event_store: pd.DataFrame,
+    bars_by_symbol: dict[str, pd.DataFrame],
+    symbol: str,
+    max_symbols: int,
+    max_events: int,
+) -> tuple[pd.DataFrame, dict[str, pd.DataFrame], dict[str, object]]:
+    symbol = symbol.zfill(6)
+    if event_store is None or event_store.empty:
+        return pd.DataFrame(), {}, {
+            "limited": False,
+            "reason": "empty_event_store",
+            "input_symbols": len(bars_by_symbol),
+            "used_symbols": 0,
+            "input_events": 0,
+            "used_events": 0,
+            "max_symbols": int(max_symbols),
+            "max_events": int(max_events),
+        }
+    events = event_store.copy()
+    events["symbol"] = events["symbol"].astype(str).str.replace(r"\D", "", regex=True).str[-6:].str.zfill(6)
+    selected_symbols = _rank_event_impact_symbols(events, bars_by_symbol, symbol, max_symbols)
+    scoped_events = events[events["symbol"].isin(selected_symbols)].copy()
+    input_event_rows = int(len(scoped_events))
+    if max_events > 0 and len(scoped_events) > max_events:
+        scoped_events = _rank_event_rows_for_impact(scoped_events, symbol).head(max_events).sort_values(["published_at", "symbol"])
+    scoped_bars = {code: bars for code, bars in bars_by_symbol.items() if str(code).zfill(6) in set(scoped_events["symbol"].astype(str).str.zfill(6))}
+    if symbol in bars_by_symbol and symbol not in scoped_bars:
+        scoped_bars[symbol] = bars_by_symbol[symbol]
+    summary = {
+        "limited": bool(len(selected_symbols) < len(bars_by_symbol) or len(scoped_events) < input_event_rows),
+        "input_symbols": int(len(bars_by_symbol)),
+        "used_symbols": int(len(scoped_bars)),
+        "input_events": int(len(event_store)),
+        "candidate_events_after_symbol_limit": input_event_rows,
+        "used_events": int(len(scoped_events)),
+        "max_symbols": int(max_symbols),
+        "max_events": int(max_events),
+        "target_symbol_forced": bool(symbol in scoped_bars),
+        "reason": "bounded_stock_report_event_impact_runtime;event_factors_still_use_full_event_store",
+    }
+    return scoped_events, scoped_bars, summary
+
+
+def _rank_event_impact_symbols(
+    events: pd.DataFrame,
+    bars_by_symbol: dict[str, pd.DataFrame],
+    symbol: str,
+    max_symbols: int,
+) -> list[str]:
+    symbol = symbol.zfill(6)
+    available = {str(item).zfill(6) for item in bars_by_symbol}
+    if not available:
+        available = set(events["symbol"].astype(str).str.zfill(6).unique().tolist())
+    counts = events[events["symbol"].isin(available)]["symbol"].value_counts()
+    ranked = [symbol]
+    for code in counts.index.astype(str).str.zfill(6).tolist():
+        if code != symbol:
+            ranked.append(code)
+    for code in sorted(available):
+        if code not in ranked:
+            ranked.append(code)
+    if max_symbols > 0:
+        ranked = ranked[:max_symbols]
+    return ranked
+
+
+def _rank_event_rows_for_impact(events: pd.DataFrame, symbol: str) -> pd.DataFrame:
+    frame = events.copy()
+    symbol = symbol.zfill(6)
+    frame["published_at_ts"] = pd.to_datetime(frame.get("published_at", ""), errors="coerce")
+    frame["is_target_symbol"] = frame["symbol"].astype(str).str.zfill(6).eq(symbol).astype(int)
+    if "source_reliability" not in frame.columns:
+        frame["source_reliability"] = 0.0
+    if "entity_link_confidence" not in frame.columns:
+        frame["entity_link_confidence"] = 0.0
+    if "weighted_impact_score" not in frame.columns:
+        frame["weighted_impact_score"] = frame.get("impact_score", 0.0)
+    frame["_source_reliability_num"] = pd.to_numeric(frame["source_reliability"], errors="coerce").fillna(0.0)
+    frame["_entity_link_confidence_num"] = pd.to_numeric(frame["entity_link_confidence"], errors="coerce").fillna(0.0)
+    frame["_impact_abs"] = pd.to_numeric(frame["weighted_impact_score"], errors="coerce").fillna(0.0).abs()
+    return frame.sort_values(
+        ["is_target_symbol", "_source_reliability_num", "_entity_link_confidence_num", "_impact_abs", "published_at_ts"],
+        ascending=[False, False, False, False, False],
+    )
 
 
 def _try_fetch_all_a_symbols() -> list[str]:
@@ -1756,7 +2060,11 @@ def _all_a_rows_from_names(frame: pd.DataFrame, source_note: str) -> pd.DataFram
     clean["symbol"] = clean["symbol"].astype(str).str.zfill(6)
     clean = clean[clean["symbol"].str.fullmatch(r"\d{6}", na=False)]
     clean = clean.drop_duplicates("symbol").sort_values("symbol").reset_index(drop=True)
-    clean["theme"] = clean["name"].map(_classify_free_theme)
+    curated_theme = _curated_primary_theme_by_symbol()
+    clean["theme"] = [
+        curated_theme.get(symbol) or _classify_free_theme(name)
+        for symbol, name in zip(clean["symbol"].astype(str), clean["name"].astype(str), strict=False)
+    ]
     clean["theme_group"] = "all_a_free"
     clean["reason"] = "free all-A stock list; theme inferred from public name keywords"
     clean["seed_rank"] = clean.index + 1
@@ -1826,7 +2134,50 @@ def _infer_name_column(frame: pd.DataFrame, symbol_col: str | None) -> str | Non
     return None
 
 
+def _curated_primary_theme_by_symbol() -> dict[str, str]:
+    try:
+        curated = build_theme_universe("hot")
+    except Exception:  # noqa: BLE001
+        return {}
+    if curated.empty:
+        return {}
+    priority = {"professional_hot": 0, "core_hot": 1, "expanded_hot": 2}
+    ranked = curated.copy()
+    ranked["theme_priority"] = ranked["theme_group"].map(priority).fillna(9).astype(int)
+    ranked = ranked.sort_values(["symbol", "theme_priority", "seed_rank", "theme"])
+    return ranked.drop_duplicates("symbol").set_index("symbol")["theme"].astype(str).to_dict()
+
+
+def _classify_free_theme_keywords(name: object) -> str:
+    text = str(name)
+    buckets = [
+        ("ai_compute_semiconductor", ["半导体", "芯片", "微电", "光电", "算力", "服务器", "浪潮", "曙光", "集成", "电子科技", "中芯"]),
+        ("datacenter_optical_liquid_cooling", ["光模块", "光通信", "数据中心", "液冷", "光迅", "中际", "新易盛", "胜宏", "沪电"]),
+        ("robotics_highend_manufacturing", ["机器人", "机床", "自动化", "精密", "机械", "数控", "激光", "电机", "伺服"]),
+        ("metals_energy_metals", ["铜", "铝", "锌", "锡", "钨", "钼", "锂", "黄金", "稀土", "有色", "矿", "钴", "镍"]),
+        ("power_solid_state_battery", ["电池", "锂电", "新能源", "储能", "电力", "光伏", "风电", "电气", "固态"]),
+        ("defense_ship_equipment", ["航天", "航空", "船", "卫星", "军", "兵", "中船", "中国船", "北斗", "无人机"]),
+        ("innovative_drug_medical_device", ["药", "医", "生物", "医疗", "制药", "器械", "基因", "疫苗", "诊断"]),
+        ("consumer_electronics_pcb", ["电子", "消费", "视源", "歌尔", "立讯", "鹏鼎", "沪电", "PCB", "面板", "显示"]),
+        ("data_element_fintech_ai_app", ["数据", "传媒", "互联", "金融", "证券", "银行", "保险", "信安", "安全", "软件", "云"]),
+        ("central_soe_high_dividend", ["中国", "中远", "中粮", "中交", "中煤", "中石", "国电", "华能", "大唐", "长江电力"]),
+        ("agriculture_food_beverage", ["食品", "酒", "乳", "农", "牧", "饮料", "消费", "种业", "饲料"]),
+        ("chemical_new_materials", ["化工", "材料", "新材", "硅", "氟", "碳纤", "石化", "化学"]),
+        ("coal_power_oil_gas", ["煤", "电力", "石油", "油气", "能源", "燃气", "核电"]),
+        ("shipping_ports_logistics", ["航运", "港", "物流", "快递", "中远海", "招商港"]),
+        ("home_appliance_export", ["家电", "美的", "海尔", "格力", "电器", "照明"]),
+        ("real_estate_chain", ["地产", "置业", "建筑", "水泥", "工程", "建材", "家居"]),
+        ("tourism_retail_services", ["旅游", "酒店", "免税", "零售", "百货", "餐饮"]),
+        ("environmental_water_gas", ["环保", "水务", "燃气", "节能", "环卫"]),
+    ]
+    for theme, keywords in buckets:
+        if any(keyword in text for keyword in keywords):
+            return theme
+    return "mega_hot_free_market_extension"
+
+
 def _classify_free_theme(name: object) -> str:
+    return _classify_free_theme_keywords(name)
     text = str(name)
     buckets = [
         ("ai_compute_semiconductor", ["半导体", "芯片", "微电", "光电", "光迅", "中际", "浪潮", "曙光", "软件", "科技"]),

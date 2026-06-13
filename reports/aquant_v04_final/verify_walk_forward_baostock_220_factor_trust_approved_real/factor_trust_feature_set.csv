@@ -1,0 +1,12 @@
+factor_id,feature_order
+upper_shadow,1
+body_size,2
+amihud_illiquidity_20,3
+amihud_illiquidity_60,4
+gap_down_count_60,5
+long_upper_shadow_count_20,6
+long_lower_shadow_count_60,7
+return_autocorr_20,8
+downside_tail_return_20,9
+down_streak,10
+cs_reversal_rank_5,11

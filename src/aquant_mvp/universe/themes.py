@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from pathlib import Path
 
 import pandas as pd
 
@@ -33,6 +34,7 @@ EXPANDED_HOT_THEME_NAMES = [
     "real_estate_chain",
     "tourism_retail_services",
     "education_human_capital",
+    "environmental_water_gas",
 ]
 
 PROFESSIONAL_THEME_NAMES = [
@@ -68,6 +70,29 @@ THEME_ALIASES: dict[str, list[str]] = {
     "core_hot": CORE_HOT_THEME_NAMES,
     "core-hot": CORE_HOT_THEME_NAMES,
 }
+
+THEME_GROUP_MIN_SYMBOLS: dict[str, int] = {
+    "core_hot": 30,
+    "expanded_hot": 20,
+    "professional_hot": 8,
+    "free_market_extension": 50,
+    "all_a_free": 50,
+    "all_a_free_fallback": 20,
+}
+
+THEME_COVERAGE_AUDIT_COLUMNS = [
+    "theme",
+    "theme_group",
+    "rows",
+    "unique_symbols",
+    "required_min_symbols",
+    "coverage_ratio",
+    "coverage_status",
+    "can_enter_training_pool",
+    "can_support_trusted_evidence",
+    "symbol_sample",
+    "notes",
+]
 
 
 def _rows(*items: str) -> list[tuple[str, str, str]]:
@@ -822,6 +847,40 @@ HOT_THEME_SYMBOLS: dict[str, list[tuple[str, str, str]]] = {
         "300170|Hand Enterprise Solutions|enterprise digital training",
         "300451|Cnstrong|education content",
         "300182|Education Hardware Seed|education seed",
+        "002621|Mango Excellent Education Seed|education information service",
+        "300282|Education Digital Seed|education digitalization seed",
+        "300192|Science Education Seed|STEM education seed",
+        "300235|Human Resource Service Seed|human resource service seed",
+        "600624|Human Capital Service Seed|human capital service seed",
+        "603040|Career Service Seed|vocational service seed",
+        "605098|Action Education|management training",
+        "300047|TianYuan DIC|enterprise digital training",
+    ),
+    "environmental_water_gas": _rows(
+        "300070|OriginWater|membrane water treatment",
+        "600323|Grandblue Environment|solid waste water gas",
+        "600461|Hongcheng Environment|water and gas utility",
+        "000544|Central Plains Environment|water treatment",
+        "000598|Chengdu Xingrong Environment|water utility",
+        "601158|Chongqing Water|water utility",
+        "600008|Beijing Capital Eco|water environmental service",
+        "601199|Jiangnan Water|water supply",
+        "600874|Capital Environment|solid waste treatment",
+        "603568|Weiming Environment|waste incineration",
+        "300203|Focused Photonics|environmental monitoring",
+        "300137|Suntar Environmental|water treatment",
+        "300388|Jiechuang Environment Seed|environmental treatment seed",
+        "300187|Yongqing Environment|environmental restoration",
+        "002573|ClearWater Source|industrial water treatment",
+        "002658|STCN Environment Seed|environmental equipment seed",
+        "300072|Three-Dimensional Silk|air pollution control",
+        "300332|Tianhao Environment|energy conservation gas",
+        "600681|Baiyun Airport Energy Seed|environmental utility seed",
+        "601139|Shenzhen Gas|city gas",
+        "600903|Guizhou Gas|city gas",
+        "605090|Jiangxi Changyun Gas Seed|gas utility seed",
+        "603393|Xintian Green Energy|gas and wind power",
+        "000685|Zhongshan Public Utilities|water utility",
     ),
     "semiconductor_equipment_materials": _rows(
         "002371|NAURA|etching deposition and cleaning equipment",
@@ -1066,6 +1125,81 @@ def symbol_theme_membership(frame: pd.DataFrame) -> pd.DataFrame:
     return membership
 
 
+def audit_theme_universe_coverage(
+    frame: pd.DataFrame,
+    *,
+    min_training_symbols: int = 200,
+) -> pd.DataFrame:
+    """Audit whether curated/professional themes are thick enough for validation.
+
+    This does not certify predictive quality. It only prevents thin or missing
+    board definitions from being mistaken for a large cross-sectional universe.
+    """
+
+    if frame.empty:
+        return pd.DataFrame(columns=THEME_COVERAGE_AUDIT_COLUMNS)
+    summary = (
+        frame.groupby("theme", as_index=False)
+        .agg(
+            theme_group=("theme_group", lambda values: ";".join(_unique(values))),
+            rows=("symbol", "size"),
+            unique_symbols=("symbol", "nunique"),
+            top_seed_weight=("seed_weight", "max"),
+        )
+        .sort_values("theme")
+        .reset_index(drop=True)
+    )
+    samples = (
+        frame.groupby("theme")["symbol"]
+        .apply(lambda values: ";".join(_unique(values)[:8]))
+        .rename("symbol_sample")
+        .reset_index()
+    )
+    audit = summary.merge(samples, on="theme", how="left")
+    audit["required_min_symbols"] = audit["theme_group"].map(_required_min_symbols_for_groups).astype(int)
+    audit["coverage_ratio"] = (
+        audit["unique_symbols"].astype(float) / audit["required_min_symbols"].replace(0, 1).astype(float)
+    ).clip(upper=2.0)
+    audit["coverage_status"] = audit.apply(_coverage_status, axis=1)
+    total_unique = int(frame["symbol"].astype(str).nunique())
+    audit["can_enter_training_pool"] = total_unique >= min_training_symbols
+    audit["can_support_trusted_evidence"] = (
+        audit["can_enter_training_pool"]
+        & audit["coverage_status"].isin(["ready", "broad"])
+        & (audit["unique_symbols"].astype(int) >= audit["required_min_symbols"].astype(int))
+    )
+    audit["notes"] = audit.apply(_coverage_notes, axis=1)
+    return audit[THEME_COVERAGE_AUDIT_COLUMNS].sort_values(
+        ["can_support_trusted_evidence", "coverage_status", "theme_group", "unique_symbols", "theme"],
+        ascending=[True, True, True, True, True],
+    ).reset_index(drop=True)
+
+
+def write_theme_coverage_audit(
+    output_dir: str | Path,
+    audit: pd.DataFrame,
+    *,
+    requested_themes: str,
+    total_unique_symbols: int,
+    min_training_symbols: int = 200,
+) -> dict[str, Path]:
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "theme_coverage_audit.csv"
+    md_path = out_dir / "theme_coverage_audit.md"
+    audit.to_csv(csv_path, index=False)
+    md_path.write_text(
+        _theme_coverage_markdown(
+            audit,
+            requested_themes=requested_themes,
+            total_unique_symbols=total_unique_symbols,
+            min_training_symbols=min_training_symbols,
+        ),
+        encoding="utf-8",
+    )
+    return {"theme_coverage_audit": csv_path, "theme_coverage_audit_md": md_path}
+
+
 def _resolve_theme_names(themes: str | Iterable[str]) -> list[str]:
     if isinstance(themes, str):
         names = [item.strip() for item in themes.split(",") if item.strip()]
@@ -1091,6 +1225,94 @@ def _theme_group(theme: str) -> str:
     if theme in PROFESSIONAL_THEME_NAMES:
         return "professional_hot"
     return "expanded_hot"
+
+
+def _coverage_status(row: pd.Series) -> str:
+    unique_symbols = int(row.get("unique_symbols", 0) or 0)
+    required = int(row.get("required_min_symbols", 0) or 0)
+    if unique_symbols <= 0:
+        return "missing"
+    if unique_symbols >= max(required * 2, required + 20):
+        return "broad"
+    if unique_symbols >= required:
+        return "ready"
+    if unique_symbols >= max(3, required // 2):
+        return "thin_watchlist"
+    return "too_thin"
+
+
+def _required_min_symbols_for_groups(groups: object) -> int:
+    group_names = [item for item in str(groups).split(";") if item]
+    primary_groups = [item for item in group_names if item not in {"free_market_extension"}]
+    if primary_groups:
+        return max(THEME_GROUP_MIN_SYMBOLS.get(item, 20) for item in primary_groups)
+    if group_names:
+        return max(THEME_GROUP_MIN_SYMBOLS.get(item, 20) for item in group_names)
+    return 20
+
+
+def _coverage_notes(row: pd.Series) -> str:
+    status = str(row.get("coverage_status", ""))
+    if status in {"broad", "ready"}:
+        return "coverage_ok_for_research_pool;prediction_still_requires_oos_validation"
+    if status == "thin_watchlist":
+        return "theme_is_usable_for_explanation_but_should_be_expanded_before_theme_level_trust"
+    if status == "too_thin":
+        return "too_few_symbols_for_theme_level_evidence;keep_out_of_trusted_theme_slices"
+    return "missing_theme_coverage"
+
+
+def _theme_coverage_markdown(
+    audit: pd.DataFrame,
+    *,
+    requested_themes: str,
+    total_unique_symbols: int,
+    min_training_symbols: int,
+) -> str:
+    lines = [
+        "# Theme Coverage Audit",
+        "",
+        "This audit checks whether the stock pool is broad enough for cross-sectional research and theme-level validation. It is not evidence of forecast accuracy.",
+        "",
+        "## Summary",
+        "",
+        f"- Requested themes: `{requested_themes}`",
+        f"- Unique symbols: `{total_unique_symbols}`",
+        f"- Minimum symbols before any trusted prediction can be considered: `{min_training_symbols}`",
+    ]
+    if audit.empty:
+        lines.extend(["- Status: `missing`", "", "No theme rows were generated."])
+        return "\n".join(lines) + "\n"
+    status_counts = audit["coverage_status"].value_counts().to_dict()
+    trusted_count = int(audit["can_support_trusted_evidence"].sum()) if "can_support_trusted_evidence" in audit.columns else 0
+    lines.extend(
+        [
+            f"- Theme rows audited: `{len(audit)}`",
+            f"- Themes that can support trusted evidence after model/data gates: `{trusted_count}`",
+            f"- Coverage status counts: `{status_counts}`",
+            "",
+            "## Thin Or Blocked Themes",
+            "",
+        ]
+    )
+    blocked = audit[~audit["can_support_trusted_evidence"].astype(bool)]
+    if blocked.empty:
+        lines.append("- No theme coverage blockers found. Predictive trust still depends on data, factor, model, and walk-forward gates.")
+    else:
+        for row in blocked.head(20).itertuples(index=False):
+            lines.append(
+                f"- `{row.theme}` ({row.theme_group}): {int(row.unique_symbols)}/{int(row.required_min_symbols)} symbols, "
+                f"status=`{row.coverage_status}`, sample=`{row.symbol_sample}`"
+            )
+    lines.extend(
+        [
+            "",
+            "## Guardrail",
+            "",
+            "- A broad theme universe only removes the small-pool bottleneck. It must still pass PIT data audit, factor trust audit, walk-forward, calibration, event evidence, and risk gates before any stock forecast can be marked `trusted`.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
 
 
 def _unique(values: Iterable[object]) -> list[str]:

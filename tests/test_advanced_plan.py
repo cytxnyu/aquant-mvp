@@ -7,30 +7,41 @@ import pandas as pd
 import pytest
 
 from aquant_mvp.broker import PaperBroker, build_order_plan_from_targets
-from aquant_mvp.config import DataConfig, RiskConfig, StrategyConfig
+from aquant_mvp.config import BacktestConfig, DataConfig, RiskConfig, StrategyConfig
 from aquant_mvp.data import add_source_audit_columns, audit_point_in_time_tables
 from aquant_mvp.events import (
     analyze_event_impact,
     audit_event_coverage,
+    audit_event_factor_quality,
     build_event_store,
     build_similar_event_report,
     commodity_symbol_map,
     discover_text_intelligence,
     sync_commodity_events,
     sync_public_events,
+    write_event_outputs,
     write_event_impact_outputs,
     write_similar_event_outputs,
     write_text_intelligence_report,
 )
 from aquant_mvp.factors import FACTOR_COLUMNS, analyze_factor_trust, build_factor_registry
 from aquant_mvp.analysis import analyze_factors, attribute_portfolio_events, evaluate_walk_forward_slices, summarize_model_registry
-from aquant_mvp.features import build_point_in_time_feature_store
+from aquant_mvp.analysis import validate_portfolio_backtest, write_portfolio_validation_outputs
+from aquant_mvp.analysis import validate_paper_trade, write_paper_trade_validation_outputs
+from aquant_mvp.features import audit_event_feature_matrix, build_point_in_time_feature_store
 from aquant_mvp.labels import compute_return_labels
 from aquant_mvp.foundations import discover_foundations
 from aquant_mvp.modeling import discover_model_bases, train_model, train_walk_forward
 from aquant_mvp.modeling import register_model
 from aquant_mvp.modeling.walk_forward import _trust_status
-from aquant_mvp.prediction import build_stock_forecast, build_stock_trust_gate_report, explain_stock_forecast, write_stock_trust_gate_outputs
+from aquant_mvp.prediction import (
+    audit_stock_forecast_evidence,
+    build_stock_forecast,
+    build_stock_trust_gate_report,
+    explain_stock_forecast,
+    write_stock_evidence_audit_outputs,
+    write_stock_trust_gate_outputs,
+)
 from aquant_mvp.prediction.stock import _forecast_trust_status, _load_walk_forward_evidence, _match_walk_forward_evidence
 from aquant_mvp.risk import EventRiskConfig, TradingRiskConfig, apply_event_risk_guard, check_order_plan, event_context_by_symbol
 from aquant_mvp.sources import (
@@ -43,7 +54,14 @@ from aquant_mvp.sources import (
 from aquant_mvp.storage import LocalWarehouse
 from aquant_mvp.strategy import apply_portfolio_constraints, write_portfolio_constraint_outputs
 from aquant_mvp.tooling import discover_tools
-from aquant_mvp.universe import build_theme_universe, symbol_theme_membership, symbols_for_themes, theme_universe_summary
+from aquant_mvp.universe import (
+    audit_theme_universe_coverage,
+    build_theme_universe,
+    symbol_theme_membership,
+    symbols_for_themes,
+    theme_universe_summary,
+    write_theme_coverage_audit,
+)
 from aquant_mvp.vendors import TushareFreeAdapter, VendorNotConfigured
 from aquant_mvp import cli as cli_module
 
@@ -84,6 +102,41 @@ def test_hot_theme_universe_contains_required_themes() -> None:
     assert not summary.empty
     assert not membership.empty
     assert membership["theme_count"].max() >= 2
+
+    audit = audit_theme_universe_coverage(universe)
+    assert {"coverage_status", "can_support_trusted_evidence", "symbol_sample"}.issubset(audit.columns)
+    assert int(audit["can_support_trusted_evidence"].sum()) >= 20
+
+
+def test_free_all_a_theme_classifier_and_coverage_audit(tmp_path: Path) -> None:
+    raw = pd.DataFrame(
+        {
+            "symbol": ["000630", "300024", "601398", "600000"],
+            "name": [
+                "\u94dc\u9675\u6709\u8272",
+                "\u673a\u5668\u4eba",
+                "\u5de5\u5546\u94f6\u884c",
+                "\u6d66\u53d1\u94f6\u884c",
+            ],
+        }
+    )
+    classified = cli_module._all_a_rows_from_names(raw, "unit_test")
+    by_symbol = classified.set_index("symbol")["theme"].to_dict()
+    assert by_symbol["000630"] in {"metals_energy_metals", "rare_earth_magnetic_materials"}
+    assert by_symbol["300024"] in {"robotics_highend_manufacturing", "humanoid_robot_core_parts"}
+    assert by_symbol["601398"] in {"central_soe_high_dividend", "high_dividend_state_owned_finance"}
+
+    audit = audit_theme_universe_coverage(classified, min_training_symbols=200)
+    assert not audit.empty
+    assert audit["can_enter_training_pool"].eq(False).all()
+    paths = write_theme_coverage_audit(
+        tmp_path,
+        audit,
+        requested_themes="unit-test",
+        total_unique_symbols=int(classified["symbol"].nunique()),
+    )
+    assert paths["theme_coverage_audit"].exists()
+    assert "Theme Coverage Audit" in paths["theme_coverage_audit_md"].read_text(encoding="utf-8")
 
 
 def test_foundation_and_tool_registries_cover_external_bases() -> None:
@@ -301,6 +354,20 @@ def test_stock_forecast_outputs_required_fields_with_sample_opt_in() -> None:
     assert {"sample_data_block", "minimum_universe_size", "walk_forward_trusted"}.issubset(set(gate_report.gates["gate"]))
     assert gate_report.summary["blocking_gate_count"] > 0
     assert "not investment advice" in gate_report.markdown
+    evidence = audit_stock_forecast_evidence(result.forecast, source="sample", news_summary={"with_news": False})
+    assert {
+        "data_version",
+        "model_version",
+        "walk_forward_evidence",
+        "factor_contributors",
+        "risk_flags",
+        "probability_calibration",
+        "conformal_interval",
+        "news_evidence",
+    }.issubset(set(evidence.checks["check"]))
+    assert evidence.summary["validation_status"] == "failed"
+    assert "walk_forward_evidence" in evidence.summary["failed_checks"]
+    assert "Stock Forecast Evidence Audit" in evidence.markdown
 
 
 def test_stock_trust_gate_outputs_are_written(tmp_path: Path) -> None:
@@ -316,6 +383,24 @@ def test_stock_trust_gate_outputs_are_written(tmp_path: Path) -> None:
     assert paths["json"].exists()
     assert paths["md"].exists()
     assert "Stock Trust Gate Report" in paths["md"].read_text(encoding="utf-8")
+
+
+def test_stock_evidence_audit_outputs_are_written(tmp_path: Path) -> None:
+    bars = {
+        "000630": _bars("000630", 0),
+        "601899": _bars("601899", 10),
+        "600362": _bars("600362", 20),
+    }
+    forecast = build_stock_forecast(bars, "000630", [5], source="sample", allow_sample=True)
+    audit = audit_stock_forecast_evidence(forecast.forecast, source="sample", news_summary={"with_news": True, "event_rows": 2, "event_factor_rows": 1})
+    paths = write_stock_evidence_audit_outputs(tmp_path, audit)
+    assert paths["csv"].exists()
+    assert paths["json"].exists()
+    assert paths["md"].exists()
+    assert "Stock Forecast Evidence Audit" in paths["md"].read_text(encoding="utf-8")
+    payload = json.loads(paths["json"].read_text(encoding="utf-8"))
+    assert payload["symbol"] == "000630"
+    assert "walk_forward_evidence" in payload["failed_checks"]
 
 
 def test_stock_forecast_requires_walk_forward_evidence_for_trusted(tmp_path: Path) -> None:
@@ -363,7 +448,7 @@ def test_stock_forecast_requires_walk_forward_evidence_for_trusted(tmp_path: Pat
     assert _forecast_trust_status(sparse_conformal, quality, 205, "free_real", trusted_evidence) == "weak"
 
 
-def test_risk_blocks_blacklist_and_paper_broker_fills() -> None:
+def test_risk_blocks_blacklist_and_paper_broker_fills(tmp_path: Path) -> None:
     prices = pd.Series({"601899": 20.0, "603993": 10.0})
     targets = pd.Series({"601899": 0.5, "603993": 0.1})
     plan = build_order_plan_from_targets(targets, prices, equity=100000, trade_date="2026-06-11")
@@ -379,6 +464,33 @@ def test_risk_blocks_blacklist_and_paper_broker_fills() -> None:
     report = PaperBroker(initial_cash=100000).submit(safe_plan)
     assert not report.executions.empty
     assert set(report.executions["status"]) == {"FILLED"}
+
+    order_frame = safe_plan.to_frame()
+    risk = check_order_plan(safe_plan.orders, TradingRiskConfig(max_single_weight=0.2, max_order_value=30000), equity=100000)
+    passed_validation = validate_paper_trade(
+        order_frame,
+        risk.report,
+        {"passed": True, "requested_days": 20, "no_live": True, "metadata": report.metadata, "portfolio_constraints": {}, "event_risk_guard": {}},
+        executions=report.executions,
+        positions=report.positions,
+        requested_days=20,
+    )
+    assert passed_validation.summary["validation_status"] in {"passed", "watchlist"}
+    assert "broker_is_paper" in set(passed_validation.checks["gate"])
+    paper_paths = write_paper_trade_validation_outputs(tmp_path / "paper_validation", passed_validation)
+    assert paper_paths["checks"].exists()
+    assert "Paper Trade Validation Report" in paper_paths["markdown"].read_text(encoding="utf-8")
+
+    blocked_validation = validate_paper_trade(
+        order_frame,
+        decision.report,
+        {"passed": False, "requested_days": 20, "no_live": True, "reasons": decision.reasons, "portfolio_constraints": {}, "event_risk_guard": {}},
+        executions=None,
+        positions=None,
+        requested_days=20,
+    )
+    assert "risk_blocked_has_reasons" in set(blocked_validation.checks["gate"])
+    assert bool(blocked_validation.checks.loc[blocked_validation.checks["gate"].eq("no_executions_when_risk_blocked"), "passed"].iloc[0])
 
 
 def test_portfolio_constraints_cap_theme_single_and_blacklist(tmp_path: Path) -> None:
@@ -413,6 +525,76 @@ def test_portfolio_constraints_cap_theme_single_and_blacklist(tmp_path: Path) ->
     assert paths["report"].exists()
     assert paths["summary"].exists()
     assert "Portfolio Constraint Report" in paths["markdown"].read_text(encoding="utf-8")
+
+
+def test_portfolio_validation_writes_cost_stability_and_gate_report(tmp_path: Path) -> None:
+    dates = pd.bdate_range("2024-01-02", periods=260)
+    equity = pd.DataFrame(
+        {
+            "date": dates,
+            "cash": 100000.0,
+            "market_value": 900000.0,
+            "equity": 1_000_000.0 * (1 + pd.Series(range(260), dtype="float64") * 0.0006),
+        }
+    )
+    equity["daily_return"] = equity["equity"].pct_change().fillna(0.0)
+    equity["running_max"] = equity["equity"].cummax()
+    equity["drawdown"] = equity["equity"] / equity["running_max"] - 1
+    trades = pd.DataFrame(
+        [
+            {"date": dates[1], "symbol": "000630", "side": "BUY", "gross_value": 100000.0, "fee": 30.0, "tax": 0.0, "slippage_rate": 0.0005},
+            {"date": dates[40], "symbol": "000630", "side": "SELL", "gross_value": 103000.0, "fee": 30.9, "tax": 103.0, "slippage_rate": 0.0005, "realized_pnl": 2800.0},
+        ]
+    )
+    rebalances = pd.DataFrame(
+        [
+            {"date": dates[1], "turnover": 0.20, "traded_value": 100000.0},
+            {"date": dates[40], "turnover": 0.18, "traded_value": 103000.0},
+        ]
+    )
+    constraint_daily = pd.DataFrame(
+        [
+            {
+                "date": dates[1].date().isoformat(),
+                "gross_weight_after": 0.50,
+                "max_single_weight_after": 0.20,
+                "max_theme_weight_after": 0.35,
+                "turnover_after": 0.20,
+            }
+        ]
+    )
+    result = validate_portfolio_backtest(
+        equity,
+        trades,
+        rebalances,
+        {
+            "total_return": 0.15,
+            "annual_return": 0.14,
+            "max_drawdown": -0.03,
+            "sharpe": 1.0,
+            "calmar": 4.0,
+            "avg_turnover": 0.19,
+            "trade_count": 2,
+        },
+        constraint_report=pd.DataFrame(),
+        constraint_daily=constraint_daily,
+        event_attribution_daily=pd.DataFrame([{"date": dates[1], "event_count_20d": 1}]),
+        event_guard_metadata={"enabled": True},
+        event_attribution_required=True,
+        backtest_config=BacktestConfig(),
+        strategy_config=StrategyConfig(max_single_weight=0.30, max_theme_weight=0.40, max_turnover=0.50),
+        risk_config=RiskConfig(max_single_weight=0.25, max_drawdown=0.10),
+    )
+    assert not result.checks.empty
+    assert {"gate", "status", "passed", "observed", "threshold"}.issubset(result.checks.columns)
+    assert {"annual_positive_ratio", "total_cost", "avg_cost_bps"}.issubset(result.summary)
+    assert result.costs.loc[result.costs["scope"].eq("all"), "total_cost"].iloc[0] > 0
+    assert {"annual_stability_available", "single_name_cap_enforced", "event_attribution_available"}.issubset(set(result.checks["gate"]))
+    paths = write_portfolio_validation_outputs(tmp_path, result)
+    assert paths["checks"].exists()
+    assert paths["annual"].exists()
+    assert paths["costs"].exists()
+    assert "Portfolio Validation Report" in paths["markdown"].read_text(encoding="utf-8")
 
 
 def test_registry_and_warehouse_write(tmp_path: Path) -> None:
@@ -827,7 +1009,11 @@ def test_feature_store_walk_forward_and_explanation(tmp_path: Path) -> None:
     event_result = build_event_store(raw_events, list(bars))
     event_store = build_point_in_time_feature_store(bars, [1, 5], "sample", event_factors=event_result.event_factors)
     assert event_store.metadata["event_feature_count"] > 0
+    assert "event_feature_quality_counts" in event_store.metadata
+    assert event_store.metadata["event_feature_quality_passed"] in {True, False}
     assert "event_impact_score" in event_store.features.columns
+    event_feature_quality = audit_event_feature_matrix(event_store.features, ["event_impact_score"])
+    assert {"feature", "quality_status", "failed_reasons", "can_enter_trusted_model"}.issubset(event_feature_quality.columns)
     event_forecast = build_stock_forecast(
         bars,
         "601899",
@@ -853,6 +1039,33 @@ def test_feature_store_walk_forward_and_explanation(tmp_path: Path) -> None:
     assert not walk.metrics.empty
     assert "trust_status" in walk.metrics.columns
     assert {"amount_mean_20", "cs_amount_rank_20", "market_breadth", "market_mean_return"}.issubset(walk.predictions.columns)
+    required_calibration_columns = {
+        "raw_prob_up",
+        "calibrated_prob_up",
+        "probability_calibration_method",
+        "probability_calibration_status",
+        "probability_calibration_rows",
+        "probability_raw_brier",
+        "probability_calibrated_brier",
+        "probability_calibration_pit_passed",
+        "probability_calibration_end_date",
+        "test_start_date",
+    }
+    assert required_calibration_columns.issubset(walk.predictions.columns)
+    assert walk.predictions["prob_up"].between(0, 1).all()
+    assert walk.predictions["raw_prob_up"].between(0, 1).all()
+    assert walk.predictions["calibrated_prob_up"].between(0, 1).all()
+    assert walk.predictions["probability_calibration_pit_passed"].astype(bool).all()
+    assert (
+        pd.to_datetime(walk.predictions["probability_calibration_end_date"])
+        < pd.to_datetime(walk.predictions["test_start_date"])
+    ).all()
+    assert "probability_calibration_ready_ratio" in walk.metrics.columns
+    model_audit_columns = {"requested_model_type", "effective_model_type", "model_base_status", "fallback_reason"}
+    assert model_audit_columns.issubset(walk.predictions.columns)
+    assert model_audit_columns.issubset(walk.metrics.columns)
+    assert set(walk.predictions["model_base_status"]) == {"baseline"}
+    assert walk.metrics["fallback_rate"].iloc[0] == 0.0
 
     event_walk = train_walk_forward(
         bars,
@@ -867,11 +1080,112 @@ def test_feature_store_walk_forward_and_explanation(tmp_path: Path) -> None:
     )
     assert event_walk.summary["event_feature_count"] > 0
     assert event_walk.summary["feature_count"] > len(FACTOR_COLUMNS)
+    assert "event_feature_quality_passed" in event_walk.metrics.columns
+    assert (tmp_path / "walk_event" / "event_feature_quality.csv").exists()
+    event_quality_artifact = pd.read_csv(tmp_path / "walk_event" / "event_feature_quality.csv")
+    assert {"feature", "quality_status", "failed_reasons"}.issubset(event_quality_artifact.columns)
+
+    weak_event_factors = pd.DataFrame(
+        {
+            "date": [bars["601899"]["date"].iloc[-30], bars["603993"]["date"].iloc[-30]],
+            "symbol": ["601899", "603993"],
+            "event_impact_score": [0.0, 0.0],
+        }
+    )
+    weak_event_walk = train_walk_forward(
+        bars,
+        "factor_score",
+        [1],
+        tmp_path / "walk_weak_event",
+        tmp_path / "registry_weak_event",
+        min_symbols=2,
+        train_years=1,
+        test_months=2,
+        event_factors=weak_event_factors,
+    )
+    assert bool(weak_event_walk.metrics["event_feature_quality_passed"].iloc[0]) is False
+    assert "event_feature_quality_passed" in str(weak_event_walk.metrics["trust_gate_reasons"].iloc[0])
+
+    approved_features = FACTOR_COLUMNS[:6]
+    filtered_walk = train_walk_forward(
+        bars,
+        "factor_score",
+        [1],
+        tmp_path / "walk_filtered",
+        tmp_path / "registry_filtered",
+        min_symbols=2,
+        train_years=1,
+        test_months=2,
+        feature_columns=approved_features,
+        feature_set_source="unit_test_factor_trust_audit:approved",
+    )
+    assert filtered_walk.summary["feature_count"] == len(approved_features)
+    assert filtered_walk.summary["feature_set_source"] == "unit_test_factor_trust_audit:approved"
+    registry_rows = json.loads((tmp_path / "registry_filtered" / "model_registry.json").read_text(encoding="utf-8"))
+    assert registry_rows[-1]["feature_set"] == approved_features
+    assert registry_rows[-1]["feature_set_source"] == "unit_test_factor_trust_audit:approved"
 
     forecast = build_stock_forecast(bars, "601899", [1, 5], source="sample", allow_sample=True)
     explanation = explain_stock_forecast(bars, forecast, "601899", [1, 5])
     assert not explanation.report.empty
     assert "Similar History" in explanation.markdown
+
+
+def test_walk_forward_records_model_base_fallback(tmp_path: Path) -> None:
+    bars = {
+        "601899": _bars("601899", 0),
+        "603993": _bars("603993", 10),
+        "600547": _bars("600547", 20),
+    }
+    result = train_walk_forward(
+        bars,
+        "unsupported_model_base",
+        [1],
+        tmp_path / "walk_unsupported",
+        tmp_path / "registry_unsupported",
+        min_symbols=2,
+        train_years=1,
+        test_months=2,
+    )
+    assert set(result.predictions["requested_model_type"]) == {"unsupported_model_base"}
+    assert set(result.predictions["effective_model_type"]) == {"factor_score"}
+    assert set(result.predictions["model_base_status"]) == {"fallback"}
+    assert set(result.predictions["fallback_reason"]) == {"unsupported_model_type"}
+    row = result.metrics.iloc[0]
+    assert row["effective_model_type"] == "factor_score"
+    assert row["model_base_status"] == "fallback"
+    assert row["fallback_reasons"] == "unsupported_model_type"
+    assert row["fallback_rate"] == 1.0
+    assert result.metrics["trust_status"].iloc[0] == "weak"
+    assert "model_base_not_fallback" in result.metrics["trust_gate_reasons"].iloc[0]
+    registry_rows = json.loads((tmp_path / "registry_unsupported" / "model_registry.json").read_text(encoding="utf-8"))
+    assert registry_rows[-1]["effective_model_type"] == "factor_score"
+    assert registry_rows[-1]["model_base_status"] == "fallback"
+    assert registry_rows[-1]["fallback_reason"] == "unsupported_model_type"
+
+
+def test_factor_trust_audit_can_filter_walk_forward_features(tmp_path: Path) -> None:
+    audit = pd.DataFrame(
+        [
+            {"factor_id": FACTOR_COLUMNS[0], "trust_status": "approved"},
+            {"factor_id": FACTOR_COLUMNS[1], "trust_status": "watchlist"},
+            {"factor_id": FACTOR_COLUMNS[2], "trust_status": "quarantine"},
+            {"factor_id": "not_a_factor_column", "trust_status": "approved"},
+        ]
+    )
+    audit_path = tmp_path / "factor_trust_audit.csv"
+    audit.to_csv(audit_path, index=False)
+
+    class Args:
+        factor_trust_audit = str(audit_path)
+        factor_trust_status = "approved"
+
+    columns, metadata = cli_module._feature_columns_from_factor_trust(Args(), tmp_path / "out")
+    assert columns == [FACTOR_COLUMNS[0]]
+    assert metadata["selected_feature_count"] == 1
+    assert metadata["allowed_statuses"] == ["approved"]
+    assert (tmp_path / "out" / "factor_trust_feature_set.csv").exists()
+    assert (tmp_path / "out" / "factor_trust_feature_set.json").exists()
 
 
 def test_factor_trust_registry_quarantines_weak_or_unproven_factors() -> None:
@@ -905,7 +1219,7 @@ def test_factor_trust_registry_quarantines_weak_or_unproven_factors() -> None:
     assert "Cost/Regime Watchlist" in result.markdown
 
 
-def test_event_bus_builds_required_evidence_fields() -> None:
+def test_event_bus_builds_required_evidence_fields(tmp_path: Path) -> None:
     raw, warnings = sync_public_events(["000630", "601899"], "2024-01-01", "2024-12-31", source="sample")
     result = build_event_store(raw, ["000630", "601899"])
     required = {
@@ -936,6 +1250,23 @@ def test_event_bus_builds_required_evidence_fields() -> None:
         "latest_entity_link_method",
     }.issubset(result.event_factors.columns)
     assert "News And Event Evidence Report" in result.evidence_markdown
+    quality = audit_event_factor_quality(result.event_store, result.event_factors, ["000630", "601899"])
+    assert {
+        "can_enter_trusted_model",
+        "quality_status",
+        "failed_reasons",
+        "source_url_coverage",
+        "raw_hash_coverage",
+    }.issubset(quality.columns)
+    assert set(quality["quality_status"]).issubset({"approved", "watchlist", "quarantine"})
+    paths = write_event_outputs(result, tmp_path / "events")
+    assert paths["event_factor_quality"].exists()
+    assert paths["event_factor_quality_report"].exists()
+    assert "Event Factor Quality Audit" in paths["event_factor_quality_report"].read_text(encoding="utf-8")
+    universe_paths = write_event_outputs(result, tmp_path / "events_universe", symbols=["000630", "601899", "000001"])
+    universe_quality = pd.read_csv(universe_paths["event_factor_quality"])
+    assert int(universe_quality["requested_symbols"].iloc[0]) == 3
+    assert universe_quality["symbol_coverage"].iloc[0] < 1.0
     coverage = audit_event_coverage(result.event_store, result.event_factors, ["000630", "601899", "000001"])
     assert {
         "symbol",
@@ -1245,6 +1576,9 @@ def test_walk_forward_trust_gate_requires_multiple_oos_metrics() -> None:
         "beats_baseline": True,
         "auc": 0.53,
         "brier": 0.24,
+        "calibrated_ece": 0.05,
+        "probability_calibration_ready_ratio": 1.0,
+        "probability_calibration_pit_passed": True,
         "rank_ic": 0.01,
         "top_bottom_spread": 0.002,
     }
@@ -1265,14 +1599,28 @@ def test_model_evaluation_slices_are_real_metrics() -> None:
         {
             "model_id": "walk_forward_factor_score_h5",
             "model_type": "factor_score",
-            "model_family": "walk_forward_validation",
-            "horizon_days": 5,
-            "artifact_path": "reports/walk_forward/walk_forward_predictions.csv",
-            "metrics": {
+                "model_family": "walk_forward_validation",
+                "horizon_days": 5,
+                "artifact_path": "reports/walk_forward/walk_forward_predictions.csv",
+                "effective_model_type": "lightgbm",
+                "effective_model_types": "lightgbm",
+                "model_base_status": "trained",
+                "model_base_statuses": "trained",
+                "fallback_rate": 0.0,
+                "prediction_methods": "lightgbm_walk_forward",
+                "metrics": {
                 "rows": 80,
                 "direction_accuracy": 0.55,
                 "auc": 0.56,
+                "raw_auc": 0.55,
                 "brier": 0.24,
+                "raw_brier": 0.25,
+                "calibrated_ece": 0.04,
+                "raw_ece": 0.08,
+                "probability_calibration_statuses": "calibrated",
+                "probability_calibration_methods": "platt",
+                "probability_calibration_ready_ratio": 1.0,
+                "probability_calibration_pit_passed": True,
                 "rank_ic": 0.03,
                 "top_bottom_spread": 0.01,
                 "trust_status": "weak",
@@ -1280,7 +1628,19 @@ def test_model_evaluation_slices_are_real_metrics() -> None:
         }
     ]
     registry = summarize_model_registry(records)
-    assert {"auc", "trust_gate_reasons", "artifact_path"}.issubset(registry.columns)
+    assert {
+        "auc",
+        "raw_auc",
+        "calibrated_ece",
+        "trust_gate_reasons",
+        "artifact_path",
+        "effective_model_types",
+        "model_base_statuses",
+        "fallback_rate",
+        "prediction_methods",
+    }.issubset(registry.columns)
+    assert registry["model_base_status"].iloc[0] == "trained"
+    assert registry["prediction_methods"].iloc[0] == "lightgbm_walk_forward"
 
     dates = pd.bdate_range("2024-01-01", periods=12)
     rows = []
@@ -1298,6 +1658,10 @@ def test_model_evaluation_slices_are_real_metrics() -> None:
                     "future_return_5d": ret,
                     "direction_up_5d": direction,
                     "prob_up": 0.40 + symbol_idx * 0.08,
+                    "raw_prob_up": 0.38 + symbol_idx * 0.08,
+                    "probability_calibration_status": "calibrated",
+                    "probability_calibration_method": "platt",
+                    "probability_calibration_pit_passed": True,
                     "amount_mean_20": 1_000_000 + symbol_idx * 100_000,
                     "market_mean_return": (day_idx % 4 - 1.5) * 0.002,
                     "market_breadth": 0.35 + (day_idx % 4) * 0.10,
@@ -1307,11 +1671,73 @@ def test_model_evaluation_slices_are_real_metrics() -> None:
     slices = evaluate_walk_forward_slices(pd.DataFrame(rows))
     assert {"year", "industry", "theme", "size", "regime"}.issubset(slices)
     assert int(slices["year"]["rows"].sum()) == len(rows)
+    assert "raw_brier" in slices["year"].columns
+    assert "calibrated_ece" in slices["year"].columns
+    assert "probability_calibration_ready_ratio" in slices["year"].columns
     assert "top_bottom_spread" in slices["theme"].columns
     assert set(slices["size"]["size_bucket"]).intersection({"low_liquidity_proxy", "mid_liquidity_proxy", "high_liquidity_proxy"})
     assert "amount_mean_20_liquidity_proxy" in set(slices["size"]["size_source"])
     assert "pit_market_mean_return_and_breadth" in set(slices["regime"]["regime_source"])
     assert slices["regime"]["market_regime"].nunique() >= 1
+
+
+def test_evaluate_models_can_use_explicit_walk_forward_artifact(tmp_path: Path) -> None:
+    artifact = tmp_path / "selected_walk_forward_predictions.csv"
+    rows = []
+    for date in pd.bdate_range("2025-01-01", periods=6):
+        for idx, symbol in enumerate(["000630", "601899", "300750"]):
+            ret = (idx - 1) * 0.002
+            rows.append(
+                {
+                    "date": date,
+                    "symbol": symbol,
+                    "horizon_days": 5,
+                    "model_type": "factor_score",
+                    "future_return_5d": ret,
+                    "direction_up_5d": int(ret > 0),
+                    "prob_up": 0.35 + idx * 0.20,
+                    "raw_prob_up": 0.33 + idx * 0.20,
+                    "probability_calibration_status": "calibrated",
+                    "probability_calibration_method": "platt",
+                    "probability_calibration_pit_passed": True,
+                    "amount_mean_20": 1_000_000 + idx * 200_000,
+                    "market_mean_return": 0.001,
+                    "market_breadth": 0.60,
+                    "volatility_20": 0.02,
+                }
+            )
+    pd.DataFrame(rows).to_csv(artifact, index=False)
+
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "data": {"source": "sample", "symbols": ["000630"], "start_date": "2024-01-01"},
+                "model": {"registry_dir": str(tmp_path / "registry")},
+                "storage": {"root_dir": str(tmp_path / "warehouse")},
+            }
+        ),
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "evaluation"
+    rc = cli_module.main(
+        [
+            "evaluate-models",
+            "--config",
+            str(config_path),
+            "--walk-forward-artifact",
+            str(artifact),
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+    manifest = json.loads((out_dir / "model_evaluation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["walk_forward_prediction_rows"] == len(rows)
+    assert manifest["walk_forward_artifacts"] == [str(artifact)]
+    yearly = pd.read_csv(out_dir / "evaluation_by_year.csv")
+    assert int(yearly["rows"].sum()) == len(rows)
+    assert "calibrated_ece" in yearly.columns
 
 
 def test_resilient_loader_keeps_large_free_run_moving(monkeypatch: pytest.MonkeyPatch) -> None:

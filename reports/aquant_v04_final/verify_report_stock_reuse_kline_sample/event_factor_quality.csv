@@ -1,0 +1,2 @@
+scope,requested_symbols,linked_symbols,symbol_coverage,event_rows,event_factor_rows,event_factor_symbols,event_factor_dates,source_count,event_type_count,avg_source_reliability,avg_entity_link_confidence,can_enter_trusted_model,quality_status,failed_reasons,source_url_coverage,published_at_coverage,fetched_at_coverage,related_symbols_coverage,event_type_coverage,impact_score_coverage,confidence_coverage,raw_hash_coverage
+event_evidence,3,3,1.0,12,15,3,7,4,3,0.4000000000000001,0.9449999999999998,False,watchlist,source_url_coverage,0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0

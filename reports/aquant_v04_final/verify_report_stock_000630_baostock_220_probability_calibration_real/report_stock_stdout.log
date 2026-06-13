@@ -1,0 +1,3 @@
+Full stock report finished.
+Symbol: 000630; source: baostock; horizons: [1, 5, 20, 60]; with_kline: True; with_news: True
+Report: reports\aquant_v04_final\verify_report_stock_000630_baostock_220_probability_calibration_real

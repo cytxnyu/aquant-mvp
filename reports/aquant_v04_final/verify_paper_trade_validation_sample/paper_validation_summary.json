@@ -1,0 +1,19 @@
+{
+  "validation_status": "passed",
+  "validation_passed": true,
+  "failed_checks": [],
+  "warning_checks": [],
+  "check_count": 14,
+  "pass_count": 14,
+  "warn_count": 0,
+  "fail_count": 0,
+  "risk_passed": true,
+  "no_live": true,
+  "requested_days": 20,
+  "order_count": 3,
+  "risk_rows": 3,
+  "execution_rows": 3,
+  "position_rows": 3,
+  "broker": "paper",
+  "note": "Paper validation proves the simulated path is auditable and non-live; it is not live-trading permission."
+}

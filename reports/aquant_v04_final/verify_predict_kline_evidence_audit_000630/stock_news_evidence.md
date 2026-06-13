@@ -1,0 +1,27 @@
+# News And Event Evidence Report
+
+## Summary
+
+- Events: 4
+- Symbols: 1
+- Event factors are structured research inputs, not direct trading advice.
+
+## Latest Event Factor Snapshot
+
+- `000630` 2025-12-31 00:00:00: impact=0.211, weighted=0.064, reliability=0.40, link=0.94, positive=3, negative=1, risk=1
+
+## Recent Major Announcement Summary
+
+- `000630` 2025-12-31 00:00:00 [sample_announcement] order_contract: link=explicit_symbol/1.00; text=not_available/0; 000630 发布经营进展公告，订单合同和产能信息需要继续跟踪。
+
+## Evidence Items
+
+- `000630` 2025-12-31 00:00:00 [sample_announcement] order_contract/positive impact=0.55, reliability=0.40: link=explicit_symbol/1.00 公告: 000630 发布经营进展公告，订单合同和产能信息需要继续跟踪。 text=not_available/0 (no_url)
+- `000630` 2025-12-29 00:00:00 [sample_policy_news] commodity_shock/positive impact=0.20, reliability=0.40: link=theme_keyword/0.78 有色金属、铜、黄金、锂和稀土资源产业链价格与供给政策受到关注。 text=not_available/0 (no_url)
+- `000630` 2025-12-28 00:00:00 [sample_industry_news] commodity_shock/positive impact=0.20, reliability=0.40: link=explicit_symbol/1.00 行业: 有色金属与新能源产业链价格波动，对相关股票形成商品价格冲击。 text=not_available/0 (no_url)
+- `000630` 2025-12-25 00:00:00 [sample_risk_news] public_opinion_risk/negative impact=-0.55, reliability=0.40: link=explicit_symbol/1.00 风险: 000630 出现舆情风险提示，需降低事件置信度。 text=not_available/0 (no_url)
+
+## Guardrails
+
+- Unlinked news is excluded from individual-stock event factors.
+- Source failures must be written as warnings, not silently filled with fake events.

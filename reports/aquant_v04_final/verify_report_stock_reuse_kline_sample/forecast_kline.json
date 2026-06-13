@@ -1,0 +1,65 @@
+{
+  "symbol": "000630",
+  "source": "sample",
+  "model_type": "factor_score",
+  "requested_days": 8,
+  "days": 20,
+  "history_days": 60,
+  "latest_date": "2025-12-31",
+  "latest_close": 33.63435124611308,
+  "forecast_rows": 60,
+  "intraday_forecast_rows": 18,
+  "horizon_summary_rows": 4,
+  "scenarios": [
+    "bearish",
+    "base",
+    "bullish"
+  ],
+  "required_kline_horizons": [
+    "intraday_next_day",
+    "1d",
+    "5d",
+    "20d"
+  ],
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "data_version": "274ffa65b083",
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "note": "Predicted K-line is a probability scenario chart, not a deterministic forecast.",
+  "stock_evidence_audit": {
+    "symbol": "000630",
+    "latest_date": "2025-12-31",
+    "source": "sample",
+    "horizons": 5,
+    "validation_status": "failed",
+    "validation_passed": false,
+    "failed_checks": [
+      "walk_forward_evidence"
+    ],
+    "warning_checks": [
+      "sample_source_warning"
+    ],
+    "check_count": 80,
+    "pass_count": 72,
+    "warn_count": 5,
+    "fail_count": 3,
+    "trust_status_set": [
+      "data_insufficient"
+    ],
+    "with_news": true,
+    "event_rows": 4,
+    "event_factor_rows": 5,
+    "note": "Evidence audit checks forecast schema completeness and traceability. It does not certify future returns."
+  },
+  "stock_evidence_audit_files": {
+    "csv": "reports\\aquant_v04_final\\verify_report_stock_reuse_kline_sample\\kline_stock_evidence_audit.csv",
+    "json": "reports\\aquant_v04_final\\verify_report_stock_reuse_kline_sample\\kline_stock_evidence_audit.json",
+    "md": "reports\\aquant_v04_final\\verify_report_stock_reuse_kline_sample\\kline_stock_evidence_audit.md"
+  }
+}

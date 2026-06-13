@@ -1,0 +1,2 @@
+scope,requested_symbols,linked_symbols,symbol_coverage,event_rows,event_factor_rows,event_factor_symbols,event_factor_dates,source_count,event_type_count,avg_source_reliability,avg_entity_link_confidence,can_enter_trusted_model,quality_status,failed_reasons,source_url_coverage,published_at_coverage,fetched_at_coverage,related_symbols_coverage,event_type_coverage,impact_score_coverage,confidence_coverage,raw_hash_coverage
+event_evidence,220,220,1.0,23525,37959,220,628,3,13,0.8866716259298617,0.9994091392136025,True,approved,passed,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0

@@ -1,0 +1,395 @@
+{
+  "symbol": "000630",
+  "latest_date": "2026-06-10",
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "source": "baostock",
+  "model_type": "factor_score",
+  "data_version": "0eb3a3a534ae",
+  "event_feature_count": 13,
+  "event_features": [
+    "event_count_3d",
+    "event_count_20d",
+    "positive_event_count",
+    "negative_event_count",
+    "event_risk_count",
+    "event_impact_score",
+    "event_weighted_impact_score",
+    "event_confidence_mean",
+    "event_reliability_mean",
+    "event_high_reliability_count",
+    "event_entity_link_confidence_mean",
+    "latest_event_source_reliability",
+    "latest_entity_link_confidence"
+  ],
+  "walk_forward_evidence_count": 38,
+  "diagnostics": {
+    "horizon_1d": {
+      "method": "score_baseline",
+      "history_rows": 128577,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128577
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128577
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 128577
+      },
+      "valid_accuracy": 0.5310005425094939,
+      "valid_brier": 0.24779160009593804,
+      "valid_auc": 0.49202010144156066,
+      "calibration_rows": 25806,
+      "calibration_bins": 1,
+      "calibration_ece": 0.05326146785338792,
+      "calibration_status": "calibration_watch",
+      "raw_prob_up": 0.4749423586856628,
+      "calibrated_prob_up": 0.4749423586856628,
+      "probability_calibration_method": "identity",
+      "probability_calibration_status": "calibration_watch",
+      "probability_calibration_rows": 25806,
+      "probability_calibration_train_rows": 18064,
+      "probability_calibration_eval_rows": 7742,
+      "probability_raw_brier": 0.24779160009593804,
+      "probability_calibrated_brier": 0.24779160009593804,
+      "probability_raw_ece": 0.05326146785338792,
+      "probability_calibrated_ece": 0.05326146785338792,
+      "probability_calibration_improvement_brier": 0.0,
+      "probability_calibration_improvement_ece": 0.0,
+      "raw_valid_brier": 0.24929998985771018,
+      "raw_calibration_ece": 0.010503402524171757,
+      "feature_count": 250,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 587,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.03082191780821919,
+      "conformal_status": "conformal_ready"
+    },
+    "horizon_5d": {
+      "method": "score_baseline",
+      "history_rows": 127697,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 127697
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 127697
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 127697
+      },
+      "valid_accuracy": 0.5204628073329945,
+      "valid_brier": 0.24830332892714094,
+      "valid_auc": 0.4871516427249945,
+      "calibration_rows": 25583,
+      "calibration_bins": 1,
+      "calibration_ece": 0.09577378900655203,
+      "calibration_status": "calibration_watch",
+      "raw_prob_up": 0.4814949800557352,
+      "calibrated_prob_up": 0.4814949800557352,
+      "probability_calibration_method": "identity",
+      "probability_calibration_status": "calibration_watch",
+      "probability_calibration_rows": 25583,
+      "probability_calibration_train_rows": 17908,
+      "probability_calibration_eval_rows": 7675,
+      "probability_raw_brier": 0.24830332892714094,
+      "probability_calibrated_brier": 0.24830332892714094,
+      "probability_raw_ece": 0.09577378900655203,
+      "probability_calibrated_ece": 0.09577378900655203,
+      "probability_calibration_improvement_brier": 0.0,
+      "probability_calibration_improvement_ece": 0.0,
+      "raw_valid_brier": 0.2497512027737686,
+      "raw_calibration_ece": 0.01302723191369859,
+      "feature_count": 250,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 583,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.07197005943457424,
+      "conformal_status": "conformal_ready"
+    },
+    "horizon_20d": {
+      "method": "score_baseline",
+      "history_rows": 124397,
+      "prob_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 124397
+      },
+      "return_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 124397
+      },
+      "excess_calibration": {
+        "mode": "linear_score_percentile",
+        "rows": 124397
+      },
+      "valid_accuracy": 0.49121258325977046,
+      "valid_brier": 0.24991495570872124,
+      "valid_auc": 0.4899980673574155,
+      "calibration_rows": 24922,
+      "calibration_bins": 1,
+      "calibration_ece": 0.01625044457581043,
+      "calibration_status": "calibrated",
+      "raw_prob_up": 0.5023807925951868,
+      "calibrated_prob_up": 0.4976013247796354,
+      "probability_calibration_method": "platt",
+      "probability_calibration_status": "calibrated",
+      "probability_calibration_rows": 24922,
+      "probability_calibration_train_rows": 17445,
+      "probability_calibration_eval_rows": 7477,
+      "probability_raw_brier": 0.2519381653270838,
+      "probability_calibrated_brier": 0.24991495570872124,
+      "probability_raw_ece": 0.03023820717471648,
+      "probability_calibrated_ece": 0.01625044457581043,
+      "probability_calibration_improvement_brier": 0.0020232096183625536,
+      "probability_calibration_improvement_ece": 0.01398776259890605,
+      "raw_valid_brier": 0.2507488291626493,
+      "raw_calibration_ece": 0.018868251263809588,
+      "feature_count": 250,
+      "embargo_days": 5,
+      "conformal_method": "split_conformal_historical_residual_proxy",
+      "conformal_rows": 568,
+      "conformal_alpha": 0.2,
+      "conformal_target_coverage": 0.8,
+      "conformal_interval_half_width": 0.1506201580473575,
+      "conformal_status": "conformal_ready"
+    }
+  },
+  "note": "Predictions are probabilistic research signals, not guaranteed price moves.",
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 242,
+    "event_factor_rows": 379,
+    "event_types": [
+      "commodity_shock",
+      "general_news",
+      "industry_policy",
+      "shareholder_change"
+    ],
+    "latest_event_title": "沪银主连价格下跌触发商品冲击",
+    "similar_event_rows": 25,
+    "similar_event_known_return_rows_5d": 21,
+    "similar_event_positive_rate_5d": 0.6190476190476191,
+    "similar_event_summary": {
+      "symbol": "000630",
+      "query_events": 5,
+      "match_rows": 25,
+      "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+      "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+      "can_enter_event_factors": false,
+      "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+      "known_return_rows_1d": 23,
+      "mean_forward_return_1d": -0.0008952362695200438,
+      "positive_rate_1d": 0.43478260869565216,
+      "known_return_rows_5d": 21,
+      "mean_forward_return_5d": 0.013112198847708317,
+      "positive_rate_5d": 0.6190476190476191,
+      "known_return_rows_20d": 19,
+      "mean_forward_return_20d": 0.043257052524495465,
+      "positive_rate_20d": 0.6842105263157895,
+      "avg_similarity_score": 0.6669314196756457,
+      "same_symbol_rows": 25,
+      "same_event_type_rows": 25
+    },
+    "event_impact_rows": 726,
+    "event_impact_pit_prior_rows": 726,
+    "event_impact_pit_ready_rows": 724,
+    "event_impact_summary": {
+      "event_rows": 23522,
+      "event_return_rows": 70566,
+      "available_return_rows": 64979,
+      "cohort_rows": 178,
+      "pit_prior_rows": 70566,
+      "pit_ready_rows": 68973,
+      "no_future_leakage": true,
+      "horizons": [
+        1,
+        5,
+        20
+      ],
+      "min_prior_rows": 20,
+      "can_enter_trusted_model": false,
+      "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+    }
+  },
+  "news_files": {
+    "raw_events": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\raw_events.csv",
+    "event_store": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\event_store.csv",
+    "event_factors": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\event_factors.csv",
+    "news_evidence": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\news_evidence.md",
+    "event_factor_quality": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\event_factor_quality.csv",
+    "event_factor_quality_report": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\event_factor_quality.md",
+    "event_warnings": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\event_warnings.json",
+    "similar_csv": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.csv",
+    "similar_json": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.json",
+    "similar_md": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.md",
+    "impact_event_returns": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_returns.csv",
+    "impact_cohorts": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_cohorts.csv",
+    "impact_pit_priors": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_pit_priors.csv",
+    "impact_json": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study.json",
+    "impact_md": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study.md",
+    "stock_event_impact_returns": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_returns.csv",
+    "stock_event_impact_pit_priors": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_pit_priors.csv"
+  },
+  "trust_gates": {
+    "symbol": "000630",
+    "latest_date": "2026-06-10",
+    "source": "baostock",
+    "horizons": 3,
+    "final_status_set": [
+      "model_failed",
+      "weak"
+    ],
+    "gate_rows": 33,
+    "blocking_gate_count": 9,
+    "blocking_gate_names": [
+      "local_signal_quality",
+      "walk_forward_evidence_present",
+      "walk_forward_rows",
+      "walk_forward_trusted"
+    ],
+    "by_horizon": {
+      "1": {
+        "trust_status": "weak",
+        "blocking_gates": [
+          "walk_forward_trusted",
+          "walk_forward_rows",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_status=weak; reasons=min_oos_rows;brier_below_025",
+          "walk_forward_rows=2370",
+          "confidence=0.0376; sample_rank_ic=0.0000"
+        ]
+      },
+      "5": {
+        "trust_status": "weak",
+        "blocking_gates": [
+          "walk_forward_trusted",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_status=weak; reasons=beats_baseline;auc_above_052;brier_below_025;calibration_ready;rank_ic_positive;top_bottom_spread_positive",
+          "confidence=0.0278; sample_rank_ic=0.0000"
+        ]
+      },
+      "20": {
+        "trust_status": "model_failed",
+        "blocking_gates": [
+          "walk_forward_evidence_present",
+          "walk_forward_trusted",
+          "walk_forward_rows",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_evidence_missing",
+          "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+          "walk_forward_rows=0",
+          "confidence=0.0036; sample_rank_ic=0.0000"
+        ]
+      }
+    },
+    "news_summary": {
+      "with_news": true,
+      "event_rows": 242,
+      "event_factor_rows": 379,
+      "event_types": [
+        "commodity_shock",
+        "general_news",
+        "industry_policy",
+        "shareholder_change"
+      ],
+      "latest_event_title": "沪银主连价格下跌触发商品冲击",
+      "similar_event_rows": 25,
+      "similar_event_known_return_rows_5d": 21,
+      "similar_event_positive_rate_5d": 0.6190476190476191,
+      "similar_event_summary": {
+        "symbol": "000630",
+        "query_events": 5,
+        "match_rows": 25,
+        "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+        "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+        "can_enter_event_factors": false,
+        "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+        "known_return_rows_1d": 23,
+        "mean_forward_return_1d": -0.0008952362695200438,
+        "positive_rate_1d": 0.43478260869565216,
+        "known_return_rows_5d": 21,
+        "mean_forward_return_5d": 0.013112198847708317,
+        "positive_rate_5d": 0.6190476190476191,
+        "known_return_rows_20d": 19,
+        "mean_forward_return_20d": 0.043257052524495465,
+        "positive_rate_20d": 0.6842105263157895,
+        "avg_similarity_score": 0.6669314196756457,
+        "same_symbol_rows": 25,
+        "same_event_type_rows": 25
+      },
+      "event_impact_rows": 726,
+      "event_impact_pit_prior_rows": 726,
+      "event_impact_pit_ready_rows": 724,
+      "event_impact_summary": {
+        "event_rows": 23522,
+        "event_return_rows": 70566,
+        "available_return_rows": 64979,
+        "cohort_rows": 178,
+        "pit_prior_rows": 70566,
+        "pit_ready_rows": 68973,
+        "no_future_leakage": true,
+        "horizons": [
+          1,
+          5,
+          20
+        ],
+        "min_prior_rows": 20,
+        "can_enter_trusted_model": false,
+        "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+      }
+    },
+    "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice."
+  },
+  "trust_gate_files": {
+    "csv": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.csv",
+    "json": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.json",
+    "md": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.md"
+  },
+  "evidence_audit": {
+    "symbol": "000630",
+    "latest_date": "2026-06-10",
+    "source": "baostock",
+    "horizons": 3,
+    "validation_status": "failed",
+    "validation_passed": false,
+    "failed_checks": [
+      "walk_forward_evidence"
+    ],
+    "warning_checks": [],
+    "check_count": 48,
+    "pass_count": 47,
+    "warn_count": 0,
+    "fail_count": 1,
+    "trust_status_set": [
+      "model_failed",
+      "weak"
+    ],
+    "with_news": true,
+    "event_rows": 242,
+    "event_factor_rows": 379,
+    "note": "Evidence audit checks forecast schema completeness and traceability. It does not certify future returns."
+  },
+  "evidence_audit_files": {
+    "csv": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.csv",
+    "json": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.json",
+    "md": "reports\\aquant_v04_final\\verify_predict_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.md"
+  }
+}

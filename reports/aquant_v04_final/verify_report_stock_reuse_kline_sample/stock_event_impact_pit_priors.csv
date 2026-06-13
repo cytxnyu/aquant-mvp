@@ -1,0 +1,13 @@
+event_id,symbol,published_at,horizon_days,cohort_key,prior_sample_count,prior_mean_return,prior_positive_rate,prior_mean_excess_return_proxy,prior_outcome_cutoff,pit_ready,no_future_leakage,reason
+c83b177a2cda6f8d,000630,2025-12-25T00:00:00,1,public_opinion_risk|negative,1,0.03560539445056987,1.0,0.027280670865588462,2025-12-24,False,True,"prior_rows=1, minimum=20"
+c83b177a2cda6f8d,000630,2025-12-25T00:00:00,5,public_opinion_risk|negative,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+c83b177a2cda6f8d,000630,2025-12-25T00:00:00,20,public_opinion_risk|negative,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+07b9489d9e7e4308,000630,2025-12-28T00:00:00,1,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+07b9489d9e7e4308,000630,2025-12-28T00:00:00,5,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+07b9489d9e7e4308,000630,2025-12-28T00:00:00,20,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+5211bc317839407f,000630,2025-12-29T00:00:00,1,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+5211bc317839407f,000630,2025-12-29T00:00:00,5,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+5211bc317839407f,000630,2025-12-29T00:00:00,20,commodity_shock|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+303a92fe240cea38,000630,2025-12-31T00:00:00,1,order_contract|positive,1,0.03941013769535395,1.0,0.021750069653457865,2025-12-30,False,True,"prior_rows=1, minimum=20"
+303a92fe240cea38,000630,2025-12-31T00:00:00,5,order_contract|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"
+303a92fe240cea38,000630,2025-12-31T00:00:00,20,order_contract|positive,0,0.0,0.0,0.0,,False,True,"prior_rows=0, minimum=20"

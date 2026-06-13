@@ -67,6 +67,17 @@ EVENT_FACTOR_CONTEXT_COLUMNS = [
 
 EVENT_FACTOR_COLUMNS = EVENT_FACTOR_NUMERIC_COLUMNS + EVENT_FACTOR_CONTEXT_COLUMNS
 
+EVENT_EVIDENCE_REQUIRED_COLUMNS = [
+    "source_url",
+    "published_at",
+    "fetched_at",
+    "related_symbols",
+    "event_type",
+    "impact_score",
+    "confidence",
+    "raw_hash",
+]
+
 EVENT_RISK_TYPES = {
     "regulatory_inquiry",
     "regulatory_penalty",
@@ -308,21 +319,149 @@ def build_event_store(raw_events: pd.DataFrame, symbols: list[str] | None = None
     )
 
 
-def write_event_outputs(result: EventBuildResult, output_dir: Path) -> dict[str, Path]:
+def write_event_outputs(result: EventBuildResult, output_dir: Path, symbols: list[str] | None = None) -> dict[str, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     paths = {
         "raw_events": output_dir / "raw_events.csv",
         "event_store": output_dir / "event_store.csv",
         "event_factors": output_dir / "event_factors.csv",
         "news_evidence": output_dir / "news_evidence.md",
+        "event_factor_quality": output_dir / "event_factor_quality.csv",
+        "event_factor_quality_report": output_dir / "event_factor_quality.md",
         "event_warnings": output_dir / "event_warnings.json",
     }
     result.raw_events.to_csv(paths["raw_events"], index=False)
     result.event_store.to_csv(paths["event_store"], index=False)
     result.event_factors.to_csv(paths["event_factors"], index=False)
+    quality = audit_event_factor_quality(result.event_store, result.event_factors, symbols=symbols)
+    quality.to_csv(paths["event_factor_quality"], index=False)
+    paths["event_factor_quality_report"].write_text(_event_factor_quality_markdown(quality), encoding="utf-8")
     paths["news_evidence"].write_text(result.evidence_markdown, encoding="utf-8")
     paths["event_warnings"].write_text(json.dumps({"warnings": result.warnings}, ensure_ascii=False, indent=2), encoding="utf-8")
     return paths
+
+
+def audit_event_factor_quality(
+    event_store: pd.DataFrame,
+    event_factors: pd.DataFrame,
+    symbols: list[str] | None = None,
+    *,
+    min_symbol_coverage: float = 0.20,
+    min_source_url_coverage: float = 0.95,
+    min_link_confidence: float = 0.35,
+    min_source_reliability: float = 0.30,
+) -> pd.DataFrame:
+    events = event_store.copy()
+    factors = event_factors.copy()
+    requested_symbols = [str(symbol).zfill(6) for symbol in symbols or []]
+    if events.empty:
+        linked_symbols: set[str] = set()
+    elif "symbol" in events.columns:
+        linked_symbols = set(events["symbol"].dropna().astype(str).str.zfill(6))
+    else:
+        linked_symbols = set()
+
+    if requested_symbols:
+        symbol_coverage = len(linked_symbols.intersection(requested_symbols)) / max(1, len(set(requested_symbols)))
+    else:
+        symbol_coverage = 1.0 if linked_symbols else 0.0
+
+    coverage = {
+        f"{column}_coverage": _nonempty_coverage(events, column)
+        for column in EVENT_EVIDENCE_REQUIRED_COLUMNS
+    }
+    avg_reliability = _mean_numeric(events, "source_reliability")
+    avg_link_confidence = _mean_numeric(events, "entity_link_confidence")
+    source_count = int(events["source"].nunique()) if not events.empty and "source" in events.columns else 0
+    event_type_count = int(events["event_type"].nunique()) if not events.empty and "event_type" in events.columns else 0
+    factor_symbol_count = int(factors["symbol"].nunique()) if not factors.empty and "symbol" in factors.columns else 0
+    factor_date_count = int(pd.to_datetime(factors["date"], errors="coerce").nunique()) if not factors.empty and "date" in factors.columns else 0
+
+    checks = {
+        "has_event_rows": len(events) > 0,
+        "has_event_factor_rows": len(factors) > 0,
+        "symbol_coverage": symbol_coverage >= min_symbol_coverage,
+        "source_url_coverage": coverage["source_url_coverage"] >= min_source_url_coverage,
+        "published_at_complete": coverage["published_at_coverage"] >= 1.0,
+        "fetched_at_complete": coverage["fetched_at_coverage"] >= 1.0,
+        "related_symbols_complete": coverage["related_symbols_coverage"] >= 1.0,
+        "event_type_complete": coverage["event_type_coverage"] >= 1.0,
+        "impact_score_complete": coverage["impact_score_coverage"] >= 1.0,
+        "confidence_complete": coverage["confidence_coverage"] >= 1.0,
+        "raw_hash_complete": coverage["raw_hash_coverage"] >= 1.0,
+        "entity_link_confidence": avg_link_confidence >= min_link_confidence,
+        "source_reliability": avg_reliability >= min_source_reliability,
+    }
+    failed = [name for name, passed in checks.items() if not passed]
+    can_enter_trusted_model = not failed
+    if can_enter_trusted_model:
+        status = "approved"
+    elif len(events) > 0 and len(factors) > 0:
+        status = "watchlist"
+    else:
+        status = "quarantine"
+
+    row = {
+        "scope": "event_evidence",
+        "requested_symbols": len(set(requested_symbols)) if requested_symbols else 0,
+        "linked_symbols": len(linked_symbols),
+        "symbol_coverage": symbol_coverage,
+        "event_rows": int(len(events)),
+        "event_factor_rows": int(len(factors)),
+        "event_factor_symbols": factor_symbol_count,
+        "event_factor_dates": factor_date_count,
+        "source_count": source_count,
+        "event_type_count": event_type_count,
+        "avg_source_reliability": avg_reliability,
+        "avg_entity_link_confidence": avg_link_confidence,
+        "can_enter_trusted_model": bool(can_enter_trusted_model),
+        "quality_status": status,
+        "failed_reasons": ";".join(failed) if failed else "passed",
+    }
+    row.update(coverage)
+    return pd.DataFrame([row])
+
+
+def _nonempty_coverage(frame: pd.DataFrame, column: str) -> float:
+    if frame.empty or column not in frame.columns:
+        return 0.0
+    values = frame[column]
+    if pd.api.types.is_numeric_dtype(values):
+        return float(pd.to_numeric(values, errors="coerce").notna().mean())
+    text = values.fillna("").astype(str).str.strip()
+    return float(text.ne("").mean()) if len(text) else 0.0
+
+
+def _mean_numeric(frame: pd.DataFrame, column: str) -> float:
+    if frame.empty or column not in frame.columns:
+        return 0.0
+    values = pd.to_numeric(frame[column], errors="coerce").dropna()
+    return float(values.mean()) if not values.empty else 0.0
+
+
+def _event_factor_quality_markdown(quality: pd.DataFrame) -> str:
+    lines = [
+        "# Event Factor Quality Audit",
+        "",
+        "This audit decides whether structured news/event evidence is strong enough to support a trusted model gate. It does not produce buy/sell advice.",
+        "",
+    ]
+    if quality.empty:
+        lines.append("- No event quality rows available.")
+        return "\n".join(lines)
+    for row in quality.itertuples(index=False):
+        lines.extend(
+            [
+                f"- Status: `{row.quality_status}`",
+                f"- Can enter trusted model: `{row.can_enter_trusted_model}`",
+                f"- Events: `{row.event_rows}`; event-factor rows: `{row.event_factor_rows}`; linked symbols: `{row.linked_symbols}`",
+                f"- Source URL coverage: `{row.source_url_coverage:.3f}`; raw-hash coverage: `{row.raw_hash_coverage:.3f}`; published-at coverage: `{row.published_at_coverage:.3f}`",
+                f"- Reliability/link confidence: `{row.avg_source_reliability:.3f}` / `{row.avg_entity_link_confidence:.3f}`",
+                f"- Failed reasons: `{row.failed_reasons}`",
+                "",
+            ]
+        )
+    return "\n".join(lines)
 
 
 def audit_event_coverage(event_store: pd.DataFrame, event_factors: pd.DataFrame, symbols: list[str]) -> pd.DataFrame:

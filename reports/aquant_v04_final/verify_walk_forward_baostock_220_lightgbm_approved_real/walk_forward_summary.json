@@ -1,0 +1,16 @@
+{
+  "model_type": "lightgbm",
+  "horizons": [
+    5
+  ],
+  "symbols": 220,
+  "min_symbols": 200,
+  "embargo_days": 5,
+  "feature_count": 11,
+  "feature_set_source": "factor_trust_audit:reports\\aquant_v04_final\\verify_factor_trust_baostock_220_real\\factor_trust_audit.csv:statuses=approved",
+  "base_factor_count": 237,
+  "event_feature_count": 0,
+  "event_features": [],
+  "rows": 72748,
+  "trust_note": "trusted requires enough symbols and model metrics better than baseline"
+}

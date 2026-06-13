@@ -1,0 +1,35 @@
+{
+  "model_type": "event_aware_ensemble",
+  "horizons": [
+    1
+  ],
+  "symbols": 3,
+  "min_symbols": 2,
+  "embargo_days": 5,
+  "feature_count": 250,
+  "feature_set_source": "all_factor_columns",
+  "base_factor_count": 237,
+  "event_feature_count": 13,
+  "event_features": [
+    "event_count_3d",
+    "event_count_20d",
+    "positive_event_count",
+    "negative_event_count",
+    "event_risk_count",
+    "event_impact_score",
+    "event_weighted_impact_score",
+    "event_confidence_mean",
+    "event_reliability_mean",
+    "event_high_reliability_count",
+    "event_entity_link_confidence_mean",
+    "latest_event_source_reliability",
+    "latest_entity_link_confidence"
+  ],
+  "event_feature_quality_counts": {
+    "watchlist": 12,
+    "quarantine": 1
+  },
+  "event_feature_quality_passed": false,
+  "rows": 2370,
+  "trust_note": "trusted requires enough symbols and model metrics better than baseline"
+}

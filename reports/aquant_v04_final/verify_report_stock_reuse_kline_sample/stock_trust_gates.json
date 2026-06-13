@@ -1,0 +1,143 @@
+{
+  "symbol": "000630",
+  "latest_date": "2025-12-31",
+  "source": "sample",
+  "horizons": 3,
+  "final_status_set": [
+    "data_insufficient"
+  ],
+  "gate_rows": 33,
+  "blocking_gate_count": 16,
+  "blocking_gate_names": [
+    "local_signal_quality",
+    "minimum_universe_size",
+    "probability_calibration",
+    "sample_data_block",
+    "walk_forward_evidence_present",
+    "walk_forward_rows",
+    "walk_forward_trusted"
+  ],
+  "by_horizon": {
+    "1": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_status=weak; reasons=min_oos_rows;brier_below_025",
+        "walk_forward_rows=2370",
+        "confidence=0.0736; sample_rank_ic=0.0000"
+      ]
+    },
+    "5": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_trusted",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_status=weak; reasons=beats_baseline;auc_above_052;brier_below_025;calibration_ready;rank_ic_positive;top_bottom_spread_positive",
+        "confidence=0.1501; sample_rank_ic=0.0000"
+      ]
+    },
+    "20": {
+      "trust_status": "data_insufficient",
+      "blocking_gates": [
+        "sample_data_block",
+        "minimum_universe_size",
+        "walk_forward_evidence_present",
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "probability_calibration",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "sample_source_cannot_be_trusted",
+        "universe_symbols=3, minimum=200",
+        "walk_forward_evidence_missing",
+        "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+        "walk_forward_rows=0",
+        "calibration_status=calibration_failed; ece=0.1160; rows=615; method=identity",
+        "confidence=0.2178; sample_rank_ic=0.0000"
+      ]
+    }
+  },
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 4,
+    "event_factor_rows": 5,
+    "event_types": [
+      "commodity_shock",
+      "order_contract",
+      "public_opinion_risk"
+    ],
+    "latest_event_title": "公告: 000630 发布经营进展公告，订单合同和产能信息需要继续跟踪。",
+    "similar_event_rows": 13,
+    "similar_event_known_return_rows_5d": 0,
+    "similar_event_positive_rate_5d": 0.0,
+    "similar_event_summary": {
+      "symbol": "000630",
+      "query_events": 4,
+      "match_rows": 13,
+      "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+      "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+      "can_enter_event_factors": false,
+      "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+      "known_return_rows_1d": 6,
+      "mean_forward_return_1d": 0.025317800972371168,
+      "positive_rate_1d": 1.0,
+      "known_return_rows_5d": 0,
+      "mean_forward_return_5d": 0.0,
+      "positive_rate_5d": 0.0,
+      "known_return_rows_20d": 0,
+      "mean_forward_return_20d": 0.0,
+      "positive_rate_20d": 0.0,
+      "avg_similarity_score": 0.4228513027552079,
+      "same_symbol_rows": 4,
+      "same_event_type_rows": 9
+    },
+    "event_impact_rows": 12,
+    "event_impact_pit_prior_rows": 12,
+    "event_impact_pit_ready_rows": 0,
+    "event_impact_summary": {
+      "event_rows": 12,
+      "event_return_rows": 36,
+      "available_return_rows": 13,
+      "cohort_rows": 17,
+      "pit_prior_rows": 36,
+      "pit_ready_rows": 0,
+      "no_future_leakage": true,
+      "horizons": [
+        1,
+        5,
+        20
+      ],
+      "min_prior_rows": 20,
+      "can_enter_trusted_model": false,
+      "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+    },
+    "event_impact_scope": {
+      "limited": false,
+      "input_symbols": 3,
+      "used_symbols": 3,
+      "input_events": 12,
+      "candidate_events_after_symbol_limit": 12,
+      "used_events": 12,
+      "max_symbols": 3,
+      "max_events": 60,
+      "target_symbol_forced": true,
+      "reason": "bounded_stock_report_event_impact_runtime;event_factors_still_use_full_event_store"
+    }
+  },
+  "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice."
+}

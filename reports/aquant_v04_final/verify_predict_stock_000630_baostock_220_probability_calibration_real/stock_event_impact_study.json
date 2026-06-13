@@ -1,0 +1,17 @@
+{
+  "event_rows": 23522,
+  "event_return_rows": 70566,
+  "available_return_rows": 64979,
+  "cohort_rows": 178,
+  "pit_prior_rows": 70566,
+  "pit_ready_rows": 68973,
+  "no_future_leakage": true,
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "min_prior_rows": 20,
+  "can_enter_trusted_model": false,
+  "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+}

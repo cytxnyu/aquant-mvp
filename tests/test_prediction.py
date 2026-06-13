@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import json
+
 import pandas as pd
+import pytest
 
 from aquant_mvp.backtest.stock import _metrics
+from aquant_mvp.cli import _stock_forecast_for_horizons
 from aquant_mvp.factors import FACTOR_COLUMNS, compute_factor_panel
 from aquant_mvp.labels import compute_return_labels
-from aquant_mvp.prediction import build_kline_forecast, build_latest_predictions, save_kline_forecast_outputs
+from aquant_mvp.prediction import build_kline_forecast, build_latest_predictions, build_stock_forecast, save_kline_forecast_outputs
 from aquant_mvp.strategy import score_factors
 
 
@@ -90,6 +94,48 @@ def test_kline_forecast_outputs_valid_scenarios(tmp_path) -> None:
     assert paths["intraday_kline_png"].exists()
     assert paths["forecast_kline_html"].exists()
     assert paths["stock_prediction_report"].exists()
+    assert paths["stock_evidence_audit"].exists()
+    assert paths["stock_evidence_audit_json"].exists()
+    assert paths["stock_evidence_audit_md"].exists()
+    audit_payload = json.loads(paths["stock_evidence_audit_json"].read_text(encoding="utf-8"))
+    assert audit_payload["symbol"] == "000630"
+    assert "walk_forward_evidence" in audit_payload["failed_checks"]
     html = paths["forecast_kline_html"].read_text(encoding="utf-8")
     assert "Next-session Intraday Forecast" in html
     assert "1/5/20 Day Forecast Nodes" in html
+
+
+def test_kline_forecast_can_reuse_superset_stock_forecast() -> None:
+    bars = {
+        "000630": _sample_bars("000630", 0),
+        "601899": _sample_bars("601899", 10),
+        "600362": _sample_bars("600362", 20),
+    }
+    superset = build_stock_forecast(bars, "000630", [1, 5, 8, 20, 60], source="sample", allow_sample=True)
+    filtered = _stock_forecast_for_horizons(superset, [1, 5, 20])
+    assert filtered.forecast["horizon_days"].astype(int).tolist() == [1, 5, 20]
+    assert set(filtered.summary["internal_horizons_available"]) == {1, 5, 8, 20, 60}
+    result = build_kline_forecast(
+        bars,
+        "000630",
+        [1, 5, 20],
+        source="sample",
+        days=8,
+        history_days=60,
+        allow_sample=True,
+        stock_forecast_override=superset,
+    )
+    assert result.stock_forecast is superset
+    assert int(result.summary["days"]) >= 20
+    missing = build_stock_forecast(bars, "000630", [1, 5, 20], source="sample", allow_sample=True)
+    with pytest.raises(ValueError, match="missing K-line horizons"):
+        build_kline_forecast(
+            bars,
+            "000630",
+            [1, 5, 20],
+            source="sample",
+            days=8,
+            history_days=60,
+            allow_sample=True,
+            stock_forecast_override=missing,
+        )

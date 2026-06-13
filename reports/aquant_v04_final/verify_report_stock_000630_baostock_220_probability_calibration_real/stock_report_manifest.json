@@ -1,0 +1,367 @@
+{
+  "symbol": "000630",
+  "source": "baostock",
+  "horizons": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "with_kline": true,
+  "with_news": true,
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 242,
+    "event_factor_rows": 379,
+    "event_types": [
+      "commodity_shock",
+      "general_news",
+      "industry_policy",
+      "shareholder_change"
+    ],
+    "latest_event_title": "沪银主连价格下跌触发商品冲击",
+    "similar_event_rows": 25,
+    "similar_event_known_return_rows_5d": 21,
+    "similar_event_positive_rate_5d": 0.6190476190476191,
+    "similar_event_summary": {
+      "symbol": "000630",
+      "query_events": 5,
+      "match_rows": 25,
+      "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+      "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+      "can_enter_event_factors": false,
+      "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+      "known_return_rows_1d": 23,
+      "mean_forward_return_1d": -0.0008952362695200438,
+      "positive_rate_1d": 0.43478260869565216,
+      "known_return_rows_5d": 21,
+      "mean_forward_return_5d": 0.013112198847708317,
+      "positive_rate_5d": 0.6190476190476191,
+      "known_return_rows_20d": 19,
+      "mean_forward_return_20d": 0.043257052524495465,
+      "positive_rate_20d": 0.6842105263157895,
+      "avg_similarity_score": 0.6669314196756457,
+      "same_symbol_rows": 25,
+      "same_event_type_rows": 25
+    },
+    "event_impact_rows": 968,
+    "event_impact_pit_prior_rows": 968,
+    "event_impact_pit_ready_rows": 511,
+    "event_impact_summary": {
+      "event_rows": 1500,
+      "event_return_rows": 6000,
+      "available_return_rows": 4732,
+      "cohort_rows": 179,
+      "pit_prior_rows": 6000,
+      "pit_ready_rows": 4412,
+      "no_future_leakage": true,
+      "horizons": [
+        1,
+        5,
+        20,
+        60
+      ],
+      "min_prior_rows": 20,
+      "can_enter_trusted_model": false,
+      "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+    },
+    "event_impact_scope": {
+      "limited": true,
+      "input_symbols": 220,
+      "used_symbols": 80,
+      "input_events": 23525,
+      "candidate_events_after_symbol_limit": 11678,
+      "used_events": 1500,
+      "max_symbols": 80,
+      "max_events": 1500,
+      "target_symbol_forced": true,
+      "reason": "bounded_stock_report_event_impact_runtime;event_factors_still_use_full_event_store"
+    }
+  },
+  "forecast_rows": 4,
+  "explanation_rows": 4,
+  "similar_history_rows": 44,
+  "backtest_rows": 2266,
+  "backtest_metric_rows": 4,
+  "trust_status_set": [
+    "model_failed",
+    "weak"
+  ],
+  "files": [
+    "event_factor_quality.csv",
+    "event_factor_quality.md",
+    "event_factors.csv",
+    "event_store.csv",
+    "event_warnings.json",
+    "forecast_kline.csv",
+    "forecast_kline.html",
+    "forecast_kline.json",
+    "forecast_kline.png",
+    "history_kline.csv",
+    "horizon_kline_summary.csv",
+    "horizon_kline_summary.json",
+    "intraday_kline.csv",
+    "intraday_kline.png",
+    "kline_stock_evidence_audit.csv",
+    "kline_stock_evidence_audit.json",
+    "kline_stock_evidence_audit.md",
+    "kline_stock_forecast.csv",
+    "kline_stock_forecast.json",
+    "news_evidence.md",
+    "raw_events.csv",
+    "report_stock_pid.txt",
+    "report_stock_stderr.log",
+    "report_stock_stdout.log",
+    "similar_history.csv",
+    "stock_event_factors.csv",
+    "stock_event_impact_pit_priors.csv",
+    "stock_event_impact_returns.csv",
+    "stock_event_impact_study.json",
+    "stock_event_impact_study.md",
+    "stock_event_impact_study_cohorts.csv",
+    "stock_event_impact_study_pit_priors.csv",
+    "stock_event_impact_study_returns.csv",
+    "stock_event_store.csv",
+    "stock_evidence_audit.csv",
+    "stock_evidence_audit.json",
+    "stock_evidence_audit.md",
+    "stock_explanation.csv",
+    "stock_explanation.md",
+    "stock_forecast.csv",
+    "stock_forecast.json",
+    "stock_forecast_backtest.csv",
+    "stock_forecast_metrics.csv",
+    "stock_news_evidence.md",
+    "stock_prediction_report.md",
+    "stock_report_manifest.json",
+    "stock_similar_events.csv",
+    "stock_similar_events.json",
+    "stock_similar_events.md",
+    "stock_trust_gates.csv",
+    "stock_trust_gates.json",
+    "stock_trust_gates.md"
+  ],
+  "kline_files": {
+    "stock_forecast": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_forecast.csv",
+    "stock_forecast_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_forecast.json",
+    "forecast_kline": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\forecast_kline.csv",
+    "forecast_kline_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\forecast_kline.json",
+    "intraday_kline": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\intraday_kline.csv",
+    "horizon_kline_summary": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\horizon_kline_summary.csv",
+    "horizon_kline_summary_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\horizon_kline_summary.json",
+    "history_kline": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\history_kline.csv",
+    "forecast_kline_png": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\forecast_kline.png",
+    "intraday_kline_png": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\intraday_kline.png",
+    "forecast_kline_html": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\forecast_kline.html",
+    "stock_prediction_report": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_prediction_report.md",
+    "kline_stock_evidence_audit": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\kline_stock_evidence_audit.csv",
+    "kline_stock_evidence_audit_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\kline_stock_evidence_audit.json",
+    "kline_stock_evidence_audit_md": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\kline_stock_evidence_audit.md",
+    "kline_stock_forecast": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\kline_stock_forecast.csv",
+    "kline_stock_forecast_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\kline_stock_forecast.json"
+  },
+  "news_files": {
+    "raw_events": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\raw_events.csv",
+    "event_store": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\event_store.csv",
+    "event_factors": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\event_factors.csv",
+    "news_evidence": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\news_evidence.md",
+    "event_factor_quality": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\event_factor_quality.csv",
+    "event_factor_quality_report": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\event_factor_quality.md",
+    "event_warnings": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\event_warnings.json",
+    "similar_csv": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.csv",
+    "similar_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.json",
+    "similar_md": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_similar_events.md",
+    "impact_event_returns": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_returns.csv",
+    "impact_cohorts": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_cohorts.csv",
+    "impact_pit_priors": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study_pit_priors.csv",
+    "impact_json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study.json",
+    "impact_md": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_study.md",
+    "stock_event_impact_returns": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_returns.csv",
+    "stock_event_impact_pit_priors": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_event_impact_pit_priors.csv"
+  },
+  "trust_gate_files": {
+    "csv": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.csv",
+    "json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.json",
+    "md": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_trust_gates.md"
+  },
+  "trust_gate_summary": {
+    "symbol": "000630",
+    "latest_date": "2026-06-10",
+    "source": "baostock",
+    "horizons": 4,
+    "final_status_set": [
+      "model_failed",
+      "weak"
+    ],
+    "gate_rows": 44,
+    "blocking_gate_count": 15,
+    "blocking_gate_names": [
+      "local_signal_quality",
+      "probability_calibration",
+      "probability_error",
+      "walk_forward_evidence_present",
+      "walk_forward_rows",
+      "walk_forward_trusted"
+    ],
+    "by_horizon": {
+      "1": {
+        "trust_status": "weak",
+        "blocking_gates": [
+          "walk_forward_trusted",
+          "walk_forward_rows",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_status=weak; reasons=min_oos_rows;brier_below_025",
+          "walk_forward_rows=2370",
+          "confidence=0.0376; sample_rank_ic=0.0000"
+        ]
+      },
+      "5": {
+        "trust_status": "weak",
+        "blocking_gates": [
+          "walk_forward_trusted",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_status=weak; reasons=beats_baseline;auc_above_052;brier_below_025;calibration_ready;rank_ic_positive;top_bottom_spread_positive",
+          "confidence=0.0278; sample_rank_ic=0.0000"
+        ]
+      },
+      "20": {
+        "trust_status": "model_failed",
+        "blocking_gates": [
+          "walk_forward_evidence_present",
+          "walk_forward_trusted",
+          "walk_forward_rows",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_evidence_missing",
+          "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+          "walk_forward_rows=0",
+          "confidence=0.0036; sample_rank_ic=0.0000"
+        ]
+      },
+      "60": {
+        "trust_status": "model_failed",
+        "blocking_gates": [
+          "walk_forward_evidence_present",
+          "walk_forward_trusted",
+          "walk_forward_rows",
+          "probability_calibration",
+          "probability_error",
+          "local_signal_quality"
+        ],
+        "blocking_reasons": [
+          "walk_forward_evidence_missing",
+          "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+          "walk_forward_rows=0",
+          "calibration_status=calibration_failed; ece=0.2104; rows=23169; method=platt",
+          "sample_oos_brier=0.2670",
+          "confidence=0.0800; sample_rank_ic=0.0000"
+        ]
+      }
+    },
+    "news_summary": {
+      "with_news": true,
+      "event_rows": 242,
+      "event_factor_rows": 379,
+      "event_types": [
+        "commodity_shock",
+        "general_news",
+        "industry_policy",
+        "shareholder_change"
+      ],
+      "latest_event_title": "沪银主连价格下跌触发商品冲击",
+      "similar_event_rows": 25,
+      "similar_event_known_return_rows_5d": 21,
+      "similar_event_positive_rate_5d": 0.6190476190476191,
+      "similar_event_summary": {
+        "symbol": "000630",
+        "query_events": 5,
+        "match_rows": 25,
+        "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+        "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+        "can_enter_event_factors": false,
+        "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+        "known_return_rows_1d": 23,
+        "mean_forward_return_1d": -0.0008952362695200438,
+        "positive_rate_1d": 0.43478260869565216,
+        "known_return_rows_5d": 21,
+        "mean_forward_return_5d": 0.013112198847708317,
+        "positive_rate_5d": 0.6190476190476191,
+        "known_return_rows_20d": 19,
+        "mean_forward_return_20d": 0.043257052524495465,
+        "positive_rate_20d": 0.6842105263157895,
+        "avg_similarity_score": 0.6669314196756457,
+        "same_symbol_rows": 25,
+        "same_event_type_rows": 25
+      },
+      "event_impact_rows": 968,
+      "event_impact_pit_prior_rows": 968,
+      "event_impact_pit_ready_rows": 511,
+      "event_impact_summary": {
+        "event_rows": 1500,
+        "event_return_rows": 6000,
+        "available_return_rows": 4732,
+        "cohort_rows": 179,
+        "pit_prior_rows": 6000,
+        "pit_ready_rows": 4412,
+        "no_future_leakage": true,
+        "horizons": [
+          1,
+          5,
+          20,
+          60
+        ],
+        "min_prior_rows": 20,
+        "can_enter_trusted_model": false,
+        "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+      },
+      "event_impact_scope": {
+        "limited": true,
+        "input_symbols": 220,
+        "used_symbols": 80,
+        "input_events": 23525,
+        "candidate_events_after_symbol_limit": 11678,
+        "used_events": 1500,
+        "max_symbols": 80,
+        "max_events": 1500,
+        "target_symbol_forced": true,
+        "reason": "bounded_stock_report_event_impact_runtime;event_factors_still_use_full_event_store"
+      }
+    },
+    "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice."
+  },
+  "evidence_audit_files": {
+    "csv": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.csv",
+    "json": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.json",
+    "md": "reports\\aquant_v04_final\\verify_report_stock_000630_baostock_220_probability_calibration_real\\stock_evidence_audit.md"
+  },
+  "evidence_audit_summary": {
+    "symbol": "000630",
+    "latest_date": "2026-06-10",
+    "source": "baostock",
+    "horizons": 4,
+    "validation_status": "failed",
+    "validation_passed": false,
+    "failed_checks": [
+      "walk_forward_evidence"
+    ],
+    "warning_checks": [],
+    "check_count": 64,
+    "pass_count": 62,
+    "warn_count": 0,
+    "fail_count": 2,
+    "trust_status_set": [
+      "model_failed",
+      "weak"
+    ],
+    "with_news": true,
+    "event_rows": 242,
+    "event_factor_rows": 379,
+    "note": "Evidence audit checks forecast schema completeness and traceability. It does not certify future returns."
+  },
+  "note": "Research reports only; not investment advice. Live trading remains disabled."
+}

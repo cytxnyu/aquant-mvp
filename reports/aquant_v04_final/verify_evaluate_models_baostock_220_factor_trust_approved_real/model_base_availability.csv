@@ -1,0 +1,6 @@
+model_base_id,package,role,available,version,train_model_supported,walk_forward_supported,fallback_policy,note
+factor_score,builtin,transparent_baseline,True,builtin,True,True,none,Deterministic multi-factor rank baseline; always available and never treated as external ML.
+sklearn_linear,sklearn,logistic_ridge_linear_baseline,True,1.6.1,True,True,fallback_to_factor_score_with_registry_reason,Logistic/Ridge/Linear challenger for interpretable probability and return baselines.
+lightgbm,lightgbm,gbdt_classifier_regressor_ranker,True,4.6.0,True,True,fallback_to_sklearn_or_factor_score_with_registry_reason,"Main GBDT model family for direction, return, and cross-sectional rank."
+xgboost,xgboost,gbdt_challenger,True,3.2.0,True,True,fallback_to_factor_score_with_registry_reason,Independent boosted-tree challenger used to falsify LightGBM-only conclusions.
+catboost,catboost,gbdt_challenger,True,1.2.10,True,True,fallback_to_factor_score_with_registry_reason,Ordered boosting challenger; useful when categorical/industry features are expanded.

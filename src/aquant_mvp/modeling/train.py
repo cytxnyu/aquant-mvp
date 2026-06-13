@@ -233,13 +233,29 @@ def _try_train_catboost(
     artifact = output_dir / f"{model_id}.cbm"
     metrics: dict[str, float] = {}
     if train[direction_col].nunique() >= 2:
-        clf = CatBoostClassifier(iterations=120, depth=4, learning_rate=0.05, loss_function="Logloss", verbose=False, random_seed=47)
+        clf = CatBoostClassifier(
+            iterations=120,
+            depth=4,
+            learning_rate=0.05,
+            loss_function="Logloss",
+            verbose=False,
+            random_seed=47,
+            allow_writing_files=False,
+        )
         clf.fit(train[features], train[direction_col].astype(int))
         if not valid.empty:
             prob = pd.Series(clf.predict_proba(valid[features])[:, 1], index=valid.index)
             metrics["valid_accuracy"] = float(((prob >= 0.5).astype(int) == valid[direction_col].astype(int)).mean())
             metrics["valid_brier"] = float(((prob - valid[direction_col]) ** 2).mean())
-    reg = CatBoostRegressor(iterations=120, depth=4, learning_rate=0.05, loss_function="RMSE", verbose=False, random_seed=48)
+    reg = CatBoostRegressor(
+        iterations=120,
+        depth=4,
+        learning_rate=0.05,
+        loss_function="RMSE",
+        verbose=False,
+        random_seed=48,
+        allow_writing_files=False,
+    )
     reg.fit(train[features], train[label_col])
     if not valid.empty:
         pred = pd.Series(reg.predict(valid[features]), index=valid.index)

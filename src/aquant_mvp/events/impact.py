@@ -5,6 +5,7 @@ import json
 import math
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -305,19 +306,13 @@ def _build_pit_priors(event_returns: pd.DataFrame, min_prior_rows: int) -> pd.Da
     frame["published_at_ts"] = pd.to_datetime(frame["published_at"], errors="coerce")
     frame["outcome_known_at_ts"] = pd.to_datetime(frame["outcome_known_at"], errors="coerce")
     frame["cohort_key"] = frame["event_type"].astype(str) + "|" + frame["sentiment"].astype(str)
+    prior_index = _build_prior_lookup_index(frame)
     rows: list[dict[str, object]] = []
     for row in frame.itertuples(index=False):
         published = pd.Timestamp(row.published_at_ts) if pd.notna(row.published_at_ts) else pd.NaT
-        prior = frame[
-            (frame["horizon_days"].astype(int) == int(row.horizon_days))
-            & (frame["cohort_key"].astype(str) == str(row.cohort_key))
-            & (frame["return_available"].astype(bool))
-            & (frame["outcome_known_at_ts"] < published)
-        ].copy()
-        returns = pd.to_numeric(prior["forward_return"], errors="coerce").dropna()
-        excess = pd.to_numeric(prior["expected_excess_return_proxy"], errors="coerce").dropna()
-        prior_count = int(len(returns))
-        cutoff = prior["outcome_known_at_ts"].max() if not prior.empty else pd.NaT
+        prior = _lookup_prior_stats(prior_index, int(row.horizon_days), str(row.cohort_key), published)
+        prior_count = int(prior["count"])
+        cutoff = prior["cutoff"]
         pit_ready = prior_count >= int(min_prior_rows)
         rows.append(
             {
@@ -327,16 +322,69 @@ def _build_pit_priors(event_returns: pd.DataFrame, min_prior_rows: int) -> pd.Da
                 "horizon_days": int(row.horizon_days),
                 "cohort_key": str(row.cohort_key),
                 "prior_sample_count": prior_count,
-                "prior_mean_return": float(returns.mean()) if prior_count else 0.0,
-                "prior_positive_rate": float((returns > 0).mean()) if prior_count else 0.0,
-                "prior_mean_excess_return_proxy": float(excess.mean()) if not excess.empty else 0.0,
+                "prior_mean_return": float(prior["return_sum"] / prior_count) if prior_count else 0.0,
+                "prior_positive_rate": float(prior["positive_count"] / prior_count) if prior_count else 0.0,
+                "prior_mean_excess_return_proxy": float(prior["excess_sum"] / prior_count) if prior_count else 0.0,
                 "prior_outcome_cutoff": pd.Timestamp(cutoff).date().isoformat() if pd.notna(cutoff) else "",
                 "pit_ready": bool(pit_ready),
-                "no_future_leakage": bool(prior.empty or pd.Timestamp(cutoff) < published),
+                "no_future_leakage": bool(prior_count == 0 or (pd.notna(published) and pd.Timestamp(cutoff) < published)),
                 "reason": "prior_ready" if pit_ready else f"prior_rows={prior_count}, minimum={min_prior_rows}",
             }
         )
     return pd.DataFrame(rows, columns=PIT_PRIOR_COLUMNS)
+
+
+def _build_prior_lookup_index(frame: pd.DataFrame) -> dict[tuple[int, str], dict[str, object]]:
+    available = frame[frame["return_available"].astype(bool)].copy()
+    available = available.dropna(subset=["outcome_known_at_ts"])
+    available["forward_return"] = pd.to_numeric(available["forward_return"], errors="coerce")
+    available["expected_excess_return_proxy"] = pd.to_numeric(available["expected_excess_return_proxy"], errors="coerce")
+    available = available.dropna(subset=["forward_return"])
+    if available.empty:
+        return {}
+    available["expected_excess_return_proxy"] = available["expected_excess_return_proxy"].fillna(0.0)
+    index: dict[tuple[int, str], dict[str, object]] = {}
+    for keys, part in available.groupby(["horizon_days", "cohort_key"], dropna=False):
+        horizon, cohort_key = keys
+        ordered = part.sort_values("outcome_known_at_ts")
+        outcomes = pd.to_datetime(ordered["outcome_known_at_ts"], errors="coerce").to_numpy(dtype="datetime64[ns]")
+        returns = pd.to_numeric(ordered["forward_return"], errors="coerce").fillna(0.0).to_numpy(dtype=float)
+        excess = pd.to_numeric(ordered["expected_excess_return_proxy"], errors="coerce").fillna(0.0).to_numpy(dtype=float)
+        index[(int(horizon), str(cohort_key))] = {
+            "outcomes": outcomes,
+            "return_cumsum": np.cumsum(returns),
+            "excess_cumsum": np.cumsum(excess),
+            "positive_cumsum": np.cumsum((returns > 0).astype(int)),
+        }
+    return index
+
+
+def _lookup_prior_stats(
+    prior_index: dict[tuple[int, str], dict[str, object]],
+    horizon: int,
+    cohort_key: str,
+    published: pd.Timestamp,
+) -> dict[str, object]:
+    empty = {"count": 0, "return_sum": 0.0, "excess_sum": 0.0, "positive_count": 0, "cutoff": pd.NaT}
+    if pd.isna(published):
+        return empty
+    bucket = prior_index.get((int(horizon), str(cohort_key)))
+    if not bucket:
+        return empty
+    outcomes = bucket["outcomes"]
+    cutoff_idx = int(np.searchsorted(outcomes, np.datetime64(pd.Timestamp(published).to_datetime64()), side="left"))
+    if cutoff_idx <= 0:
+        return empty
+    return_cumsum = bucket["return_cumsum"]
+    excess_cumsum = bucket["excess_cumsum"]
+    positive_cumsum = bucket["positive_cumsum"]
+    return {
+        "count": cutoff_idx,
+        "return_sum": float(return_cumsum[cutoff_idx - 1]),
+        "excess_sum": float(excess_cumsum[cutoff_idx - 1]),
+        "positive_count": int(positive_cumsum[cutoff_idx - 1]),
+        "cutoff": pd.Timestamp(outcomes[cutoff_idx - 1]),
+    }
 
 
 def _study_summary(

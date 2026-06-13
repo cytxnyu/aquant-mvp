@@ -1,0 +1,45 @@
+{
+  "requested_themes": "professional",
+  "universe_mode": "theme_seed",
+  "theme_count": 14,
+  "rows": 145,
+  "unique_symbols": 145,
+  "duplicate_theme_rows": 0,
+  "multi_theme_symbols": 0,
+  "minimum_symbols_for_trusted_prediction": 200,
+  "coverage_audit": {
+    "theme_coverage_audit": "reports\\aquant_v04_final\\verify_professional_theme_coverage\\theme_coverage_audit.csv",
+    "theme_coverage_audit_md": "reports\\aquant_v04_final\\verify_professional_theme_coverage\\theme_coverage_audit.md"
+  },
+  "coverage_status_counts": {
+    "ready": 14
+  },
+  "themes_supporting_trusted_evidence_after_other_gates": 0,
+  "thin_or_blocked_themes": [
+    "rare_earth_magnetic_materials",
+    "advanced_packaging_chiplet_pcb",
+    "medical_device_ivd_imaging",
+    "commercial_space_satellite_internet",
+    "cpo_optical_module_datacenter",
+    "humanoid_robot_core_parts",
+    "industrial_mother_machine_laser",
+    "shipbuilding_ocean_shipping",
+    "uhv_smart_grid_power_equipment",
+    "cxo_biotech_innovative_drug",
+    "data_element_fintech_ai_app",
+    "solid_state_battery_materials",
+    "central_soe_high_dividend",
+    "semiconductor_equipment_materials"
+  ],
+  "warehouse_universe": {
+    "table": "universe",
+    "path": "data\\warehouse\\universe.parquet",
+    "rows": "145",
+    "file_format": "parquet"
+  },
+  "notes": [
+    "This is a curated hot-sector seed universe, not an official industry classifier.",
+    "mega-hot is augmented with free all-A names when domestic sources are available to support large-sample modeling.",
+    "Use --universe all-a for maximum market coverage when free source availability allows it."
+  ]
+}

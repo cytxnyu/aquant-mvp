@@ -37,10 +37,12 @@ All of the aliases above resolve to the expanded pool. `core-hot` keeps the six 
 
 The expanded pool is a research seed universe, not an official industry classifier. Real prediction still requires liquidity filters, ST/suspension/delist checks, point-in-time data, and sample-out validation.
 
-Latest verified smoke output on 2026-06-12:
+Latest verified smoke output on 2026-06-13:
 
-- `mega-hot`: 36 themes, 845 theme rows, 624 unique symbols.
+- `mega-hot` curated seed layer: 37 themes, 877 theme rows, 656 unique symbols.
+- `mega-hot` CLI output with free all-A extension: 38 themes, 1421 theme rows, 1200 unique symbols.
 - `professional`: 14 themes, 145 theme rows, 145 unique symbols.
+- `theme_coverage_audit`: 30 ready themes and 8 broad themes in the latest `mega-hot` CLI report, with no thin or blocked themes after curated seed expansion plus free-market augmentation.
 
 ## Commands
 
@@ -61,6 +63,8 @@ Use `--universe all-a` when BaoStock or AKShare can return the full A-share list
 - `theme_universe.csv`: curated theme-symbol rows.
 - `theme_universe_summary.csv`: per-theme coverage.
 - `symbol_theme_membership.csv`: duplicate and cross-theme membership.
+- `theme_coverage_audit.csv`: theme-level coverage gates with minimum symbol counts and trainability flags.
+- `theme_coverage_audit.md`: human-readable coverage report and guardrails.
 - `theme_universe_manifest.json`: universe size, duplicate rows, and trust-gating notes.
 
 `sync-free-all` now continues through per-symbol failures and records them in `source_audit`. A single bad code, vendor timeout, or free-source schema change should no longer stop the whole large-universe job.

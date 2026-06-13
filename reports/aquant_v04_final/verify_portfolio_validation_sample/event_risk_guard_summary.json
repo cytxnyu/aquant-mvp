@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "adjusted_rows": 6,
+  "blocked_symbols": [],
+  "reduced_symbols": [
+    "000630",
+    "600362",
+    "601899"
+  ],
+  "weight_removed": 0.45,
+  "config": {
+    "max_event_risk_count": 0,
+    "min_negative_impact": -0.2,
+    "min_confidence": 0.45,
+    "weight_multiplier": 0.5,
+    "block_new_buy": true,
+    "max_event_age_days": 30
+  }
+}

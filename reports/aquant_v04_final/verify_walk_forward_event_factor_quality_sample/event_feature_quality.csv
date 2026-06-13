@@ -1,0 +1,14 @@
+feature,coverage,nonzero_ratio,mean_abs_value,distinct_values,quality_status,failed_reasons,can_enter_trusted_model
+event_count_3d,1.0,0.004793863854266539,0.008948545861297539,4,watchlist,sparse_event_signal,False
+event_count_20d,1.0,0.004793863854266539,0.009907318632150847,5,watchlist,sparse_event_signal,False
+positive_event_count,1.0,0.0022371364653243847,0.005113454777884308,4,watchlist,sparse_event_signal,False
+negative_event_count,1.0,0.004793863854266539,0.004793863854266539,2,watchlist,sparse_event_signal,False
+event_risk_count,1.0,0.004793863854266539,0.004793863854266539,2,watchlist,sparse_event_signal,False
+event_impact_score,1.0,0.004793863854266539,0.001666975094947284,9,watchlist,sparse_event_signal,False
+event_weighted_impact_score,1.0,0.004793863854266539,0.0004843766052942271,9,watchlist,sparse_event_signal,False
+event_confidence_mean,1.0,0.004793863854266539,0.0034803451581975073,5,watchlist,sparse_event_signal,False
+event_reliability_mean,1.0,0.004793863854266539,0.0019175455417066154,4,watchlist,sparse_event_signal,False
+event_high_reliability_count,1.0,0.0,0.0,1,quarantine,all_zero_event_feature;constant_event_feature,False
+event_entity_link_confidence_mean,1.0,0.004793863854266539,0.004642399989853855,7,watchlist,sparse_event_signal,False
+latest_event_source_reliability,1.0,0.004793863854266539,0.0019175455417066154,2,watchlist,sparse_event_signal,False
+latest_entity_link_confidence,1.0,0.004793863854266539,0.004512623841482902,3,watchlist,sparse_event_signal,False

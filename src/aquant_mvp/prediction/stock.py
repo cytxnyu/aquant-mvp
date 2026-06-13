@@ -30,6 +30,22 @@ _TRUST_GATE_COLUMNS = [
     "data_version",
 ]
 
+_EVIDENCE_COLUMNS = [
+    "latest_date",
+    "symbol",
+    "horizon_days",
+    "trust_status",
+    "check",
+    "status",
+    "passed",
+    "severity",
+    "observed",
+    "threshold",
+    "reason",
+    "model_id",
+    "data_version",
+]
+
 
 @dataclass(frozen=True)
 class StockForecastResult:
@@ -40,6 +56,13 @@ class StockForecastResult:
 @dataclass(frozen=True)
 class StockTrustGateReport:
     gates: pd.DataFrame
+    summary: dict[str, object]
+    markdown: str
+
+
+@dataclass(frozen=True)
+class StockEvidenceAudit:
+    checks: pd.DataFrame
     summary: dict[str, object]
     markdown: str
 
@@ -270,6 +293,77 @@ def write_stock_trust_gate_outputs(
     report.gates.to_csv(paths["csv"], index=False)
     paths["json"].write_text(json.dumps(report.summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     paths["md"].write_text(report.markdown, encoding="utf-8")
+    return paths
+
+
+def audit_stock_forecast_evidence(
+    forecast: pd.DataFrame,
+    *,
+    source: str = "",
+    news_summary: dict[str, object] | None = None,
+) -> StockEvidenceAudit:
+    rows: list[dict[str, object]] = []
+    news = news_summary or {}
+    if forecast.empty:
+        summary = {
+            "symbol": "",
+            "source": source,
+            "validation_status": "failed",
+            "validation_passed": False,
+            "failed_checks": ["forecast_rows_present"],
+            "warning_checks": [],
+            "note": "No forecast rows were available for evidence audit.",
+        }
+        return StockEvidenceAudit(pd.DataFrame(columns=_EVIDENCE_COLUMNS), summary, _evidence_markdown(pd.DataFrame(), summary))
+
+    for row in forecast.to_dict(orient="records"):
+        rows.extend(_evidence_rows(row, source=source, news_summary=news))
+    checks = pd.DataFrame(rows, columns=_EVIDENCE_COLUMNS)
+    failed = checks[checks["status"] == "fail"]["check"].dropna().astype(str).unique().tolist()
+    warned = checks[checks["status"] == "warn"]["check"].dropna().astype(str).unique().tolist()
+    if failed:
+        validation_status = "failed"
+    elif warned:
+        validation_status = "watchlist"
+    else:
+        validation_status = "passed"
+    summary = {
+        "symbol": str(forecast["symbol"].iloc[0]).zfill(6) if "symbol" in forecast.columns else "",
+        "latest_date": str(forecast["latest_date"].iloc[0]) if "latest_date" in forecast.columns else "",
+        "source": source,
+        "horizons": int(forecast["horizon_days"].nunique()) if "horizon_days" in forecast.columns else int(len(forecast)),
+        "validation_status": validation_status,
+        "validation_passed": not failed,
+        "failed_checks": failed,
+        "warning_checks": warned,
+        "check_count": int(len(checks)),
+        "pass_count": int((checks["status"] == "pass").sum()) if not checks.empty else 0,
+        "warn_count": int((checks["status"] == "warn").sum()) if not checks.empty else 0,
+        "fail_count": int((checks["status"] == "fail").sum()) if not checks.empty else 0,
+        "trust_status_set": sorted(forecast["trust_status"].dropna().astype(str).unique().tolist()) if "trust_status" in forecast.columns else [],
+        "with_news": bool(news.get("with_news", False)),
+        "event_rows": int(news.get("event_rows", 0) or 0),
+        "event_factor_rows": int(news.get("event_factor_rows", 0) or 0),
+        "note": "Evidence audit checks forecast schema completeness and traceability. It does not certify future returns.",
+    }
+    return StockEvidenceAudit(checks, summary, _evidence_markdown(checks, summary))
+
+
+def write_stock_evidence_audit_outputs(
+    output_dir: Path,
+    audit: StockEvidenceAudit,
+    *,
+    prefix: str = "stock_evidence_audit",
+) -> dict[str, Path]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    paths = {
+        "csv": output_dir / f"{prefix}.csv",
+        "json": output_dir / f"{prefix}.json",
+        "md": output_dir / f"{prefix}.md",
+    }
+    audit.checks.to_csv(paths["csv"], index=False)
+    paths["json"].write_text(json.dumps(audit.summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    paths["md"].write_text(audit.markdown, encoding="utf-8")
     return paths
 
 
@@ -910,6 +1004,387 @@ def _trust_gate_markdown(gates: pd.DataFrame, summary: dict[str, object]) -> str
         if not warnings.empty:
             for row in warnings.itertuples(index=False):
                 lines.append(f"- Warn `{row.gate}`: {row.reason}")
+        lines.append("")
+    return "\n".join(lines).rstrip()
+
+
+def _evidence_rows(row: dict[str, object], *, source: str, news_summary: dict[str, object]) -> list[dict[str, object]]:
+    horizon = int(row.get("horizon_days", 0) or 0)
+    status = str(row.get("trust_status", ""))
+    symbol = str(row.get("symbol", "")).zfill(6)
+    rows = [
+        _evidence_row(row, horizon, symbol, status, "forecast_row_present", True, "required", "row", "present", "forecast row exists"),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "data_version",
+            _has_value(row.get("data_version")),
+            "required",
+            row.get("data_version", ""),
+            "non-empty data_version",
+            "forecast must be tied to a reproducible data snapshot",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "model_version",
+            _has_value(row.get("model_id")) and _has_value(row.get("model_type")),
+            "required",
+            f"model_id={row.get('model_id', '')}; model_type={row.get('model_type', '')}",
+            "non-empty model_id and model_type",
+            "forecast must be tied to a model/version identifier",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "probability_outputs",
+            _valid_probability_fields(row),
+            "required",
+            (
+                f"prob_up={row.get('prob_up', '')}; raw={row.get('raw_prob_up', '')}; "
+                f"calibrated={row.get('calibrated_prob_up', '')}"
+            ),
+            "probability fields in [0, 1]",
+            "probability outputs must be numeric and bounded",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "return_interval_outputs",
+            _valid_return_interval_fields(row),
+            "required",
+            f"p10={row.get('return_p10', '')}; p50={row.get('return_p50', '')}; p90={row.get('return_p90', '')}",
+            "finite expected returns and p10 <= p50 <= p90",
+            "return forecast and risk interval must be complete",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "direction_and_trend_labels",
+            _has_value(row.get("direction")) and _has_value(row.get("trend_label")),
+            "required",
+            f"direction={row.get('direction', '')}; trend={row.get('trend_label', '')}",
+            "non-empty direction and trend labels",
+            "stock report must expose both direction and K-line trend labels",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "risk_flags",
+            _risk_flags_present(row.get("risk_flags")),
+            "required",
+            row.get("risk_flags", ""),
+            "non-empty risk_flags",
+            "forecast must disclose risk flags, even when the value is none",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "factor_contributors",
+            _has_value(row.get("top_factor_contributors")),
+            "required",
+            row.get("top_factor_contributors", ""),
+            "non-empty top_factor_contributors",
+            "forecast must be explainable by factor contribution evidence",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "walk_forward_evidence",
+            _has_value(row.get("walk_forward_model_id"))
+            and _has_value(row.get("walk_forward_status"))
+            and _safe_float(row.get("walk_forward_rows", 0)) > 0,
+            "required",
+            (
+                f"model={row.get('walk_forward_model_id', '')}; status={row.get('walk_forward_status', '')}; "
+                f"rows={row.get('walk_forward_rows', 0)}"
+            ),
+            "walk_forward model id/status/rows present",
+            "trusted prediction evidence requires out-of-sample walk-forward provenance",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "walk_forward_metrics",
+            _valid_walk_forward_metrics(row),
+            "required",
+            (
+                f"auc={row.get('walk_forward_auc', '')}; brier={row.get('walk_forward_brier', '')}; "
+                f"rank_ic={row.get('walk_forward_rank_ic', '')}"
+            ),
+            "AUC/Brier/RankIC fields present and numeric",
+            "walk-forward evidence must include falsifiable model metrics",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "probability_calibration",
+            _valid_calibration_evidence(row),
+            "required",
+            (
+                f"status={row.get('probability_calibration_status', row.get('calibration_status', ''))}; "
+                f"raw_brier={row.get('probability_raw_brier', '')}; calibrated_brier={row.get('probability_calibrated_brier', '')}; "
+                f"raw_ece={row.get('probability_raw_ece', '')}; calibrated_ece={row.get('probability_calibrated_ece', '')}"
+            ),
+            "calibration status plus Brier/ECE fields",
+            "probability forecasts must disclose calibration evidence",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "conformal_interval",
+            _valid_conformal_evidence(row),
+            "required",
+            (
+                f"status={row.get('conformal_status', '')}; rows={row.get('conformal_rows', '')}; "
+                f"half_width={row.get('conformal_interval_half_width', '')}"
+            ),
+            "conformal status/rows/interval width present",
+            "risk interval must disclose conformal or fallback uncertainty evidence",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "research_no_advice_note",
+            "not investment advice" in str(row.get("note", "")).lower(),
+            "required",
+            row.get("note", ""),
+            "contains not investment advice",
+            "forecast output must explicitly remain research-only",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "sample_source_warning",
+            source != "sample",
+            "warning",
+            source,
+            "source != sample",
+            "sample data can verify plumbing but cannot prove a real signal",
+        ),
+    ]
+    rows.extend(_news_evidence_rows(row, horizon, symbol, status, news_summary))
+    return rows
+
+
+def _news_evidence_rows(
+    row: dict[str, object],
+    horizon: int,
+    symbol: str,
+    status: str,
+    news_summary: dict[str, object],
+) -> list[dict[str, object]]:
+    with_news = bool(news_summary.get("with_news", False))
+    if not with_news:
+        return [
+            _evidence_row(
+                row,
+                horizon,
+                symbol,
+                status,
+                "news_evidence",
+                False,
+                "warning",
+                "with_news=False",
+                "run with --with-news for news/event evidence",
+                "news evidence was not requested for this forecast",
+            )
+        ]
+    event_rows = int(news_summary.get("event_rows", 0) or 0)
+    event_factor_rows = int(news_summary.get("event_factor_rows", 0) or 0)
+    event_feature_count = int(row.get("event_feature_count", 0) or 0)
+    return [
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "news_raw_events",
+            event_rows > 0,
+            "required",
+            f"event_rows={event_rows}",
+            "event_rows > 0",
+            "requested news mode must produce timestamped raw event evidence",
+        ),
+        _evidence_row(
+            row,
+            horizon,
+            symbol,
+            status,
+            "news_event_factors",
+            event_factor_rows > 0 and event_feature_count > 0,
+            "required",
+            f"event_factor_rows={event_factor_rows}; event_feature_count={event_feature_count}",
+            "event factors and forecast event features present",
+            "news evidence must become structured event factors before it can affect forecasts",
+        ),
+    ]
+
+
+def _evidence_row(
+    row: dict[str, object],
+    horizon: int,
+    symbol: str,
+    trust_status: str,
+    check: str,
+    passed: bool,
+    severity: str,
+    observed: object,
+    threshold: object,
+    reason: str,
+) -> dict[str, object]:
+    severity = severity.lower()
+    status = "pass" if passed else ("warn" if severity == "warning" else "fail")
+    if trust_status == "trusted" and status == "fail":
+        reason = f"INCONSISTENT_TRUSTED_EVIDENCE:{reason}"
+    return {
+        "latest_date": row.get("latest_date", ""),
+        "symbol": symbol,
+        "horizon_days": horizon,
+        "trust_status": trust_status,
+        "check": check,
+        "status": status,
+        "passed": bool(passed),
+        "severity": severity,
+        "observed": observed,
+        "threshold": threshold,
+        "reason": "passed" if passed else reason,
+        "model_id": row.get("model_id", ""),
+        "data_version": row.get("data_version", ""),
+    }
+
+
+def _has_value(value: object) -> bool:
+    if value is None:
+        return False
+    try:
+        if pd.isna(value):
+            return False
+    except (TypeError, ValueError):
+        pass
+    return str(value).strip().lower() not in {"", "nan", "none", "null"}
+
+
+def _risk_flags_present(value: object) -> bool:
+    if value is None:
+        return False
+    try:
+        if pd.isna(value):
+            return False
+    except (TypeError, ValueError):
+        pass
+    return str(value).strip().lower() not in {"", "nan", "null"}
+
+
+def _finite_number(value: object) -> bool:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(number)
+
+
+def _valid_probability_fields(row: dict[str, object]) -> bool:
+    fields = ["prob_up", "raw_prob_up", "calibrated_prob_up", "confidence"]
+    for field in fields:
+        if not _finite_number(row.get(field)):
+            return False
+        value = float(row.get(field, 0.0) or 0.0)
+        if value < 0.0 or value > 1.0:
+            return False
+    return True
+
+
+def _valid_return_interval_fields(row: dict[str, object]) -> bool:
+    fields = ["expected_return", "expected_excess_return", "return_p10", "return_p50", "return_p90"]
+    if not all(_finite_number(row.get(field)) for field in fields):
+        return False
+    return (
+        float(row.get("return_p10", 0.0))
+        <= float(row.get("return_p50", 0.0))
+        <= float(row.get("return_p90", 0.0))
+    )
+
+
+def _valid_walk_forward_metrics(row: dict[str, object]) -> bool:
+    if not _has_value(row.get("walk_forward_status")):
+        return False
+    return all(_finite_number(row.get(field)) for field in ["walk_forward_auc", "walk_forward_brier", "walk_forward_rank_ic"])
+
+
+def _valid_calibration_evidence(row: dict[str, object]) -> bool:
+    status = row.get("probability_calibration_status", row.get("calibration_status", ""))
+    if not _has_value(status):
+        return False
+    fields = ["probability_raw_brier", "probability_calibrated_brier", "probability_raw_ece", "probability_calibrated_ece"]
+    return all(_finite_number(row.get(field)) for field in fields)
+
+
+def _valid_conformal_evidence(row: dict[str, object]) -> bool:
+    if not _has_value(row.get("conformal_status")):
+        return False
+    return _finite_number(row.get("conformal_rows")) and _finite_number(row.get("conformal_interval_half_width"))
+
+
+def _evidence_markdown(checks: pd.DataFrame, summary: dict[str, object]) -> str:
+    lines = [
+        f"# Stock Forecast Evidence Audit: {summary.get('symbol', '')}",
+        "",
+        "This audit checks whether each stock forecast row contains the evidence required for a falsifiable research signal. It does not certify future returns and is not investment advice.",
+        "",
+        "## Summary",
+        "",
+        f"- Source: `{summary.get('source', '')}`",
+        f"- Horizons: `{summary.get('horizons', 0)}`",
+        f"- Validation status: `{summary.get('validation_status', '')}`",
+        f"- Failed checks: `{', '.join(summary.get('failed_checks', [])) if summary.get('failed_checks') else 'none'}`",
+        f"- Warning checks: `{', '.join(summary.get('warning_checks', [])) if summary.get('warning_checks') else 'none'}`",
+        f"- With news: `{summary.get('with_news', False)}`",
+        "",
+    ]
+    if checks.empty:
+        lines.append("- No evidence checks were generated.")
+        return "\n".join(lines)
+    lines.extend(["## Horizon Evidence", ""])
+    for horizon, part in checks.groupby("horizon_days", sort=True):
+        trust_status = str(part["trust_status"].iloc[0])
+        failed = part[part["status"].eq("fail")]
+        warned = part[part["status"].eq("warn")]
+        lines.append(f"### {int(horizon)}d - `{trust_status}`")
+        if failed.empty:
+            lines.append("- Required evidence checks: passed")
+        else:
+            for item in failed.itertuples(index=False):
+                lines.append(f"- Fail `{item.check}`: {item.reason} (observed: `{item.observed}`)")
+        if not warned.empty:
+            for item in warned.itertuples(index=False):
+                lines.append(f"- Warn `{item.check}`: {item.reason} (observed: `{item.observed}`)")
         lines.append("")
     return "\n".join(lines).rstrip()
 

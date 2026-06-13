@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aquant_mvp.modeling.calibration import calibrate_probability, calibration_result_to_metrics
+from aquant_mvp.modeling.calibration import calibrate_probability, calibrate_probability_series, calibration_result_to_metrics
 
 
 def test_probability_calibration_sparse_falls_back_to_identity() -> None:
@@ -62,3 +62,27 @@ def test_probability_calibration_is_chronological_and_input_order_stable() -> No
     assert shuffled.calibrated_latest_prob == pytest.approx(ordered.calibrated_latest_prob)
     assert shuffled.calibrated_brier == pytest.approx(ordered.calibrated_brier)
     assert shuffled.calibrated_ece == pytest.approx(ordered.calibrated_ece)
+
+
+def test_probability_series_calibration_transforms_unseen_probabilities() -> None:
+    pytest.importorskip("sklearn")
+    calibration_dates = pd.bdate_range("2023-01-02", periods=150)
+    inference_dates = pd.bdate_range("2023-08-01", periods=12)
+    calibration_prob = pd.Series(np.linspace(0.08, 0.92, len(calibration_dates)), index=calibration_dates)
+    calibration_target = pd.Series((calibration_prob > 0.48).astype(int), index=calibration_dates)
+    inference_prob = pd.Series(np.linspace(0.15, 0.85, len(inference_dates)), index=inference_dates)
+
+    result = calibrate_probability_series(
+        calibration_prob,
+        calibration_target,
+        inference_prob,
+        min_train_rows=80,
+        min_eval_rows=40,
+    )
+
+    assert result.method in {"identity", "platt", "isotonic"}
+    assert result.status in {"calibrated", "calibration_watch", "calibration_failed"}
+    assert result.rows == len(calibration_prob)
+    assert result.calibrated_probabilities.index.equals(inference_prob.index)
+    assert result.calibrated_probabilities.between(0, 1).all()
+    assert {"identity", "platt", "isotonic"}.issubset(set(result.candidates["method"]))

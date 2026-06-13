@@ -1,0 +1,116 @@
+{
+  "symbol": "000630",
+  "latest_date": "2026-06-10",
+  "source": "baostock",
+  "horizons": 3,
+  "final_status_set": [
+    "model_failed",
+    "weak"
+  ],
+  "gate_rows": 33,
+  "blocking_gate_count": 9,
+  "blocking_gate_names": [
+    "local_signal_quality",
+    "walk_forward_evidence_present",
+    "walk_forward_rows",
+    "walk_forward_trusted"
+  ],
+  "by_horizon": {
+    "1": {
+      "trust_status": "weak",
+      "blocking_gates": [
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "walk_forward_status=weak; reasons=min_oos_rows;brier_below_025",
+        "walk_forward_rows=2370",
+        "confidence=0.0376; sample_rank_ic=0.0000"
+      ]
+    },
+    "5": {
+      "trust_status": "weak",
+      "blocking_gates": [
+        "walk_forward_trusted",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "walk_forward_status=weak; reasons=beats_baseline;auc_above_052;brier_below_025;calibration_ready;rank_ic_positive;top_bottom_spread_positive",
+        "confidence=0.0278; sample_rank_ic=0.0000"
+      ]
+    },
+    "20": {
+      "trust_status": "model_failed",
+      "blocking_gates": [
+        "walk_forward_evidence_present",
+        "walk_forward_trusted",
+        "walk_forward_rows",
+        "local_signal_quality"
+      ],
+      "blocking_reasons": [
+        "walk_forward_evidence_missing",
+        "walk_forward_status=missing; reasons=walk_forward_evidence_missing",
+        "walk_forward_rows=0",
+        "confidence=0.0036; sample_rank_ic=0.0000"
+      ]
+    }
+  },
+  "news_summary": {
+    "with_news": true,
+    "event_rows": 242,
+    "event_factor_rows": 379,
+    "event_types": [
+      "commodity_shock",
+      "general_news",
+      "industry_policy",
+      "shareholder_change"
+    ],
+    "latest_event_title": "沪银主连价格下跌触发商品冲击",
+    "similar_event_rows": 25,
+    "similar_event_known_return_rows_5d": 21,
+    "similar_event_positive_rate_5d": 0.6190476190476191,
+    "similar_event_summary": {
+      "symbol": "000630",
+      "query_events": 5,
+      "match_rows": 25,
+      "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+      "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+      "can_enter_event_factors": false,
+      "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+      "known_return_rows_1d": 23,
+      "mean_forward_return_1d": -0.0008952362695200438,
+      "positive_rate_1d": 0.43478260869565216,
+      "known_return_rows_5d": 21,
+      "mean_forward_return_5d": 0.013112198847708317,
+      "positive_rate_5d": 0.6190476190476191,
+      "known_return_rows_20d": 19,
+      "mean_forward_return_20d": 0.043257052524495465,
+      "positive_rate_20d": 0.6842105263157895,
+      "avg_similarity_score": 0.6669314196756457,
+      "same_symbol_rows": 25,
+      "same_event_type_rows": 25
+    },
+    "event_impact_rows": 726,
+    "event_impact_pit_prior_rows": 726,
+    "event_impact_pit_ready_rows": 724,
+    "event_impact_summary": {
+      "event_rows": 23522,
+      "event_return_rows": 70566,
+      "available_return_rows": 64979,
+      "cohort_rows": 178,
+      "pit_prior_rows": 70566,
+      "pit_ready_rows": 68973,
+      "no_future_leakage": true,
+      "horizons": [
+        1,
+        5,
+        20
+      ],
+      "min_prior_rows": 20,
+      "can_enter_trusted_model": false,
+      "note": "Historical event impact statistics are audit evidence only. They do not guarantee future returns or provide investment advice."
+    }
+  },
+  "note": "Trust gates explain why a probabilistic research forecast is trusted, weak, data_insufficient, or model_failed. They are not investment advice."
+}

@@ -37,6 +37,7 @@ It is not a deterministic future price chart. The chart now has two layers:
 - `intraday_kline.png`
 - `forecast_kline.html`
 - `stock_prediction_report.md`
+- `stock_evidence_audit.csv/json/md`
 
 `report-stock --with-kline` writes the same K-line files plus explanation and backtest files.
 
@@ -50,6 +51,7 @@ For an explicit next-session view plus 1/5/20-day nodes:
 
 ```powershell
 python run_mvp.py predict-kline --config configs\mvp.json --source sample --allow-sample --universe 000630,601899,600362 --symbol 000630 --horizons 1,5,20 --days 1 --history-days 80 --output-dir reports\aquant_v04_final\verify_predict_kline_intraday_000630
+python run_mvp.py predict-kline --config configs\mvp.json --source sample --allow-sample --universe 000630,601899,600362 --symbol 000630 --horizons 1,5,20 --model factor_score --days 8 --history-days 80 --with-news --output-dir reports\aquant_v04_final\verify_predict_kline_evidence_audit_000630
 ```
 
 ## Interpretation
@@ -60,3 +62,4 @@ python run_mvp.py predict-kline --config configs\mvp.json --source sample --allo
 - `horizon_kline_summary.csv` shows intraday, 1d, 5d, and 20d key nodes.
 - The p10-p90 band is a risk interval.
 - `trust_status=data_insufficient` means the report exists, but the validation/data coverage is not enough for high-confidence use.
+- `stock_evidence_audit.*` verifies the underlying forecast has data/model versioning, walk-forward evidence fields, calibration/conformal evidence, factor contributors, risk flags, and news/event evidence status. A failed audit blocks trust; it does not delete the scenario chart.

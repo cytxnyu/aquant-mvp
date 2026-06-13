@@ -1,0 +1,16 @@
+{
+  "model_type": "xgboost",
+  "horizons": [
+    1
+  ],
+  "symbols": 3,
+  "min_symbols": 2,
+  "embargo_days": 5,
+  "feature_count": 237,
+  "feature_set_source": "all_factor_columns",
+  "base_factor_count": 237,
+  "event_feature_count": 0,
+  "event_features": [],
+  "rows": 2370,
+  "trust_note": "trusted requires enough symbols and model metrics better than baseline"
+}

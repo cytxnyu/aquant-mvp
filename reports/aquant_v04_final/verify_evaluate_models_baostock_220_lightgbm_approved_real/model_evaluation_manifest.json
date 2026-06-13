@@ -1,0 +1,27 @@
+{
+  "registry_dir": "models\\registry",
+  "registry_records": 49,
+  "explicit_walk_forward_artifacts": [
+    "reports\\aquant_v04_final\\verify_walk_forward_baostock_220_lightgbm_approved_real\\walk_forward_predictions.csv"
+  ],
+  "walk_forward_prediction_rows": 72748,
+  "walk_forward_artifacts": [
+    "reports\\aquant_v04_final\\verify_walk_forward_baostock_220_lightgbm_approved_real\\walk_forward_predictions.csv"
+  ],
+  "slice_reports": [
+    "evaluation_by_year.csv",
+    "evaluation_by_industry.csv",
+    "evaluation_by_theme.csv",
+    "evaluation_by_size.csv",
+    "evaluation_by_regime.csv"
+  ],
+  "model_base_availability": {
+    "csv": "reports\\aquant_v04_final\\verify_evaluate_models_baostock_220_lightgbm_approved_real\\model_base_availability.csv",
+    "md": "reports\\aquant_v04_final\\verify_evaluate_models_baostock_220_lightgbm_approved_real\\model_base_availability.md"
+  },
+  "notes": [
+    "industry is a curated hot-theme proxy unless historical industry data has been synced",
+    "size uses market_cap when available, otherwise PIT liquidity proxy or unavailable",
+    "regime uses PIT market breadth/mean return when present; older artifacts fall back to ex-post OOS diagnostics"
+  ]
+}

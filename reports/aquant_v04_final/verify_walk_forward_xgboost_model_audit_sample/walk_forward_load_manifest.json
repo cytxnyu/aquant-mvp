@@ -1,0 +1,9 @@
+{
+  "source": "sample",
+  "requested_symbols": 3,
+  "loaded_symbols": 3,
+  "min_symbols": 2,
+  "feature_set": {},
+  "warnings": [],
+  "note": "Large free-source walk-forward uses resilient per-symbol loading; failed symbols remain audited."
+}

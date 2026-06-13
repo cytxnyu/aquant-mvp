@@ -1,0 +1,1201 @@
+symbol,name,theme_count,themes,reasons
+000977,Inspur Information,4,ai_compute_semiconductor;cpo_optical_module_datacenter;datacenter_optical_liquid_cooling;xinchuang_software_cybersecurity,AI server;server
+603019,Sugon,4,ai_compute_semiconductor;cpo_optical_module_datacenter;datacenter_optical_liquid_cooling;xinchuang_software_cybersecurity,HPC and server;HPC data center;data center server;HPC
+000938,Unisplendour,3,ai_compute_semiconductor;datacenter_optical_liquid_cooling;xinchuang_software_cybersecurity,AI infrastructure;ICT infrastructure
+000988,Huagong Tech,3,datacenter_optical_liquid_cooling;industrial_mother_machine_laser;robotics_highend_manufacturing,optical communication;laser equipment
+002050,Sanhua Intelligent Controls,3,humanoid_robot_core_parts;robotics_highend_manufacturing;smart_ev_autonomous_driving,thermal and actuator component;thermal management actuator;thermal management
+002151,BDS Navigation,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,Beidou navigation;Beidou
+002230,iFlytek,3,ai_compute_semiconductor;data_element_fintech_ai_app;xinchuang_software_cybersecurity,AI application platform;AI platform;AI application
+002335,Kehua Data,3,datacenter_optical_liquid_cooling;renewable_grid_storage;uhv_smart_grid_power_equipment,UPS and data center;UPS and storage;UPS and power electronics
+002463,WUS Printed Circuit,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,AI server PCB;PCB
+002465,Haige Communications,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,satellite communication;military communication
+002600,Lingyi iTech,3,consumer_electronics_pcb;rare_earth_magnetic_materials;robotics_highend_manufacturing,precision component;precision magnetic component;precision manufacturing
+002709,Tinci Materials,3,power_solid_state_battery;smart_ev_autonomous_driving;solid_state_battery_materials,electrolyte;battery material
+002916,Shennan Circuits,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,IC substrate and PCB;PCB substrate;PCB and packaging substrate
+002938,Avary Holding,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,high-end PCB;PCB
+300001,TGOOD,3,datacenter_optical_liquid_cooling;renewable_grid_storage;uhv_smart_grid_power_equipment,charging and power equipment;charging and grid;charging and grid equipment
+300101,Zhenxin Technology,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,navigation chip;Beidou chip
+300124,Inovance,3,humanoid_robot_core_parts;robotics_highend_manufacturing;smart_ev_autonomous_driving,servo and control;industrial automation;EV drive
+300207,Sunwoda,3,consumer_electronics_pcb;power_solid_state_battery;smart_ev_autonomous_driving,consumer battery;battery pack
+300308,Zhongji Innolight,3,ai_compute_semiconductor;cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical module;800G optical module;CPO optical module
+300476,Victory Giant,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,AI server PCB;PCB;server PCB
+300502,Eoptolink,3,ai_compute_semiconductor;cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical module;high-speed optical module
+300627,Huace Navigation,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,precision navigation
+300699,Guangwei Composites,3,chemical_new_materials;defense_ship_equipment;low_altitude_space_satellite,carbon fiber
+300750,CATL,3,power_solid_state_battery;smart_ev_autonomous_driving;solid_state_battery_materials,battery;power battery;solid-state battery leader watchlist
+300777,Sinofibers Technology,3,chemical_new_materials;defense_ship_equipment;low_altitude_space_satellite,carbon fiber
+600018,SIPG,3,high_dividend_state_owned_finance;shipbuilding_ocean_shipping;shipping_ports_logistics,port
+600028,Sinopec,3,central_soe_high_dividend;coal_power_oil_gas;high_dividend_state_owned_finance,oil dividend;oil refining
+600118,China Satellite,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,satellite platform;satellite
+600183,Shengyi Technology,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,copper clad laminate;CCL
+600845,Baosight Software,3,data_element_fintech_ai_app;datacenter_optical_liquid_cooling;xinchuang_software_cybersecurity,industrial data;IDC and industrial software;industrial software
+600900,Yangtze Power,3,central_soe_high_dividend;coal_power_oil_gas;high_dividend_state_owned_finance,hydropower dividend;hydropower
+600938,CNOOC,3,central_soe_high_dividend;coal_power_oil_gas;high_dividend_state_owned_finance,oil dividend;offshore oil
+601088,China Shenhua,3,central_soe_high_dividend;coal_power_oil_gas;high_dividend_state_owned_finance,coal dividend;coal
+601857,PetroChina,3,central_soe_high_dividend;coal_power_oil_gas;high_dividend_state_owned_finance,oil dividend;oil gas
+601919,COSCO Shipping Holdings,3,high_dividend_state_owned_finance;shipbuilding_ocean_shipping;shipping_ports_logistics,shipping;container shipping
+603228,Kinwong,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,high-end PCB;PCB
+688066,PIESAT,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,satellite remote sensing;satellite application
+688116,TnTech,3,chemical_new_materials;power_solid_state_battery;solid_state_battery_materials,nanocarbon material;carbon nanotube
+688183,Shengyi Electronics,3,advanced_packaging_chiplet_pcb;consumer_electronics_pcb;datacenter_optical_liquid_cooling,server PCB;PCB
+688568,Geovis Technology,3,commercial_space_satellite_internet;defense_ship_equipment;low_altitude_space_satellite,satellite data
+000034,Digital China,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,cloud data service;cloud and IT distribution
+000547,Avic Industry-Finance,2,defense_ship_equipment;low_altitude_space_satellite,defense group finance;defense industry
+000768,AVIC Xian Aircraft,2,defense_ship_equipment;low_altitude_space_satellite,aircraft
+000831,China Rare Earth,2,metals_energy_metals;rare_earth_magnetic_materials,rare earth;rare earth oxide
+000901,Aerospace Hi-Tech,2,defense_ship_equipment;low_altitude_space_satellite,aerospace electronic;aerospace electronics
+001872,China Merchants Port,2,shipbuilding_ocean_shipping;shipping_ports_logistics,port
+002008,Han's Laser,2,industrial_mother_machine_laser;robotics_highend_manufacturing,laser automation
+002025,Aerospace Electric,2,defense_ship_equipment;low_altitude_space_satellite,connector
+002028,Sieyuan Electric,2,renewable_grid_storage;uhv_smart_grid_power_equipment,power equipment
+002074,Gotion High-Tech,2,power_solid_state_battery;smart_ev_autonomous_driving,battery
+002156,Tongfu Microelectronics,2,advanced_packaging_chiplet_pcb;ai_compute_semiconductor,advanced packaging
+002192,Rongjie,2,power_solid_state_battery;solid_state_battery_materials,lithium mining;lithium resource
+002281,Accelink,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical device
+002371,NAURA,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor equipment;etching deposition and cleaning equipment
+002384,Dongshan Precision,2,consumer_electronics_pcb;datacenter_optical_liquid_cooling,FPC and PCB;PCB and connector
+002389,Aerospace Rainbow,2,defense_ship_equipment;low_altitude_space_satellite,UAV
+002407,Do-Fluoride,2,chemical_new_materials;power_solid_state_battery,fluorine and battery material;electrolyte and fluorine
+002415,Hikvision,2,ai_compute_semiconductor;xinchuang_software_cybersecurity,AI vision hardware;AIoT
+002472,Shuanghuan Driveline,2,humanoid_robot_core_parts;robotics_highend_manufacturing,gear transmission
+002497,Yahua Group,2,power_solid_state_battery;solid_state_battery_materials,lithium salt
+002518,Kstar,2,datacenter_optical_liquid_cooling;renewable_grid_storage,UPS energy storage;UPS storage
+002527,Xinshida,2,humanoid_robot_core_parts;robotics_highend_manufacturing,robot controller
+002594,BYD,2,power_solid_state_battery;smart_ev_autonomous_driving,battery vehicle;new energy vehicle
+002747,Estun,2,humanoid_robot_core_parts;robotics_highend_manufacturing,robot body and servo;robotics
+002821,Asymchem,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,CDMO
+002850,Kedali,2,power_solid_state_battery;smart_ev_autonomous_driving,battery structure
+002851,Megmeet,2,datacenter_optical_liquid_cooling;home_appliance_export,power supply;power electronics export
+300003,Lepu Medical,2,innovative_drug_medical_device;medical_device_ivd_imaging,cardiovascular device
+300014,EVE Energy,2,power_solid_state_battery;smart_ev_autonomous_driving,battery
+300033,Hithink RoyalFlush,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,financial data;financial IT
+300045,Hwa Create,2,commercial_space_satellite_internet;low_altitude_space_satellite,satellite navigation
+300073,Dangsheng Technology,2,power_solid_state_battery;solid_state_battery_materials,cathode;cathode material
+300161,Huazhong CNC,2,industrial_mother_machine_laser;robotics_highend_manufacturing,CNC system;industrial CNC
+300188,Meiya Pico,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,data security
+300212,E-Hualu,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,data asset
+300347,Tigermed,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,clinical CRO
+300363,Porton Pharma,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,CDMO
+300364,Chinese Online,2,data_element_fintech_ai_app;media_game_ai_application,digital content and data;digital reading
+300390,Canmax,2,power_solid_state_battery;solid_state_battery_materials,lithium chemical
+300394,TFC Communication,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical passive component;optical component
+300413,Mango Excellent Media,2,media_game_ai_application;tourism_retail_services,streaming media;entertainment service
+300418,Kunlun Tech,2,data_element_fintech_ai_app;media_game_ai_application,AI application;AI application and game
+300424,Aviation New Technology,2,defense_ship_equipment;low_altitude_space_satellite,aviation maintenance
+300482,Wondfo Biotech,2,innovative_drug_medical_device;medical_device_ivd_imaging,IVD
+300491,Tonghe Technology,2,renewable_grid_storage;uhv_smart_grid_power_equipment,charging module
+300567,Jingce Electronic,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor inspection;inspection equipment
+300570,T&S Communications,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical connector;fiber connector
+300595,Opm Biosciences,2,innovative_drug_medical_device;medical_device_ivd_imaging,bioprocess;bioprocess equipment
+300604,Changchuan Technology,2,ai_compute_semiconductor;semiconductor_equipment_materials,IC testing equipment;IC test equipment
+300607,Topstar,2,industrial_mother_machine_laser;robotics_highend_manufacturing,industrial automation
+300660,Jiangsu Leili,2,humanoid_robot_core_parts;robotics_highend_manufacturing,micro motor
+300693,Power Electronics Seed,2,datacenter_optical_liquid_cooling;renewable_grid_storage,power electronics seed;power electronics
+300725,Pharmablock,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,chemistry CRO;CRO chemistry
+300759,Pharmaron,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,CXO platform;CXO
+300760,Mindray Medical,2,innovative_drug_medical_device;medical_device_ivd_imaging,medical device
+300782,Maxscend,2,ai_compute_semiconductor;consumer_electronics_pcb,RF chip
+301358,Hunan Yuneng,2,power_solid_state_battery;solid_state_battery_materials,LFP cathode
+301368,Fengli Intelligent,2,humanoid_robot_core_parts;robotics_highend_manufacturing,micro transmission
+600011,Huaneng Power,2,coal_power_oil_gas;high_dividend_state_owned_finance,thermal power;power
+600026,COSCO Shipping Energy,2,shipbuilding_ocean_shipping;shipping_ports_logistics,tanker shipping;energy shipping
+600027,Huadian Power,2,coal_power_oil_gas;high_dividend_state_owned_finance,thermal power;power
+600031,Sany Heavy Industry,2,industrial_mother_machine_laser;robotics_highend_manufacturing,high-end equipment;construction machinery
+600038,Avicopter,2,defense_ship_equipment;low_altitude_space_satellite,helicopter
+600089,TBEA,2,renewable_grid_storage;uhv_smart_grid_power_equipment,transformer and silicon;transformer and UHV
+600111,Northern Rare Earth,2,metals_energy_metals;rare_earth_magnetic_materials,rare earth;rare earth resource
+600150,CSSC Holdings,2,defense_ship_equipment;shipbuilding_ocean_shipping,shipbuilding
+600176,China Jushi,2,chemical_new_materials;real_estate_chain,glass fiber
+600188,Yankuang Energy,2,coal_power_oil_gas;high_dividend_state_owned_finance,coal
+600276,Hengrui Medicine,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,innovative drug
+600312,Pinggao Electric,2,renewable_grid_storage;uhv_smart_grid_power_equipment,UHV switchgear
+600316,Hongdu Aviation,2,defense_ship_equipment;low_altitude_space_satellite,trainer aircraft;aircraft
+600406,NARI Technology,2,renewable_grid_storage;uhv_smart_grid_power_equipment,grid automation
+600428,COSCO Shipping Specialized,2,shipbuilding_ocean_shipping;shipping_ports_logistics,special shipping;specialized shipping
+600482,China Ship Defense,2,defense_ship_equipment;shipbuilding_ocean_shipping,ship equipment
+600487,Hengtong Optic-Electric,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical cable
+600522,Zhongtian Technology,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,optical cable
+600584,JCET,2,advanced_packaging_chiplet_pcb;ai_compute_semiconductor,advanced packaging
+600760,AVIC Shenyang Aircraft,2,defense_ship_equipment;low_altitude_space_satellite,aircraft
+600795,GD Power,2,coal_power_oil_gas;high_dividend_state_owned_finance,power
+600886,SDIC Power,2,coal_power_oil_gas;high_dividend_state_owned_finance,power
+600941,China Mobile,2,central_soe_high_dividend;high_dividend_state_owned_finance,telecom dividend
+601018,Ningbo Zhoushan Port,2,shipbuilding_ocean_shipping;shipping_ports_logistics,port
+601100,Hengli Hydraulic,2,industrial_mother_machine_laser;robotics_highend_manufacturing,hydraulic component
+601179,China XD Electric,2,renewable_grid_storage;uhv_smart_grid_power_equipment,UHV equipment
+601225,Shaanxi Coal,2,coal_power_oil_gas;high_dividend_state_owned_finance,coal;coal dividend
+601288,Agricultural Bank of China,2,central_soe_high_dividend;high_dividend_state_owned_finance,bank dividend;large bank dividend
+601360,Qihoo 360,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,security AI;security and AI
+601398,ICBC,2,central_soe_high_dividend;high_dividend_state_owned_finance,bank dividend;large bank dividend
+601728,China Telecom,2,central_soe_high_dividend;high_dividend_state_owned_finance,telecom dividend
+601816,Beijing-Shanghai High Speed Railway,2,central_soe_high_dividend;high_dividend_state_owned_finance,transport dividend
+601872,China Merchants Energy Shipping,2,shipbuilding_ocean_shipping;shipping_ports_logistics,energy shipping;tanker dry bulk
+601877,Chint Electrics,2,renewable_grid_storage;uhv_smart_grid_power_equipment,low-voltage and solar;low-voltage electrical
+601939,China Construction Bank,2,central_soe_high_dividend;high_dividend_state_owned_finance,bank dividend;large bank dividend
+601988,Bank of China,2,central_soe_high_dividend;high_dividend_state_owned_finance,bank dividend;large bank dividend
+601989,China Heavy Industry,2,defense_ship_equipment;shipbuilding_ocean_shipping,shipbuilding
+603259,WuXi AppTec,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,CXO platform;CXO
+603283,Saiteng,2,industrial_mother_machine_laser;robotics_highend_manufacturing,precision equipment;precision automation
+603338,Zhejiang Dingli,2,industrial_mother_machine_laser;robotics_highend_manufacturing,industrial equipment;aerial work platform
+603416,Xinjie Electric,2,humanoid_robot_core_parts;robotics_highend_manufacturing,PLC and servo
+603659,Putailai,2,power_solid_state_battery;solid_state_battery_materials,anode coating separator;anode and coating
+603662,Keli Sensing,2,humanoid_robot_core_parts;robotics_highend_manufacturing,force sensor;sensor
+603799,Huayou Cobalt,2,metals_energy_metals;power_solid_state_battery,cobalt nickel lithium material;battery metal
+603882,KingMed Diagnostics,2,innovative_drug_medical_device;medical_device_ivd_imaging,medical testing
+603893,Rockchip,2,ai_compute_semiconductor;consumer_electronics_pcb,AIoT chip
+603986,GigaDevice,2,ai_compute_semiconductor;consumer_electronics_pcb,memory and MCU
+605117,Deye,2,home_appliance_export;renewable_grid_storage,inverter export;inverter
+688008,Montage Technology,2,ai_compute_semiconductor;consumer_electronics_pcb,memory interface chip;memory interface
+688012,Advanced Micro-Fab,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor equipment;etching equipment
+688017,Green Harmonic,2,humanoid_robot_core_parts;robotics_highend_manufacturing,harmonic reducer;robot reducer
+688019,Anji Micro,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor material;CMP slurry and photoresist material
+688029,Nanwei Medical,2,innovative_drug_medical_device;medical_device_ivd_imaging,endoscope device
+688037,Kingsemi,2,ai_compute_semiconductor;semiconductor_equipment_materials,lithography process equipment;photoresist process equipment
+688072,Piotech,2,ai_compute_semiconductor;semiconductor_equipment_materials,thin film equipment;domestic deposition equipment;thin film deposition equipment
+688099,Amlogic,2,ai_compute_semiconductor;consumer_electronics_pcb,AIoT SoC;SoC
+688111,Kingsoft Office,2,data_element_fintech_ai_app;xinchuang_software_cybersecurity,office AI;office software
+688120,Hwatsing,2,ai_compute_semiconductor;semiconductor_equipment_materials,CMP equipment
+688126,National Silicon,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor wafer;large silicon wafer
+688180,Junshi Biosciences,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,antibody drug;innovative antibody
+688200,Huafeng Test,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor test equipment
+688234,Tianyue Advanced,2,ai_compute_semiconductor;semiconductor_equipment_materials,SiC substrate
+688235,BeiGene,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,oncology drug;innovative oncology
+688239,Aerospace Nanhu,2,commercial_space_satellite_internet;low_altitude_space_satellite,radar
+688266,Zelgen,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,innovative drug
+688271,United Imaging,2,innovative_drug_medical_device;medical_device_ivd_imaging,medical imaging
+688305,KSEC Intelligent,2,industrial_mother_machine_laser;robotics_highend_manufacturing,motion control
+688331,RemeGen,2,cxo_biotech_innovative_drug;innovative_drug_medical_device,ADC and biologic;innovative drug
+688333,Xi'an Bright Laser,2,commercial_space_satellite_internet;low_altitude_space_satellite,aerospace additive manufacturing;aerospace 3D printing
+688388,Jiayuan Technology,2,power_solid_state_battery;solid_state_battery_materials,copper foil
+688390,GoodWe,2,renewable_grid_storage;uhv_smart_grid_power_equipment,inverter
+688396,China Resources Micro,2,ai_compute_semiconductor;semiconductor_equipment_materials,power semiconductor
+688409,Fortune Precision,2,ai_compute_semiconductor;semiconductor_equipment_materials,semiconductor equipment parts
+688498,Yuanjie Semiconductor,2,cpo_optical_module_datacenter;datacenter_optical_liquid_cooling,laser chip
+688525,Siglent,2,ai_compute_semiconductor;semiconductor_equipment_materials,electronic measurement;electronic test instrument
+688567,Farasis Energy,2,power_solid_state_battery;solid_state_battery_materials,solid-state battery watchlist
+688575,YHLO Biotech,2,innovative_drug_medical_device;medical_device_ivd_imaging,IVD
+688608,Bestechnic,2,ai_compute_semiconductor;consumer_electronics_pcb,wireless audio chip;audio chip
+688617,APT Medical,2,innovative_drug_medical_device;medical_device_ivd_imaging,medical device;electrophysiology device
+688698,Weihong,2,industrial_mother_machine_laser;robotics_highend_manufacturing,motion control;CNC control
+000001,平安银行,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000002,Vanke A,1,real_estate_chain,real estate
+000004,*ST国华,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000006,深振业Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000007,全新好,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000008,神州高铁,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000009,中国宝安,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000010,*ST美丽,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000011,深物业A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000012,CSG Holding,1,real_estate_chain,glass
+000014,沙河股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000016,*ST康佳A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000017,深中华A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000019,深粮控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000020,深华发Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000021,深科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000025,特  力Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000026,飞亚达,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000027,深圳能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000028,国药一致,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000029,深深房Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000030,富奥股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000031,Grandjoy Holdings,1,real_estate_chain,real estate
+000032,深桑达Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000035,中国天楹,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000036,华联控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000037,深南电A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000039,中集集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000042,中洲控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000045,深纺织Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000048,京基智农,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000049,德赛电池,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000050,Tianma Microelectronics,1,consumer_electronics_pcb,display
+000055,方大集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000056,*ST皇庭,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000058,深 赛 格,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000059,华锦股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000060,中金岭南,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000061,农 产 品,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000062,深圳华强,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000063,中兴通讯,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000065,北方国际,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000066,中国长城,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000068,华控赛格,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000069,Overseas Chinese Town,1,real_estate_chain,real estate tourism
+000070,特发信息,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000078,ST海王,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000088,Yantian Port,1,shipping_ports_logistics,port
+000089,深圳机场,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000090,天健集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000096,广聚能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000099,中信海直,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000100,TCL Technology,1,consumer_electronics_pcb,display panel
+000151,中成股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000153,丰原药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000155,川能动力,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000156,华数传媒,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000157,Zoomlion,1,robotics_highend_manufacturing,construction machinery
+000158,常山北明,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000159,国际实业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000166,申万宏源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000301,Eastern Shenghong,1,chemical_new_materials,chemical fiber
+000333,Midea Group,1,home_appliance_export,home appliance export
+000338,Weichai Power,1,smart_ev_autonomous_driving,powertrain
+000400,许继电气,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000401,Jidong Cement,1,real_estate_chain,cement
+000402,Financial Street,1,real_estate_chain,real estate
+000403,派林生物,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000404,长虹华意,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000407,胜利股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000408,藏格矿业,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000409,云鼎科技,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000410,沈阳机床,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000411,英特集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000415,渤海租赁,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000417,合百集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000419,通程控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000420,吉林化纤,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000421,南京公用,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000422,湖北宜化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000423,东阿阿胶,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000425,XCMG Machinery,1,robotics_highend_manufacturing,construction machinery
+000426,Xingye Silver Tin,1,metals_energy_metals,silver tin
+000428,华天酒店,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000429,粤高速Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000430,张家界,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000488,ST晨鸣,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000498,山东路桥,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000501,武商集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000503,国新健康,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000504,南华生物,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000505,京粮控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000506,招金黄金,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000507,珠海港,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000509,华塑控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000510,新金路,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000513,丽珠集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000514,渝 开 发,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000516,国际医学,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000517,荣安地产,1,real_estate_chain,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000518,四环生物,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000519,中兵红箭,1,defense_ship_equipment,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000520,凤凰航运,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000521,长虹美菱,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000523,红棉股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000524,Lingnan Holdings,1,tourism_retail_services,travel service
+000525,红太阳,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000526,Xueda Education,1,education_human_capital,education service
+000528,柳    工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000529,广弘控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000530,冰山冷热,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000531,穗恒运Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000532,华金资本,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000533,顺钠股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000534,万泽股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000536,华映科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000537,Guangyu Development,1,coal_power_oil_gas,new energy power
+000538,云南白药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000539,Guangdong Electric Power,1,coal_power_oil_gas,power
+000541,佛山照明,1,home_appliance_export,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000543,Anhui Wenergy,1,coal_power_oil_gas,power
+000544,Central Plains Environment,1,environmental_water_gas,water treatment
+000545,金浦钛业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000546,金圆股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000548,湖南投资,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000550,Jiangling Motors,1,smart_ev_autonomous_driving,commercial vehicle
+000551,创元科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000552,甘肃能化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000553,安道麦A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000554,泰山石油,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000555,神州信息,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000557,西部创业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000558,天府文旅,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000559,万向钱潮,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000560,我爱我家,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000561,烽火电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000563,陕国投Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000564,供销大集,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000565,渝三峡Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000566,海南海药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000567,海德股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000568,Luzhou Laojiao,1,agriculture_food_beverage,liquor
+000570,苏常柴Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000571,新大洲A,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000572,海马汽车,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000573,粤宏远Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000576,甘化科工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000581,威孚高科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000582,Beibu Gulf Port,1,shipping_ports_logistics,port
+000586,汇源通信,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000589,贵州轮胎,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000590,古汉医药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000591,太阳能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000592,平潭发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000593,德龙汇能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000595,*ST宝实,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000596,Gujing Gongjiu,1,agriculture_food_beverage,liquor
+000597,东北制药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000598,Chengdu Xingrong Environment,1,environmental_water_gas,water utility
+000599,青岛双星,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000600,建投能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000601,韶能股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000603,盛达资源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000605,渤海股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000607,华媒控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000608,阳光股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000609,*ST中迪,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000610,*ST西旅,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000612,焦作万方,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000615,*ST美谷,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000617,中油资本,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000619,海螺新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000620,盈新发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000623,吉林敖东,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000625,Changan Automobile,1,smart_ev_autonomous_driving,vehicle
+000626,远大控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000628,高新发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000629,钒钛股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000630,Tongling Nonferrous,1,metals_energy_metals,copper
+000631,顺发恒能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000632,ST三木,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000633,合金投资,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000635,英 力 特,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000636,风华高科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000637,茂化实华,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000639,ST西王,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000650,仁和药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000651,Gree Electric,1,home_appliance_export,home appliance
+000652,泰达股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000655,金岭矿业,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000656,*ST金科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000657,中钨高新,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000659,珠海中富,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000661,Changchun High-Tech,1,innovative_drug_medical_device,biopharma
+000663,永安林业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000665,湖北广电,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000668,荣丰控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000669,ST金鸿,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000670,盈方微,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000672,上峰材料,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000676,智度股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000677,ST海龙,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000678,襄阳轴承,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000679,大连友谊,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000680,山推股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000681,视觉中国,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000682,东方电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000683,博源化工,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000685,Zhongshan Public Utilities,1,environmental_water_gas,water utility
+000686,东北证券,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000688,国城矿业,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000690,宝新能源,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000691,亚太实业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000692,惠天热电,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000695,滨海能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000697,炼石航空,1,defense_ship_equipment,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000698,ST沈化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000700,模塑科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000701,厦门信达,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000702,正虹科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000703,恒逸石化,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000705,浙江震元,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000707,双环科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000708,中信特钢,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000709,河钢股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000710,贝瑞基因,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000711,ST京蓝,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000712,锦龙股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000713,国投丰乐,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000715,中兴商业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000716,黑芝麻,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000717,中南股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000718,苏宁环球,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000719,中原传媒,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000720,新能泰山,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000721,西安饮食,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000722,湖南发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000723,美锦能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000725,BOE Technology,1,consumer_electronics_pcb,display panel
+000726,鲁  泰Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000727,冠捷科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000728,国元证券,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000729,燕京啤酒,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000731,四川美丰,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000733,Zhenhua Technology,1,defense_ship_equipment,military electronics
+000735,罗 牛 山,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000736,中交地产,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000737,North Copper,1,metals_energy_metals,copper
+000738,Avicopter,1,defense_ship_equipment,helicopter
+000739,普洛药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000750,国海证券,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000751,锌业股份,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000752,*ST西发,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000753,漳州发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000755,山西高速,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000756,新华制药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000757,浩物股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000758,中色股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000759,中百集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000761,本钢板材,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000762,西藏矿业,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000766,通化金马,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000767,晋控电力,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000776,GF Securities,1,high_dividend_state_owned_finance,broker
+000777,中核科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000778,新兴铸管,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000779,甘咨询,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000782,恒申新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000783,长江证券,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000785,居然智家,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000786,BBMG,1,real_estate_chain,cement building material
+000788,北大医药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000789,万年青,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000790,华神科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000791,甘肃能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000792,盐湖股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000793,*ST华闻,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000795,英洛华,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000796,Tourism Seed,1,tourism_retail_services,travel watchlist
+000797,中国武夷,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000798,中水渔业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000799,酒鬼酒,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000800,FAW Jiefang,1,smart_ev_autonomous_driving,commercial vehicle
+000801,四川九洲,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000802,北京文化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000803,山高环能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000807,Yunnan Aluminum,1,metals_energy_metals,aluminum
+000809,和展能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000810,创维数字,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000811,冰轮环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000812,陕西金叶,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000813,德展健康,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000815,美利云,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000816,智慧农业,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000818,航锦科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000819,岳阳兴长,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000820,*ST节能,1,environmental_water_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000821,ST京机,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000822,山东海化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000823,Ultrasonic Electronics,1,consumer_electronics_pcb,PCB
+000825,太钢不锈,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000826,*ST启环,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000828,东莞控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000829,天音控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000830,鲁西化工,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000833,粤桂股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000837,秦川机床,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000838,*ST发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000839,国安股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000848,承德露露,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000850,华茂股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000852,石化机械,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000856,冀东装备,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000858,Wuliangye,1,agriculture_food_beverage,liquor
+000859,国风新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000860,顺鑫农业,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000862,银星能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000863,三湘印象,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000868,安凯客车,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000869,张  裕Ａ,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000875,Jidian Electric Power,1,coal_power_oil_gas,power
+000876,New Hope,1,agriculture_food_beverage,pig and feed
+000877,Tianshan Materials,1,real_estate_chain,cement
+000878,Yunnan Copper,1,metals_energy_metals,copper
+000880,潍柴重机,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000881,中广核技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000882,华联股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000883,湖北能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000885,城发环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000886,海南高速,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000887,中鼎股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000888,Emei Shan Tourism,1,tourism_retail_services,scenic spot
+000889,中嘉博创,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000890,法尔胜,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000892,欢瑞世纪,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000893,亚钾国际,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000895,Shuanghui Development,1,agriculture_food_beverage,meat processing
+000897,津滨发展,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000898,鞍钢股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000899,赣能股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000900,现代投资,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000902,新洋丰,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000903,ST云动,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000905,厦门港务,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000906,浙商中拓,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000908,景峰医药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000909,*ST数源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000910,大亚圣象,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000911,*ST广糖,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000912,泸天化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000913,钱江摩托,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000915,华特达因,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000917,电广传媒,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000919,金陵药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000920,沃顿科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000921,海信家电,1,home_appliance_export,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000922,佳电股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000923,河钢资源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000925,众合科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000926,福星股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000927,中国铁物,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000928,中钢国际,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000929,*ST兰黄,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000930,中粮科技,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000931,中 关 村,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000932,华菱钢铁,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000933,Shenhuo,1,metals_energy_metals,coal aluminum
+000935,四川双马,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000936,华西股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000937,冀中能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000948,南天信息,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000949,新乡化纤,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000950,重药控股,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000951,中国重汽,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000952,广济药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000953,中哲精化,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000955,欣龙控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000957,中通客车,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000958,电投产融,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000959,首钢股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000960,Yunnan Tin,1,metals_energy_metals,tin
+000962,东方钽业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000963,Huadong Medicine,1,innovative_drug_medical_device,pharma and aesthetics
+000965,天保基建,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000966,长源电力,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000967,盈峰环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000968,蓝焰控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000969,安泰科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000970,Zhongke Sanhuan,1,rare_earth_magnetic_materials,NdFeB magnet
+000972,*ST中基,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000973,佛塑科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000975,Yintai Gold,1,metals_energy_metals,gold
+000978,Guilin Tourism,1,tourism_retail_services,scenic spot
+000980,众泰汽车,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000981,山子高科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000983,Shanxi Coking Coal,1,coal_power_oil_gas,coal
+000985,大庆华科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000987,越秀资本,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000989,九芝堂,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000990,诚志股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000993,闽东电力,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000995,皇台酒业,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000997,新 大 陆,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+000998,Longping High-Tech,1,agriculture_food_beverage,seed
+000999,华润三九,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001201,东瑞股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001202,炬申股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001203,大中矿业,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001205,盛航股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001206,依依股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001207,联科科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001208,华菱线缆,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001209,洪兴股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001210,金房能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001211,双枪科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001212,中旗新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001213,中铁特货,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001215,千味央厨,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001216,华瓷股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001217,华尔泰,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001218,丽臣实业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001219,青岛食品,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001220,世盟股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001221,悍高集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001222,源飞宠物,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001223,欧克科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001225,和泰机电,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001226,拓山重工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001227,兰州银行,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001228,永泰运,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001229,魅视科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001230,劲旅环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001231,农心科技,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001233,海安集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001234,泰慕士,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001236,弘业期货,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001237,惠康科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001238,浙江正特,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001239,永达股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001255,博菲电气,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001256,炜冈科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001257,盛龙股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001258,立新能源,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001259,利仁科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001260,坤泰股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001266,宏英智能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001267,汇绿生态,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001268,联合精密,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001269,欧晶科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001270,铖昌科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001277,速达股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001278,一彬科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001279,强邦新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001280,中国铀业,1,central_soe_high_dividend,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001282,三联锻造,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001283,Haojiang Intelligent,1,home_appliance_export,smart home controls
+001285,瑞立科密,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001286,陕西能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001287,中电港,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001288,运机集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001289,龙源电力,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001296,长江材料,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001298,好上好,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001299,美能能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001300,三柏硕,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001301,尚太科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001306,夏厦精密,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001308,康冠科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001309,德明利,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001311,多利科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001312,福恩股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001313,粤海饲料,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001314,亿道信息,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001316,润贝航科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001317,三羊马,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001318,阳光乳业,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001319,铭科精技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001322,箭牌家居,1,real_estate_chain,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001323,慕思股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001324,长青科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001325,元创股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001326,联域股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001328,登康口腔,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001330,博纳影业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001331,胜通能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001332,锡装股份,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001333,光华股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001335,信凯科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001336,楚环科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001337,四川黄金,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001338,永顺泰,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001339,智微智能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001356,富岭股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001358,兴欣新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001359,平安电工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001360,南矿集团,1,metals_energy_metals,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001365,天海电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001366,播恩集团,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001367,海森药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001368,通达创智,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001369,双欣材料,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001373,翔腾新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001376,百通能源,1,coal_power_oil_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001378,德冠新材,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001379,腾达科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001380,华纬科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001382,新亚电缆,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001386,马可波罗,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001387,雪祺电气,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001388,信通电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001389,广合科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001390,古麒绒材,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001391,国货航,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001393,维通利,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001395,亚联机械,1,robotics_highend_manufacturing,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001396,誉帆科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001400,江顺科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001696,宗申动力,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001896,豫能控股,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001914,招商积余,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001965,招商公路,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+001979,China Merchants Shekou,1,real_estate_chain,real estate
+002001,新 和 成,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002003,伟星股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002004,华邦健康,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002005,ST德豪,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002006,精工科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002007,华兰生物,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002009,天奇股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002010,传化智联,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002011,盾安环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002012,凯恩股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002014,永新股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002015,协鑫能科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002016,世荣兆业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002017,东信和平,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002019,亿帆医药,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002020,京新药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002021,中捷资源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002022,科华生物,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002023,海特高新,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002024,ST易购,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002026,山东威达,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002027,分众传媒,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002029,七 匹 狼,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002030,达安基因,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002031,巨轮智能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002032,Supoer,1,home_appliance_export,small appliance
+002033,Lijiang Tourism,1,tourism_retail_services,scenic spot
+002034,旺能环境,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002035,Appliance Export Seed,1,home_appliance_export,export seed
+002036,联创电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002037,保利联合,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002038,双鹭药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002039,黔源电力,1,power_solid_state_battery,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002040,南 京 港,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002041,登海种业,1,agriculture_food_beverage,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002042,华孚时尚,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002043,兔 宝 宝,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002044,美年健康,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002045,国光电器,1,ai_compute_semiconductor,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002046,国机精工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002047,宝鹰股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002048,宁波华翔,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002049,Unigroup Guoxin,1,ai_compute_semiconductor,security and FPGA chip
+002051,中工国际,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002052,同洲电子,1,consumer_electronics_pcb,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002053,云南能投,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002054,德美化工,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002055,ST得润,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002056,Hengdian DMEGC,1,rare_earth_magnetic_materials,magnetic material
+002057,中钢天源,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002058,*ST威尔,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002059,云南旅游,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002060,广东建工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002061,浙江交科,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002062,宏润建设,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002063,远光软件,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002064,华峰化学,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002065,东华软件,1,data_element_fintech_ai_app,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002066,瑞泰科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002067,景兴纸业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002068,黑猫股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002069,獐子岛,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002072,凯瑞德,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002073,软控股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002075,沙钢股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002076,*ST星光,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002077,大港股份,1,shipping_ports_logistics,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002078,太阳纸业,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002079,苏州固锝,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002080,Sinoma Science,1,power_solid_state_battery,lithium separator
+002081,金 螳 螂,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002082,ST万邦,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002083,孚日股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002084,海鸥住工,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002085,Wanfeng Auto,1,low_altitude_space_satellite,low altitude aircraft chain
+002086,东方海洋,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002088,鲁阳节能,1,environmental_water_gas,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002090,金智科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002091,江苏国泰,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002092,中泰化学,1,chemical_new_materials,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002093,国脉科技,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002094,青岛金王,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002095,生 意 宝,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002096,易普力,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002097,山河智能,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002098,浔兴股份,1,mega_hot_free_market_extension,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002099,海翔药业,1,innovative_drug_medical_device,free all-A extension added to make mega-hot large enough for cross-sectional validation
+002120,Yunda Holding,1,shipping_ports_logistics,express
+002129,TCL Zhonghuan,1,renewable_grid_storage,silicon wafer
+002138,Sunlord Electronics,1,consumer_electronics_pcb,passive component
+002142,Bank of Ningbo,1,high_dividend_state_owned_finance,regional bank
+002155,Hunan Gold,1,metals_energy_metals,gold antimony
+002179,AVIC Optoelectronics,1,defense_ship_equipment,connectors
+002182,Baowu Magnesium,1,metals_energy_metals,magnesium
+002183,Eternal Asia,1,shipping_ports_logistics,supply chain
+002202,Goldwind,1,renewable_grid_storage,wind turbine
+002203,Hailiang,1,metals_energy_metals,copper pipe
+002216,Sanquan Food,1,agriculture_food_beverage,frozen food
+002237,Hengbang,1,metals_energy_metals,gold smelting
+002241,GoerTek,1,consumer_electronics_pcb,acoustic and XR
+002242,Joyoung,1,home_appliance_export,small appliance
+002251,Retail Seed,1,tourism_retail_services,retail seed
+002268,Empyrean Technology,1,xinchuang_software_cybersecurity,EDA
+002271,Oriental Yuhong,1,real_estate_chain,waterproof material
+002273,Crystal-Optech,1,consumer_electronics_pcb,optics
+002284,Asia-Pacific,1,smart_ev_autonomous_driving,brake system
+002291,Digital Retail Seed,1,media_game_ai_application,AI application seed
+002292,Alpha Group,1,media_game_ai_application,IP and toy
+002304,Yanghe Brewery,1,agriculture_food_beverage,liquor
+002311,Haid Group,1,agriculture_food_beverage,feed
+002324,Pret Composites,1,chemical_new_materials,modified plastic
+002326,Yongtai Technology,1,chemical_new_materials,fluorine fine chemical
+002334,INVT,1,renewable_grid_storage,industrial inverter
+002340,GEM,1,power_solid_state_battery,battery recycling precursor
+002352,SF Holding,1,shipping_ports_logistics,express logistics
+002353,Oil Service Seed,1,coal_power_oil_gas,oil service seed
+002368,Taiji Computer,1,xinchuang_software_cybersecurity,government IT
+002385,Dabeinong,1,agriculture_food_beverage,seed feed
+002402,Consumer Electronics Seed,1,consumer_electronics_pcb,electronics watchlist
+002405,NavInfo,1,smart_ev_autonomous_driving,autonomous driving map
+002410,Glodon,1,xinchuang_software_cybersecurity,construction software
+002414,Infrared Equipment Seed,1,defense_ship_equipment,infrared seed
+002419,Rainbow Digital Commercial,1,tourism_retail_services,retail
+002434,Wanliyang,1,smart_ev_autonomous_driving,transmission
+002439,Venustech,1,xinchuang_software_cybersecurity,cybersecurity
+002456,OFILM,1,consumer_electronics_pcb,optical module
+002459,JA Solar,1,renewable_grid_storage,solar module
+002460,Ganfeng Lithium,1,metals_energy_metals,lithium
+002466,Tianqi Lithium,1,metals_energy_metals,lithium
+002475,Luxshare Precision,1,consumer_electronics_pcb,consumer electronics
+002481,Shuangta Food,1,agriculture_food_beverage,plant protein
+002487,Dajin Heavy Industry,1,renewable_grid_storage,wind tower
+002493,Rongsheng Petrochemical,1,chemical_new_materials,refining chemical
+002507,Fuling Zhacai,1,agriculture_food_beverage,food
+002508,Robam Appliances,1,home_appliance_export,kitchen appliance
+002517,Kingnet Network,1,media_game_ai_application,game
+002531,Titan Wind,1,renewable_grid_storage,wind tower
+002532,Tianshan Aluminum,1,metals_energy_metals,aluminum
+002536,Feilong Auto,1,smart_ev_autonomous_driving,thermal management
+002555,Sanqi Interactive,1,media_game_ai_application,game
+002557,Qiaqia Food,1,agriculture_food_beverage,snack
+002558,Giant Network,1,media_game_ai_application,game
+002572,Sogal,1,real_estate_chain,custom furniture
+002573,ClearWater Source,1,environmental_water_gas,industrial water treatment
+002601,LB Group,1,chemical_new_materials,titanium dioxide
+002602,Century Huatong,1,media_game_ai_application,game
+002605,Yaoji Technology,1,media_game_ai_application,game
+002607,Offcn Education,1,education_human_capital,vocational education
+002611,Dongfang Precision,1,power_solid_state_battery,battery equipment
+002621,Mango Excellent Education Seed,1,education_human_capital,education information service
+002624,Perfect World,1,media_game_ai_application,game
+002635,Anjie Technology,1,consumer_electronics_pcb,functional parts
+002643,Wanshun New Material,1,chemical_new_materials,display material
+002648,Satellite Chemical,1,chemical_new_materials,light hydrocarbon chemical
+002658,STCN Environment Seed,1,environmental_water_gas,environmental equipment seed
+002659,Education Tech Seed,1,education_human_capital,education seed
+002677,Consumer Export Seed,1,home_appliance_export,consumer export seed
+002698,Bozhon Precision,1,robotics_highend_manufacturing,automation equipment
+002705,Ningbo Joyson,1,home_appliance_export,auto electronics export
+002714,Muyuan Foods,1,agriculture_food_beverage,pig farming
+002738,Sinomine Resource,1,metals_energy_metals,cesium lithium
+002739,Wanda Film,1,media_game_ai_application,cinema
+002756,Yongxing Materials,1,metals_energy_metals,lithium stainless steel
+002812,Yunnan Energy New Material,1,power_solid_state_battery,separator
+002815,Chongda Technology,1,consumer_electronics_pcb,PCB
+002837,Cooling Equipment Seed,1,datacenter_optical_liquid_cooling,thermal management watchlist
+002860,Hangzhou Star Shuaier,1,home_appliance_export,home appliance component
+002867,Chow Tai Seng,1,tourism_retail_services,jewelry retail
+002906,Huayang Group,1,smart_ev_autonomous_driving,smart cockpit
+002918,Mona Lisa,1,real_estate_chain,ceramic tile
+002920,Desay SV,1,smart_ev_autonomous_driving,smart cockpit
+002959,Bear Electric,1,home_appliance_export,small appliance
+002988,New Material Seed,1,metals_energy_metals,new material seed
+003032,Chuanzhi Education,1,education_human_capital,IT training
+003816,CGN Power,1,coal_power_oil_gas,nuclear power
+300002,Shenzhou Taiyue,1,media_game_ai_application,game and AI
+300010,Dou Shen Education,1,education_human_capital,education service
+300013,Logistics Fintech Seed,1,shipping_ports_logistics,logistics seed
+300015,Aier Eye,1,innovative_drug_medical_device,medical service
+300024,Siasun Robot,1,robotics_highend_manufacturing,industrial robot
+300037,Capchem,1,power_solid_state_battery,battery electrolyte
+300047,TianYuan DIC,1,education_human_capital,enterprise digital training
+300058,BlueFocus,1,media_game_ai_application,marketing AI
+300059,East Money,1,data_element_fintech_ai_app,internet finance
+300068,Narada Power,1,renewable_grid_storage,energy storage
+300070,OriginWater,1,environmental_water_gas,membrane water treatment
+300072,Three-Dimensional Silk,1,environmental_water_gas,air pollution control
+300115,Everwin Precision,1,consumer_electronics_pcb,precision component
+300118,Risen Energy,1,renewable_grid_storage,solar module
+300122,Zhifei Biological,1,innovative_drug_medical_device,vaccine
+300133,Huace Film & TV,1,media_game_ai_application,content
+300137,Suntar Environmental,1,environmental_water_gas,water treatment
+300144,Songcheng Performance,1,tourism_retail_services,culture tourism
+300146,By-Health,1,agriculture_food_beverage,nutrition
+300166,Business-intelligence of Oriental Nations,1,xinchuang_software_cybersecurity,data analytics
+300170,Hand Enterprise Solutions,1,education_human_capital,enterprise digital training
+300182,Education Hardware Seed,1,education_human_capital,education seed
+300187,Yongqing Environment,1,environmental_water_gas,environmental restoration
+300192,Science Education Seed,1,education_human_capital,STEM education seed
+300203,Focused Photonics,1,environmental_water_gas,environmental monitoring
+300224,Zhenghai Magnetic,1,rare_earth_magnetic_materials,rare earth magnet
+300229,Trust Alliance,1,xinchuang_software_cybersecurity,cybersecurity
+300235,Human Resource Service Seed,1,education_human_capital,human resource service seed
+300251,Enlight Media,1,media_game_ai_application,film
+300253,Wisesoft,1,xinchuang_software_cybersecurity,aviation software
+300258,Fine Blanking,1,smart_ev_autonomous_driving,transmission part
+300271,Thunisoft,1,xinchuang_software_cybersecurity,legal software
+300274,Sungrow Power,1,renewable_grid_storage,inverter and storage
+300276,Automation Equipment Seed,1,robotics_highend_manufacturing,factory automation seed
+300282,Education Digital Seed,1,education_human_capital,education digitalization seed
+300285,Sinocera,1,chemical_new_materials,ceramic material
+300315,Ourpalm,1,media_game_ai_application,game
+300332,Tianhao Environment,1,environmental_water_gas,energy conservation gas
+300338,Kaiyuan Education,1,education_human_capital,vocational education
+300339,Hirisun,1,xinchuang_software_cybersecurity,power IT
+300359,Qtone Education,1,education_human_capital,education digitalization
+300365,Human Capital Tech Seed,1,education_human_capital,education seed
+300369,Pansoft,1,xinchuang_software_cybersecurity,enterprise software
+300379,Fintech Seed,1,xinchuang_software_cybersecurity,financial data seed
+300388,Jiechuang Environment Seed,1,environmental_water_gas,environmental treatment seed
+300398,Feikai Materials,1,chemical_new_materials,electronic chemical
+300408,Chaozhou Three-Circle,1,consumer_electronics_pcb,ceramic component
+300433,Lens Technology,1,consumer_electronics_pcb,cover glass
+300438,Penghui Energy,1,power_solid_state_battery,energy storage battery
+300442,Range Intelligent,1,datacenter_optical_liquid_cooling,data center service
+300450,Wuxi Lead,1,power_solid_state_battery,battery equipment
+300451,Cnstrong,1,education_human_capital,education content
+300454,Sangfor,1,xinchuang_software_cybersecurity,cybersecurity and cloud
+300459,Tom Cat,1,media_game_ai_application,AI companion app
+300474,Jingjia Micro,1,defense_ship_equipment,GPU defense
+300487,Sunresin,1,chemical_new_materials,adsorption resin
+300494,Shengtian Network,1,media_game_ai_application,game platform
+300496,ThunderSoft,1,smart_ev_autonomous_driving,vehicle OS
+300498,Wens Foodstuff,1,agriculture_food_beverage,pig and poultry
+300558,Betta Pharmaceuticals,1,innovative_drug_medical_device,innovative drug
+300568,Senior Technology,1,power_solid_state_battery,separator
+300580,Bethel Automotive,1,robotics_highend_manufacturing,intelligent manufacturing
+300596,Lianlong,1,chemical_new_materials,polymer additive
+300601,Kangtai Biological,1,innovative_drug_medical_device,vaccine
+300618,Hanrui Cobalt,1,metals_energy_metals,cobalt
+300661,SG Micro,1,ai_compute_semiconductor,analog chip
+300680,Longsheng Technology,1,smart_ev_autonomous_driving,engine and EGR
+300688,Entrepreneurship Dark Horse,1,education_human_capital,enterprise training
+300697,Electric Alloy,1,metals_energy_metals,copper alloy
+300718,Changsheng Bearing,1,robotics_highend_manufacturing,sliding bearing
+300724,Jiejia Weichuang,1,renewable_grid_storage,solar equipment
+300748,Jintian Copper,1,rare_earth_magnetic_materials,copper and magnetic chain seed
+300751,Maxwell,1,renewable_grid_storage,solar equipment
+300768,Dingxin Communications,1,xinchuang_software_cybersecurity,power IoT
+300769,Dynanonic,1,power_solid_state_battery,LFP cathode
+300781,Inly Media,1,media_game_ai_application,digital marketing
+300821,Dongyue Silicon,1,chemical_new_materials,silicone
+300827,Sineng Electric,1,renewable_grid_storage,inverter
+300850,Grid Power Electronics Seed,1,renewable_grid_storage,power electronics seed
+300896,Imeik,1,tourism_retail_services,medical aesthetics
+300900,Guanglian Aviation,1,low_altitude_space_satellite,aviation component
+300911,Appliance Export Seed,1,home_appliance_export,small appliance seed
+300919,CNGR Advanced Material,1,power_solid_state_battery,precursor
+300957,Consumer Service Seed,1,tourism_retail_services,consumer service seed
+300999,Jinzai Food,1,agriculture_food_beverage,snack
+301008,Hongchang Technology,1,home_appliance_export,home appliance parts
+301026,Battery Metal Seed,1,metals_energy_metals,battery metal seed
+301112,Crrc Times Electric,1,robotics_highend_manufacturing,industrial drive
+301171,Easy Click,1,media_game_ai_application,cross-border marketing
+301219,Tengyuan Cobalt,1,metals_energy_metals,cobalt copper
+301349,Sichuan Energy,1,power_solid_state_battery,lithium chain seed
+600000,Shanghai Pudong Development Bank,1,high_dividend_state_owned_finance,bank
+600008,Beijing Capital Eco,1,environmental_water_gas,water environmental service
+600016,Minsheng Bank,1,high_dividend_state_owned_finance,bank
+600017,Rizhao Port,1,shipping_ports_logistics,port
+600019,Baoshan Iron and Steel,1,high_dividend_state_owned_finance,steel dividend
+600021,Shanghai Electric Power,1,coal_power_oil_gas,power
+600023,Zhejiang Zheneng,1,coal_power_oil_gas,power
+600030,CITIC Securities,1,high_dividend_state_owned_finance,broker
+600036,China Merchants Bank,1,high_dividend_state_owned_finance,joint-stock bank
+600048,Poly Developments,1,real_estate_chain,real estate
+600054,Huangshan Tourism,1,tourism_retail_services,scenic spot
+600104,SAIC Motor,1,smart_ev_autonomous_driving,vehicle
+600110,NuoDe New Materials,1,power_solid_state_battery,copper foil
+600138,CYTS Tours,1,tourism_retail_services,tourism
+600143,Kingfa Sci & Tech,1,chemical_new_materials,modified plastic
+600160,Juhua,1,chemical_new_materials,fluorine chemical
+600196,Fosun Pharma,1,innovative_drug_medical_device,pharma platform
+600219,Nanshan Aluminum,1,metals_energy_metals,aluminum
+600233,YTO Express,1,shipping_ports_logistics,express
+600256,Guanghui Energy,1,coal_power_oil_gas,LNG coal
+600258,BTG Hotels,1,tourism_retail_services,hotel
+600266,City Developments,1,real_estate_chain,real estate
+600279,Chongqing Port,1,shipping_ports_logistics,port
+600309,Wanhua Chemical,1,chemical_new_materials,polyurethane and new material
+600313,Nongfa Seed,1,agriculture_food_beverage,seed
+600323,Grandblue Environment,1,environmental_water_gas,solid waste water gas
+600325,Huafa Properties,1,real_estate_chain,real estate
+600346,Hengli Petrochemical,1,chemical_new_materials,refining chemical
+600348,Huayang New Material,1,coal_power_oil_gas,coal
+600352,Zhejiang Longsheng,1,chemical_new_materials,dye
+600362,Jiangxi Copper,1,metals_energy_metals,copper
+600371,Wanxiang Doneed,1,agriculture_food_beverage,seed
+600372,AVIC Airborne,1,defense_ship_equipment,airborne systems
+600373,Chinese Universe Publishing,1,media_game_ai_application,publishing
+600383,Gemdale,1,real_estate_chain,real estate
+600392,Shenghe Resources,1,rare_earth_magnetic_materials,rare earth resource
+600418,JAC Motors,1,smart_ev_autonomous_driving,vehicle
+600426,Hualu Hengsheng,1,chemical_new_materials,coal chemical
+600435,North Navigation,1,defense_ship_equipment,navigation equipment
+600438,Tongwei,1,renewable_grid_storage,silicon and solar
+600456,BaoTi,1,metals_energy_metals,titanium
+600460,Silan Micro,1,ai_compute_semiconductor,power semiconductor
+600461,Hongcheng Environment,1,environmental_water_gas,water and gas utility
+600486,Yangnong Chemical,1,chemical_new_materials,agrochemical
+600489,Zhongjin Gold,1,metals_energy_metals,gold
+600497,Chihong ZnGe,1,metals_energy_metals,zinc germanium
+600519,Kweichow Moutai,1,agriculture_food_beverage,liquor
+600521,Huahai Pharma,1,innovative_drug_medical_device,API and generic
+600536,China Software,1,xinchuang_software_cybersecurity,domestic OS and software
+600546,Thermal Coal Seed,1,coal_power_oil_gas,coal seed
+600547,Shandong Gold,1,metals_energy_metals,gold
+600556,Inmyshow,1,media_game_ai_application,creator economy
+600575,Huaihe Energy,1,shipping_ports_logistics,logistics coal
+600583,Offshore Oil Engineering,1,coal_power_oil_gas,oil engineering
+600585,Conch Cement,1,real_estate_chain,cement
+600588,Yonyou Network,1,xinchuang_software_cybersecurity,enterprise software
+600606,Greenland Holdings,1,real_estate_chain,real estate
+600624,Human Capital Service Seed,1,education_human_capital,human capital service seed
+600633,Zhewen Interactive,1,media_game_ai_application,digital culture
+600642,Shenergy,1,coal_power_oil_gas,power gas
+600655,Yuyuan,1,tourism_retail_services,retail jewelry
+600660,Fuyao Glass,1,smart_ev_autonomous_driving,auto glass
+600661,Shanghai Xinnanyang,1,education_human_capital,education
+600681,Baiyun Airport Energy Seed,1,environmental_water_gas,environmental utility seed
+600690,Haier Smart Home,1,home_appliance_export,home appliance
+600711,Silver Lead Zinc Seed,1,metals_energy_metals,silver lead zinc watchlist
+600733,BAIC BluePark,1,smart_ev_autonomous_driving,new energy vehicle
+600737,COFCO Sugar,1,agriculture_food_beverage,sugar
+600741,Huayu Automotive,1,smart_ev_autonomous_driving,auto parts
+600754,Jin Jiang Hotels,1,tourism_retail_services,hotel
+600761,Anhui Heli,1,robotics_highend_manufacturing,forklift
+600787,CMST Development,1,shipping_ports_logistics,warehousing logistics
+600801,Huaxin Cement,1,real_estate_chain,cement
+600809,Shanxi Fenjiu,1,agriculture_food_beverage,liquor
+600827,Bailian,1,tourism_retail_services,retail
+600835,Shanghai Mechanical,1,robotics_highend_manufacturing,elevator equipment
+600859,Wangfujing,1,tourism_retail_services,retail duty free
+600862,AVIC Hi-Tech,1,defense_ship_equipment,aero composite material
+600867,Tonghua Dongbao,1,innovative_drug_medical_device,diabetes drug
+600872,Jonjee Hi-Tech,1,agriculture_food_beverage,condiment
+600874,Capital Environment,1,environmental_water_gas,solid waste treatment
+600879,Aerospace Electronics Watch,1,defense_ship_equipment,aerospace seed
+600884,Shanshan,1,power_solid_state_battery,anode material
+600887,Yili,1,agriculture_food_beverage,dairy
+600893,Aerospace Electronics,1,defense_ship_equipment,defense electronics
+600903,Guizhou Gas,1,environmental_water_gas,city gas
+600905,China Three Gorges Renewables,1,coal_power_oil_gas,green power
+600919,Bank of Jiangsu,1,high_dividend_state_owned_finance,regional bank
+600958,Orient Securities,1,high_dividend_state_owned_finance,broker
+600967,Inner Mongolia First Machinery,1,defense_ship_equipment,ground equipment
+600985,Huaibei Mining,1,coal_power_oil_gas,coal
+600988,Chifeng Gold,1,metals_energy_metals,gold
+600989,Baofeng Energy,1,chemical_new_materials,coal chemical
+600999,China Merchants Securities,1,high_dividend_state_owned_finance,broker
+601006,Daqin Railway,1,high_dividend_state_owned_finance,railway
+601008,Lianyungang Port,1,shipping_ports_logistics,port
+601009,Bank of Nanjing,1,high_dividend_state_owned_finance,regional bank
+601012,LONGi Green Energy,1,renewable_grid_storage,solar module
+601098,China South Publishing,1,media_game_ai_application,publishing
+601127,Seres,1,smart_ev_autonomous_driving,smart EV
+601139,Shenzhen Gas,1,environmental_water_gas,city gas
+601155,Seazen Holdings,1,real_estate_chain,real estate
+601158,Chongqing Water,1,environmental_water_gas,water utility
+601166,Industrial Bank,1,high_dividend_state_owned_finance,joint-stock bank
+601168,Western Mining,1,metals_energy_metals,copper lead zinc
+601169,Bank of Beijing,1,high_dividend_state_owned_finance,regional bank
+601186,China Railway Construction,1,high_dividend_state_owned_finance,SOE infrastructure
+601199,Jiangnan Water,1,environmental_water_gas,water supply
+601211,Guotai Junan,1,high_dividend_state_owned_finance,broker
+601212,Baiyin Nonferrous,1,metals_energy_metals,nonferrous metal
+601222,Linyang Energy,1,renewable_grid_storage,meter and storage
+601233,Tongkun Group,1,chemical_new_materials,polyester
+601238,GAC Group,1,smart_ev_autonomous_driving,vehicle
+601318,Ping An,1,high_dividend_state_owned_finance,insurance
+601319,PICC,1,high_dividend_state_owned_finance,insurance
+601328,Bank of Communications,1,high_dividend_state_owned_finance,large bank
+601336,New China Life,1,high_dividend_state_owned_finance,insurance
+601369,Shaanxi Construction Machinery,1,robotics_highend_manufacturing,equipment cycle
+601390,China Railway,1,high_dividend_state_owned_finance,SOE infrastructure
+601598,Sinotrans,1,shipping_ports_logistics,logistics
+601600,Aluminum Corp of China,1,metals_energy_metals,aluminum
+601601,CPIC,1,high_dividend_state_owned_finance,insurance
+601609,Jintian Copper,1,metals_energy_metals,copper processing
+601615,Ming Yang Smart Energy,1,renewable_grid_storage,wind turbine
+601628,China Life,1,high_dividend_state_owned_finance,insurance
+601633,Great Wall Motor,1,smart_ev_autonomous_driving,vehicle
+601658,Postal Savings Bank,1,high_dividend_state_owned_finance,large bank
+601668,China State Construction,1,high_dividend_state_owned_finance,SOE construction
+601677,Mingtai Aluminum,1,metals_energy_metals,aluminum processing
+601688,Huatai Securities,1,high_dividend_state_owned_finance,broker
+601689,Tuopu Group,1,smart_ev_autonomous_driving,chassis and thermal
+601699,Shanxi Coal International,1,coal_power_oil_gas,coal
+601800,China Communications Construction,1,high_dividend_state_owned_finance,SOE infrastructure
+601808,COSL,1,coal_power_oil_gas,oilfield service
+601818,China Everbright Bank,1,high_dividend_state_owned_finance,bank
+601866,COSCO Shipping Development,1,shipping_ports_logistics,shipping leasing
+601888,China Tourism Group Duty Free,1,tourism_retail_services,duty free
+601899,Zijin Mining,1,metals_energy_metals,copper gold lithium
+601933,Yonghui Superstores,1,tourism_retail_services,supermarket
+601985,China National Nuclear Power,1,coal_power_oil_gas,nuclear power
+601995,CICC,1,high_dividend_state_owned_finance,broker
+603000,People.cn,1,media_game_ai_application,media
+603040,Career Service Seed,1,education_human_capital,vocational service seed
+603056,Deppon Logistics,1,shipping_ports_logistics,less-than-truckload
+603068,Aviation Seed,1,low_altitude_space_satellite,low altitude seed
+603083,CIG Shanghai,1,datacenter_optical_liquid_cooling,optical access equipment
+603128,CTS International Logistics,1,shipping_ports_logistics,cross-border logistics
+603160,Goodix,1,consumer_electronics_pcb,fingerprint and touch chip
+603180,GoldenHome Living,1,real_estate_chain,custom furniture
+603185,Hongyuan Green Energy,1,renewable_grid_storage,wafer equipment
+603195,Gongniu Group,1,home_appliance_export,electrical outlet
+603197,Baolong Automotive,1,smart_ev_autonomous_driving,sensor and TPMS
+603212,Battery Material Seed,1,power_solid_state_battery,battery material seed
+603219,Fujia,1,home_appliance_export,small appliance ODM
+603225,Xinfengming,1,chemical_new_materials,polyester
+603232,Koal Software,1,xinchuang_software_cybersecurity,security
+603260,Hoshine Silicon,1,chemical_new_materials,industrial silicon
+603288,Haitian Flavouring,1,agriculture_food_beverage,condiment
+603305,Xuhui Holdings,1,smart_ev_autonomous_driving,auto die casting
+603345,Anjoy Foods,1,agriculture_food_beverage,frozen food
+603355,Laike Electric,1,home_appliance_export,cleaning appliance
+603369,Jinshiyuan,1,agriculture_food_beverage,liquor
+603377,Education Service Seed,1,education_human_capital,education seed
+603385,Building Material Seed,1,real_estate_chain,building material seed
+603393,Xintian Green Energy,1,environmental_water_gas,gas and wind power
+603444,G-bits Network,1,media_game_ai_application,game
+603486,Home Appliance Seed,1,home_appliance_export,home appliance seed
+603501,WillSemi,1,ai_compute_semiconductor,semiconductor sensor
+603515,Opple Lighting,1,home_appliance_export,lighting
+603517,Juewei Food,1,agriculture_food_beverage,snack chain
+603551,Household Fixture Seed,1,home_appliance_export,home fixture seed
+603565,Zhonggu Logistics,1,shipping_ports_logistics,container logistics
+603568,Weiming Environment,1,environmental_water_gas,waste incineration
+603589,Kouzi Distillery,1,agriculture_food_beverage,liquor
+603596,Bethel,1,smart_ev_autonomous_driving,braking system
+603598,Content Seed,1,media_game_ai_application,media seed
+603605,Proya Cosmetics,1,tourism_retail_services,beauty
+603606,Orient Cable,1,renewable_grid_storage,submarine cable
+603611,Noblelift,1,robotics_highend_manufacturing,smart warehousing equipment
+603626,KET,1,consumer_electronics_pcb,connector
+603708,Jiajiayue,1,tourism_retail_services,supermarket
+603713,Milkyway,1,shipping_ports_logistics,chemical logistics
+603728,Mingzhi Technology,1,robotics_highend_manufacturing,precision casting equipment
+603737,SKSHU Paint,1,chemical_new_materials,coating
+603786,Keboda,1,smart_ev_autonomous_driving,automotive electronics
+603801,Zbom Home,1,real_estate_chain,custom furniture
+603806,First Applied Material,1,renewable_grid_storage,solar film
+603816,Jason Furniture,1,real_estate_chain,furniture
+603833,Oppein Home,1,real_estate_chain,home furnishing
+603868,Ecovacs,1,home_appliance_export,cleaning robot
+603876,Dingsheng New Materials,1,metals_energy_metals,aluminum foil
+603993,CMOC,1,metals_energy_metals,copper cobalt
+605090,Jiangxi Changyun Gas Seed,1,environmental_water_gas,gas utility seed
+605098,Action Education,1,education_human_capital,management training
+605136,Fashion Retail Seed,1,tourism_retail_services,retail seed
+605499,Eastroc Beverage,1,agriculture_food_beverage,beverage
+688005,Ronbay Technology,1,power_solid_state_battery,cathode material
+688006,Hangke Technology,1,power_solid_state_battery,battery equipment
+688031,Xinchuang Software Seed,1,xinchuang_software_cybersecurity,xinchuang watchlist
+688032,Hoymiles,1,renewable_grid_storage,micro inverter
+688036,Transsion Holdings,1,consumer_electronics_pcb,smartphone export
+688041,Hygon,1,ai_compute_semiconductor,AI compute chip
+688047,Loongson,1,ai_compute_semiconductor,domestic CPU
+688063,Pylontech,1,power_solid_state_battery,energy storage battery
+688088,ArcSoft,1,xinchuang_software_cybersecurity,computer vision software
+688110,Dongxin,1,ai_compute_semiconductor,memory chip
+688122,Western Superconducting,1,defense_ship_equipment,aero material
+688139,Oncology Drug Seed,1,innovative_drug_medical_device,innovative drug seed
+688160,Kinco Automation,1,robotics_highend_manufacturing,servo drive
+688169,Roborock,1,home_appliance_export,cleaning robot
+688185,CanSino,1,innovative_drug_medical_device,vaccine
+688208,Liquid Cooling Seed,1,datacenter_optical_liquid_cooling,liquid cooling watchlist
+688223,Jinko Solar,1,renewable_grid_storage,solar module
+688228,Database Seed,1,xinchuang_software_cybersecurity,data infrastructure seed
+688256,Cambricon,1,ai_compute_semiconductor,AI accelerator
+688278,Healthcare Seed,1,innovative_drug_medical_device,healthcare seed
+688288,Hongquan Intelligent seed,1,smart_ev_autonomous_driving,smart driving watchlist
+688295,Advanced Material Seed,1,chemical_new_materials,new material seed
+688297,UAV Seed,1,low_altitude_space_satellite,low altitude watchlist
+688301,Medical Equipment Seed,1,innovative_drug_medical_device,medical equipment seed
+688303,Daqo New Energy,1,renewable_grid_storage,polysilicon
+688326,Jingwei Hirain,1,smart_ev_autonomous_driving,automotive electronics
+688347,Hua Hong,1,ai_compute_semiconductor,specialty foundry
+688348,Yuneng Technology,1,renewable_grid_storage,micro inverter
+688385,Fudan Microelectronics,1,ai_compute_semiconductor,FPGA and MCU
+688520,Sinocelltech,1,innovative_drug_medical_device,biotech
+688521,VeriSilicon,1,ai_compute_semiconductor,chip design service
+688550,Chemical Material Seed,1,chemical_new_materials,chemical seed
+688561,Qi An Xin,1,xinchuang_software_cybersecurity,cybersecurity
+688599,Trina Solar,1,renewable_grid_storage,solar module
+688707,Zhenhua New Material,1,power_solid_state_battery,cathode
+688778,XTC New Energy,1,power_solid_state_battery,battery material
+688779,Changyuan Lico,1,power_solid_state_battery,cathode material
+688981,SMIC,1,ai_compute_semiconductor,foundry

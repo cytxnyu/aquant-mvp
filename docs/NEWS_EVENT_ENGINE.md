@@ -104,7 +104,22 @@ The event layer also includes a local PIT-safe similar-event retrieval report:
 
 Stock reports with `--with-news` also write `stock_event_impact_study.*`, `stock_event_impact_returns.csv`, and `stock_event_impact_pit_priors.csv`, with the summary embedded in `stock_report_manifest.json`.
 
+For stock-level reports, event-impact diagnostics are bounded by default with `--max-event-impact-symbols` and `--max-event-impact-events`. This bound applies to the historical outcome study only; the raw event store, stock event store, event factors, news evidence, and forecast event features are still written from the full linked event context. The selected diagnostic scope is recorded in `news_summary.event_impact_scope` so any truncation is auditable.
+
+PIT priors are computed with cohort-level cumulative lookup instead of repeated full-table filtering. This preserves the rule that only outcomes known before the query event may enter prior evidence, while keeping large stock reports operational.
+
 This layer is deliberately skeptical. Small cohorts become `data_insufficient`; weak reliability or weak entity links stay `weak`; even stronger-looking cohorts are only `candidate_for_walk_forward`, never directly trusted. The event factor can affect trusted predictions only after large-universe walk-forward validation beats the baseline.
+
+## Event Factor Quality Gate
+
+News and event features now have two explicit quality gates:
+
+- `event_factor_quality.csv/md` audits the event evidence before modeling. It checks event rows, event-factor rows, symbol coverage, source URL coverage, published/fetched timestamps, related symbols, event type, impact/confidence, raw hash, source reliability, and entity-link confidence.
+- `event_feature_quality.csv` audits the merged model matrix during `train-walk-forward`. It checks each event feature's coverage, non-zero ratio, mean absolute value, distinct values, and quarantine/watchlist/approved status.
+
+CLI commands pass the requested universe into `event_factor_quality.csv`, so `requested_symbols`, `linked_symbols`, and `symbol_coverage` are measured against the actual stock pool rather than only the symbols that happened to receive linked events.
+
+The walk-forward trusted gate consumes `event_feature_quality_passed`. If event features are enabled and their matrix is all zero, constant, too sparse, or otherwise quarantined, the run remains `weak` even if the model produces predictions. This prevents a model from claiming news awareness merely because event columns exist.
 
 ## Event Types
 
@@ -151,8 +166,11 @@ The mapping is transparent but still approximate; it is a research factor, not p
 raw_events.csv
 event_store.csv
 event_factors.csv
+event_factor_quality.csv
+event_factor_quality.md
 news_evidence.md
 event_warnings.json
+event_feature_quality.csv
 stock_event_store.csv
 stock_event_factors.csv
 stock_news_evidence.md

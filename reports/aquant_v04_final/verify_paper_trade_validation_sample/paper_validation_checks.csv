@@ -1,0 +1,15 @@
+gate,status,passed,severity,observed,threshold,detail
+no_live_required,pass,True,info,True,True,Paper dry-run must explicitly keep live order submission disabled.
+paper_summary_present,pass,True,info,"['event_risk_guard', 'metadata', 'no_live', 'passed', 'portfolio_constraints', 'requested_days', 'with_news']",non-empty,Paper summary JSON is the run manifest for the dry-run.
+requested_days_recorded,pass,True,info,20,>= 20,A 20-day simulation target should be recorded when requested.
+order_plan_present,pass,True,info,3,>0 rows,"No orders can be valid after risk/targets, but order evidence should be visible."
+risk_report_present,pass,True,info,3,>0 rows,Risk checks must write row-level order evidence.
+risk_report_matches_summary,pass,True,info,True,True,Summary pass/fail should match row-level risk report.
+executions_present_when_risk_passed,pass,True,info,3,>0 rows,Risk-passed paper orders must write simulated executions.
+positions_present_when_risk_passed,pass,True,info,True,True,"Risk-passed paper orders must write simulated positions, even if flat."
+paper_only_filled_status,pass,True,info,['FILLED'],FILLED,"PaperBroker executions should be simulated fills, not live broker statuses."
+execution_count_matches_orders,pass,True,info,3,3,Each generated order should have a simulated execution row.
+execution_costs_recorded,pass,True,info,"['fee', 'fill_price', 'filled_shares', 'gross_value', 'requested_shares', 'side', 'status', 'symbol', 'tax', 'trade_date']",gross_value/fee/tax,Paper fills must preserve cost fields.
+broker_is_paper,pass,True,info,paper,paper,Dry-run execution must use PaperBroker only.
+portfolio_constraints_recorded,pass,True,info,dict,dict,Paper order planning must record portfolio constraint metadata.
+event_guard_recorded,pass,True,info,dict,dict,Paper order planning should record event-risk guard state.

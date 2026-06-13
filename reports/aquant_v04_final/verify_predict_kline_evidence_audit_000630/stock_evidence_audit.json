@@ -1,0 +1,25 @@
+{
+  "symbol": "000630",
+  "latest_date": "2025-12-31",
+  "source": "sample",
+  "horizons": 4,
+  "validation_status": "failed",
+  "validation_passed": false,
+  "failed_checks": [
+    "walk_forward_evidence"
+  ],
+  "warning_checks": [
+    "sample_source_warning"
+  ],
+  "check_count": 64,
+  "pass_count": 58,
+  "warn_count": 4,
+  "fail_count": 2,
+  "trust_status_set": [
+    "data_insufficient"
+  ],
+  "with_news": true,
+  "event_rows": 4,
+  "event_factor_rows": 5,
+  "note": "Evidence audit checks forecast schema completeness and traceability. It does not certify future returns."
+}

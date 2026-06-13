@@ -1,0 +1,133 @@
+{
+  "command": "backtest-portfolio",
+  "source": "sample",
+  "requested_universe": "630,601899,600362",
+  "loaded_symbols": [
+    "000630",
+    "600362",
+    "601899"
+  ],
+  "selected_symbols": [
+    "000630",
+    "600362",
+    "601899"
+  ],
+  "metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1915748.2339494305,
+    "total_return": 0.9157482339494305,
+    "annual_return": 0.1700811891301537,
+    "annual_volatility": 0.16101385514866634,
+    "max_drawdown": -0.21030756263525863,
+    "sharpe": 1.056363429229828,
+    "calmar": 0.8087259773207942,
+    "win_rate": 0.7208480565371025,
+    "avg_turnover": 0.029695887851122284,
+    "total_turnover": 6.176744673033435,
+    "trade_count": 548.0,
+    "rebalance_count": 208.0
+  },
+  "portfolio_constraints": {
+    "enabled": true,
+    "target_dates": 209,
+    "symbols": 3,
+    "adjustment_rows": 1306,
+    "constraints_triggered": [
+      "drawdown_circuit_breaker",
+      "max_single_weight",
+      "max_theme_weight"
+    ],
+    "max_gross_weight_after": 0.44999999999999996,
+    "min_gross_weight_after": 0.0,
+    "max_single_weight_after": 0.15,
+    "max_theme_weight_after": 0.44999999999999996,
+    "config": {
+      "max_single_weight": 0.2,
+      "max_theme_weight": 0.45,
+      "max_turnover": 1.0,
+      "volatility_target": 0.35,
+      "volatility_lookback_days": 20,
+      "max_drawdown": 0.1,
+      "drawdown_de_risk_multiplier": 0.0,
+      "blacklist": []
+    }
+  },
+  "constraint_adjusted_metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1156901.0757378435,
+    "total_return": 0.1569010757378435,
+    "annual_return": 0.03584088226285331,
+    "annual_volatility": 0.06852076846256457,
+    "max_drawdown": -0.11025559965223097,
+    "sharpe": 0.5482159737253763,
+    "calmar": 0.32507085695332383,
+    "win_rate": 0.75,
+    "avg_turnover": 0.05420748916394738,
+    "total_turnover": 11.275157746101055,
+    "trade_count": 384.0,
+    "rebalance_count": 208.0
+  },
+  "with_news": true,
+  "event_attribution_rows": 778,
+  "event_risk_guard": {
+    "enabled": true,
+    "adjusted_rows": 6,
+    "blocked_symbols": [],
+    "reduced_symbols": [
+      "000630",
+      "600362",
+      "601899"
+    ],
+    "weight_removed": 0.45,
+    "config": {
+      "max_event_risk_count": 0,
+      "min_negative_impact": -0.2,
+      "min_confidence": 0.45,
+      "weight_multiplier": 0.5,
+      "block_new_buy": true,
+      "max_event_age_days": 30
+    }
+  },
+  "event_guarded_metrics": {
+    "initial_cash": 1000000.0,
+    "final_equity": 1154678.3995990641,
+    "total_return": 0.15467839959906415,
+    "annual_return": 0.035359704136968206,
+    "annual_volatility": 0.06840091739561356,
+    "max_drawdown": -0.11025559965223097,
+    "sharpe": 0.5422630192411905,
+    "calmar": 0.32070665116783226,
+    "win_rate": 0.7463414634146341,
+    "avg_turnover": 0.05521314097483513,
+    "total_turnover": 11.484333322765707,
+    "trade_count": 384.0,
+    "rebalance_count": 208.0
+  },
+  "portfolio_validation": {
+    "validation_status": "passed",
+    "validation_passed": true,
+    "failed_checks": [],
+    "warning_checks": [],
+    "check_count": 17,
+    "pass_count": 17,
+    "warn_count": 0,
+    "fail_count": 0,
+    "total_return": 0.1569010757378435,
+    "annual_return": 0.03584088226285331,
+    "max_drawdown": -0.11025559965223097,
+    "sharpe": 0.5482159737253763,
+    "calmar": 0.32507085695332383,
+    "avg_turnover": 0.05420748916394738,
+    "trade_count": 384.0,
+    "annual_years": 4,
+    "annual_positive_ratio": 0.75,
+    "worst_year_return": -0.0005224040191950108,
+    "total_cost": 14747.059065140375,
+    "avg_cost_bps": 12.846383443013481,
+    "constraint_adjustment_rows": 1306,
+    "constraint_days": 209,
+    "note": "Portfolio validation is evidence for research quality only; it is not live-trading permission."
+  },
+  "portfolio_validation_report": "reports\\aquant_v04_final\\verify_portfolio_validation_sample\\portfolio_validation_report.md",
+  "note": "Portfolio research backtest only; live trading remains disabled."
+}

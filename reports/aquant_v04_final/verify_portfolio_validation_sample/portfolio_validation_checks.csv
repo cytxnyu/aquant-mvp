@@ -1,0 +1,18 @@
+gate,status,passed,severity,observed,threshold,detail
+equity_curve_present,pass,True,info,1043,>0 rows,Backtest must write daily equity evidence.
+rebalance_trace_present,pass,True,info,208,>0 rows,Rebalance rows are required for turnover and T+1 traceability.
+trade_trace_present,pass,True,info,384,>0 rows,"No trades can be valid for tiny samples, but it is not enough for strategy validation."
+costs_recorded,pass,True,info,14747.059065140375,>=0,"Fees, taxes, and slippage-cost proxy must be present and non-negative."
+cost_after_metrics_available,pass,True,info,"['annual_return', 'annual_volatility', 'avg_turnover', 'calmar', 'final_equity', 'initial_cash', 'max_drawdown', 'rebalance_count', 'sharpe', 'total_return', 'total_turnover', 'trade_count', 'win_rate']",required metrics,Strategy validation must use cost-after backtest metrics.
+turnover_within_config,pass,True,info,0.054207,<= 1.0,Average realized turnover should respect the configured turnover budget.
+drawdown_within_risk_budget,pass,True,info,-0.110256,>= -0.1500,Drawdown outside the risk budget is evidence against deployment.
+annual_stability_available,pass,True,info,4,>=1 year rows,Year-by-year stability must be visible.
+annual_positive_ratio,pass,True,info,0.75,>=0.50,A strategy that only works in aggregate should remain challenged by year.
+worst_year_not_extreme,pass,True,info,-0.0005,> -0.50,Extreme bad years require separate explanation.
+portfolio_constraints_audited,pass,True,info,True,True,Constraint report and daily summary must be written.
+single_name_cap_enforced,pass,True,info,0.15,<= 0.2,Single-name exposure cap must hold after constraints.
+theme_cap_enforced,pass,True,info,0.45,<= 0.45,Theme exposure cap must hold after constraints.
+daily_turnover_cap_enforced,pass,True,info,0.45,<= 1.0,Daily target turnover cap must hold after constraints.
+event_attribution_available,pass,True,info,778,>0 when --with-news,News-aware portfolio runs must write event attribution evidence.
+event_guard_evidence_available,pass,True,info,True,true when --with-news,News-aware portfolio runs should record event-risk guard metadata.
+capacity_proxy_available,pass,True,info,11479541.406,cost table with gross/cost bps,"Free-source capacity is approximate, so the audit requires traded value and cost-bps evidence."

@@ -1,0 +1,20 @@
+{
+  "source": "sample",
+  "requested_symbols": 3,
+  "loaded_symbols": 3,
+  "min_symbols": 2,
+  "feature_set": {
+    "factor_trust_audit_path": "reports\\aquant_v04_final\\verify_factor_trust_cost_regime_sample\\factor_trust_audit.csv",
+    "allowed_statuses": [
+      "approved"
+    ],
+    "audit_rows": 237,
+    "eligible_rows": 67,
+    "selected_feature_count": 67,
+    "available_factor_columns": 237,
+    "feature_set_source": "factor_trust_audit:reports\\aquant_v04_final\\verify_factor_trust_cost_regime_sample\\factor_trust_audit.csv:statuses=approved",
+    "note": "Only selected factor ids are used as base factors; event factors are appended separately when --with-news/event-aware is enabled."
+  },
+  "warnings": [],
+  "note": "Large free-source walk-forward uses resilient per-symbol loading; failed symbols remain audited."
+}

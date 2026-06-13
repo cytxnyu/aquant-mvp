@@ -24,6 +24,23 @@ class ProbabilityCalibrationResult:
     candidates: pd.DataFrame
 
 
+@dataclass(frozen=True)
+class ProbabilitySeriesCalibrationResult:
+    calibrated_probabilities: pd.Series
+    method: str
+    status: str
+    rows: int
+    train_rows: int
+    eval_rows: int
+    raw_brier: float
+    calibrated_brier: float
+    raw_ece: float
+    calibrated_ece: float
+    improvement_brier: float
+    improvement_ece: float
+    candidates: pd.DataFrame
+
+
 def calibrate_probability(
     prob: pd.Series,
     target: pd.Series,
@@ -125,6 +142,108 @@ def calibrate_probability(
     )
 
 
+def calibrate_probability_series(
+    calibration_prob: pd.Series,
+    calibration_target: pd.Series,
+    inference_prob: pd.Series,
+    *,
+    min_train_rows: int = 80,
+    min_eval_rows: int = 40,
+    bins: int = 5,
+) -> ProbabilitySeriesCalibrationResult:
+    """Calibrate unseen probabilities using only an earlier calibration sample.
+
+    Candidate selection uses a chronological split inside the calibration
+    sample. The selected method is then refit on the full calibration sample
+    before transforming the unseen inference probabilities.
+    """
+    inference = inference_prob.astype(float).clip(0.0, 1.0)
+    aligned = pd.concat([calibration_prob.astype(float), calibration_target.astype(float)], axis=1).dropna()
+    aligned.columns = ["prob", "target"]
+    aligned["prob"] = aligned["prob"].clip(0.0, 1.0)
+    aligned = _sort_by_time(aligned)
+    rows = int(len(aligned))
+    if rows < min_train_rows + min_eval_rows or aligned.empty or aligned["target"].nunique() < 2:
+        raw_brier = _brier(aligned["prob"], aligned["target"]) if not aligned.empty else 1.0
+        raw_ece = _ece(aligned["prob"], aligned["target"], bins) if not aligned.empty else 1.0
+        return ProbabilitySeriesCalibrationResult(
+            calibrated_probabilities=inference,
+            method="identity_insufficient",
+            status="calibration_sparse",
+            rows=rows,
+            train_rows=0,
+            eval_rows=0,
+            raw_brier=raw_brier,
+            calibrated_brier=raw_brier,
+            raw_ece=raw_ece,
+            calibrated_ece=raw_ece,
+            improvement_brier=0.0,
+            improvement_ece=0.0,
+            candidates=_candidate_frame([]),
+        )
+
+    split = max(min_train_rows, int(rows * 0.70))
+    if rows - split < min_eval_rows:
+        split = rows - min_eval_rows
+    train = aligned.iloc[:split]
+    eval_frame = aligned.iloc[split:]
+    if train["target"].nunique() < 2 or eval_frame.empty:
+        raw_brier = _brier(aligned["prob"], aligned["target"])
+        raw_ece = _ece(aligned["prob"], aligned["target"], bins)
+        return ProbabilitySeriesCalibrationResult(
+            calibrated_probabilities=inference,
+            method="identity_single_class",
+            status="calibration_sparse",
+            rows=rows,
+            train_rows=int(len(train)),
+            eval_rows=int(len(eval_frame)),
+            raw_brier=raw_brier,
+            calibrated_brier=raw_brier,
+            raw_ece=raw_ece,
+            calibrated_ece=raw_ece,
+            improvement_brier=0.0,
+            improvement_ece=0.0,
+            candidates=_candidate_frame([]),
+        )
+
+    candidates: list[dict[str, object]] = [
+        _candidate_metrics("identity", eval_frame["prob"], eval_frame["target"], 0.5, bins)
+    ]
+    platt = _fit_platt(train["prob"], train["target"], eval_frame["prob"], 0.5)
+    if platt is not None:
+        candidates.append(_candidate_metrics("platt", platt[0], eval_frame["target"], platt[1], bins))
+    isotonic = _fit_isotonic(train["prob"], train["target"], eval_frame["prob"], 0.5)
+    if isotonic is not None:
+        candidates.append(_candidate_metrics("isotonic", isotonic[0], eval_frame["target"], isotonic[1], bins))
+
+    candidate_frame = _candidate_frame(candidates)
+    best = candidate_frame.sort_values(["brier", "ece", "method"], ascending=[True, True, True]).iloc[0]
+    raw_row = candidate_frame[candidate_frame["method"] == "identity"].iloc[0]
+    method = str(best["method"])
+    transformed = _transform_probability_series(method, aligned["prob"], aligned["target"], inference)
+    if transformed is None:
+        transformed = inference
+        method = "identity_refit_failed"
+        status = "calibration_failed"
+    else:
+        status = _calibration_status(int(len(eval_frame)), float(best["ece"]))
+    return ProbabilitySeriesCalibrationResult(
+        calibrated_probabilities=transformed.astype(float).clip(0.0, 1.0),
+        method=method,
+        status=status,
+        rows=rows,
+        train_rows=int(len(train)),
+        eval_rows=int(len(eval_frame)),
+        raw_brier=float(raw_row["brier"]),
+        calibrated_brier=float(best["brier"]),
+        raw_ece=float(raw_row["ece"]),
+        calibrated_ece=float(best["ece"]),
+        improvement_brier=float(raw_row["brier"] - best["brier"]),
+        improvement_ece=float(raw_row["ece"] - best["ece"]),
+        candidates=candidate_frame,
+    )
+
+
 def calibration_result_to_metrics(result: ProbabilityCalibrationResult) -> dict[str, object]:
     return {
         "raw_prob_up": result.raw_latest_prob,
@@ -179,6 +298,23 @@ def _fit_isotonic(
     eval_out = pd.Series(model.predict(eval_prob.astype(float).to_numpy()), index=eval_prob.index).clip(0.0, 1.0)
     latest_out = float(model.predict([latest_prob])[0])
     return eval_out, latest_out
+
+
+def _transform_probability_series(
+    method: str,
+    calibration_prob: pd.Series,
+    calibration_target: pd.Series,
+    inference_prob: pd.Series,
+) -> pd.Series | None:
+    if method == "identity":
+        return inference_prob.astype(float).clip(0.0, 1.0)
+    if method == "platt":
+        result = _fit_platt(calibration_prob, calibration_target, inference_prob, 0.5)
+        return result[0] if result is not None else None
+    if method == "isotonic":
+        result = _fit_isotonic(calibration_prob, calibration_target, inference_prob, 0.5)
+        return result[0] if result is not None else None
+    return None
 
 
 def _candidate_metrics(method: str, prob: pd.Series, target: pd.Series, latest_prob: float, bins: int) -> dict[str, object]:

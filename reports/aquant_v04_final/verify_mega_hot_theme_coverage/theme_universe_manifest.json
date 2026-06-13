@@ -1,0 +1,31 @@
+{
+  "requested_themes": "mega-hot",
+  "universe_mode": "theme_seed",
+  "theme_count": 38,
+  "rows": 1421,
+  "unique_symbols": 1200,
+  "duplicate_theme_rows": 221,
+  "multi_theme_symbols": 178,
+  "minimum_symbols_for_trusted_prediction": 200,
+  "coverage_audit": {
+    "theme_coverage_audit": "reports\\aquant_v04_final\\verify_mega_hot_theme_coverage\\theme_coverage_audit.csv",
+    "theme_coverage_audit_md": "reports\\aquant_v04_final\\verify_mega_hot_theme_coverage\\theme_coverage_audit.md"
+  },
+  "coverage_status_counts": {
+    "ready": 30,
+    "broad": 8
+  },
+  "themes_supporting_trusted_evidence_after_other_gates": 38,
+  "thin_or_blocked_themes": [],
+  "warehouse_universe": {
+    "table": "universe",
+    "path": "data\\warehouse\\universe.parquet",
+    "rows": "1421",
+    "file_format": "parquet"
+  },
+  "notes": [
+    "This is a curated hot-sector seed universe, not an official industry classifier.",
+    "mega-hot is augmented with free all-A names when domestic sources are available to support large-sample modeling.",
+    "Use --universe all-a for maximum market coverage when free source availability allows it."
+  ]
+}

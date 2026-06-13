@@ -1,0 +1,21 @@
+{
+  "symbol": "601899",
+  "query_events": 5,
+  "match_rows": 25,
+  "pit_policy": "candidate events must be earlier than query events; forward returns require the return window to end before query time",
+  "retrieval_model": "tfidf_char_cosine_with_jaccard_fallback",
+  "can_enter_event_factors": false,
+  "note": "Similar event retrieval is explanatory evidence only, not trading advice.",
+  "known_return_rows_1d": 23,
+  "mean_forward_return_1d": -0.0013291374490005923,
+  "positive_rate_1d": 0.43478260869565216,
+  "known_return_rows_5d": 17,
+  "mean_forward_return_5d": 0.0006188850160786061,
+  "positive_rate_5d": 0.47058823529411764,
+  "known_return_rows_20d": 17,
+  "mean_forward_return_20d": 0.028528148810598397,
+  "positive_rate_20d": 0.6470588235294118,
+  "avg_similarity_score": 0.6960652109198763,
+  "same_symbol_rows": 25,
+  "same_event_type_rows": 25
+}

@@ -20,8 +20,12 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
                 "model_type": record.get("model_type", ""),
                 "requested_model_type": record.get("requested_model_type", record.get("model_type", "")),
                 "effective_model_type": record.get("effective_model_type", record.get("model_type", "")),
+                "effective_model_types": record.get("effective_model_types", metrics.get("effective_model_types", "")),
                 "model_base_status": record.get("model_base_status", ""),
+                "model_base_statuses": record.get("model_base_statuses", metrics.get("model_base_statuses", "")),
                 "fallback_reason": record.get("fallback_reason", ""),
+                "fallback_rate": record.get("fallback_rate", metrics.get("fallback_rate", "")),
+                "prediction_methods": record.get("prediction_methods", metrics.get("prediction_methods", "")),
                 "horizon_days": record.get("horizon_days", ""),
                 "model_family": record.get("model_family", ""),
                 "trust_status": metrics.get("trust_status", record.get("trust_status", "")),
@@ -31,7 +35,15 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
                 "rank_ic": metrics.get("rank_ic", metrics.get("valid_rank_ic", "")),
                 "direction_accuracy": metrics.get("direction_accuracy", metrics.get("valid_accuracy", "")),
                 "auc": metrics.get("auc", metrics.get("valid_auc", "")),
+                "raw_auc": metrics.get("raw_auc", ""),
                 "brier": metrics.get("brier", metrics.get("valid_brier", "")),
+                "raw_brier": metrics.get("raw_brier", ""),
+                "calibrated_ece": metrics.get("calibrated_ece", ""),
+                "raw_ece": metrics.get("raw_ece", ""),
+                "probability_calibration_statuses": metrics.get("probability_calibration_statuses", ""),
+                "probability_calibration_methods": metrics.get("probability_calibration_methods", ""),
+                "probability_calibration_ready_ratio": metrics.get("probability_calibration_ready_ratio", ""),
+                "probability_calibration_pit_passed": metrics.get("probability_calibration_pit_passed", ""),
                 "top_bottom_spread": metrics.get("top_bottom_spread", ""),
                 "beats_baseline": metrics.get("beats_baseline", ""),
                 "artifact_path": record.get("artifact_path", ""),
@@ -43,8 +55,12 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
         "model_type",
         "requested_model_type",
         "effective_model_type",
+        "effective_model_types",
         "model_base_status",
+        "model_base_statuses",
         "fallback_reason",
+        "fallback_rate",
+        "prediction_methods",
         "horizon_days",
         "model_family",
         "trust_status",
@@ -54,7 +70,15 @@ def summarize_model_registry(records: list[dict[str, object]]) -> pd.DataFrame:
         "rank_ic",
         "direction_accuracy",
         "auc",
+        "raw_auc",
         "brier",
+        "raw_brier",
+        "calibrated_ece",
+        "raw_ece",
+        "probability_calibration_statuses",
+        "probability_calibration_methods",
+        "probability_calibration_ready_ratio",
+        "probability_calibration_pit_passed",
         "top_bottom_spread",
         "beats_baseline",
         "artifact_path",
@@ -184,14 +208,27 @@ def _prediction_metrics(frame: pd.DataFrame) -> dict[str, object]:
             "symbols": int(frame["symbol"].nunique()) if "symbol" in frame.columns else 0,
             "slice_status": "missing_label_columns",
         }
-    work = frame[["symbol", "prob_up", ret_col, direction_col]].copy()
+    optional_columns = [
+        column
+        for column in [
+            "raw_prob_up",
+            "probability_calibration_status",
+            "probability_calibration_method",
+            "probability_calibration_pit_passed",
+        ]
+        if column in frame.columns
+    ]
+    work = frame[["symbol", "prob_up", ret_col, direction_col, *optional_columns]].copy()
     work["prob_up"] = pd.to_numeric(work["prob_up"], errors="coerce")
+    if "raw_prob_up" in work.columns:
+        work["raw_prob_up"] = pd.to_numeric(work["raw_prob_up"], errors="coerce")
     work[ret_col] = pd.to_numeric(work[ret_col], errors="coerce")
     work[direction_col] = pd.to_numeric(work[direction_col], errors="coerce")
     work = work.dropna(subset=["prob_up", ret_col, direction_col])
     if work.empty:
         return {"rows": 0, "symbols": 0, "slice_status": "empty_after_label_filter"}
     prob = work["prob_up"].astype(float).clip(0.0, 1.0)
+    raw_prob = work["raw_prob_up"].astype(float).fillna(prob).clip(0.0, 1.0) if "raw_prob_up" in work.columns else prob
     direction = work[direction_col].astype(int)
     ret = work[ret_col].astype(float)
     top = work[prob >= prob.quantile(0.8)] if len(work) >= 5 else work.iloc[0:0]
@@ -215,7 +252,15 @@ def _prediction_metrics(frame: pd.DataFrame) -> dict[str, object]:
         "direction_accuracy": direction_accuracy,
         "baseline_accuracy": baseline_accuracy,
         "auc": _auc(prob, direction),
+        "raw_auc": _auc(raw_prob, direction),
         "brier": float(((prob - direction) ** 2).mean()),
+        "raw_brier": float(((raw_prob - direction) ** 2).mean()),
+        "calibrated_ece": _ece(prob, direction),
+        "raw_ece": _ece(raw_prob, direction),
+        "probability_calibration_statuses": _joined_values(work, "probability_calibration_status"),
+        "probability_calibration_methods": _joined_values(work, "probability_calibration_method"),
+        "probability_calibration_ready_ratio": _ready_ratio(work),
+        "probability_calibration_pit_ratio": _pit_ratio(work),
         "rank_ic": rank_ic,
         "mean_forward_return": float(ret.mean()),
         "top_bucket_return": top_return,
@@ -375,6 +420,51 @@ def _auc(prob: pd.Series, direction: pd.Series) -> float:
     ranks = prob.rank(method="average")
     positive_rank_sum = float(ranks[y == 1].sum())
     return float((positive_rank_sum - positives * (positives + 1) / 2) / (positives * negatives))
+
+
+def _ece(prob: pd.Series, direction: pd.Series, bins: int = 5) -> float:
+    clean = pd.concat([prob.astype(float).clip(0.0, 1.0), direction.astype(float)], axis=1).dropna()
+    if clean.empty:
+        return 1.0
+    p = clean.iloc[:, 0]
+    y = clean.iloc[:, 1]
+    edges = np.linspace(0.0, 1.0, bins + 1)
+    ece = 0.0
+    for left, right in zip(edges[:-1], edges[1:]):
+        mask = (p >= left) & (p <= right) if right >= 1.0 else (p >= left) & (p < right)
+        if mask.any():
+            ece += float(mask.mean()) * abs(float(p[mask].mean()) - float(y[mask].mean()))
+    return float(ece)
+
+
+def _joined_values(frame: pd.DataFrame, column: str) -> str:
+    if column not in frame.columns:
+        return ""
+    return ";".join(sorted(frame[column].dropna().astype(str).unique().tolist()))
+
+
+def _ready_ratio(frame: pd.DataFrame) -> float:
+    if "probability_calibration_status" not in frame.columns:
+        return 0.0
+    statuses = frame["probability_calibration_status"].dropna().astype(str)
+    if statuses.empty:
+        return 0.0
+    return float(statuses.isin({"calibrated", "calibration_watch"}).mean())
+
+
+def _pit_ratio(frame: pd.DataFrame) -> float:
+    if "probability_calibration_pit_passed" not in frame.columns:
+        return 0.0
+    values = frame["probability_calibration_pit_passed"].map(_truthy)
+    return float(values.mean()) if len(values) else 0.0
+
+
+def _truthy(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if pd.isna(value):
+        return False
+    return str(value).strip().lower() in {"true", "1", "yes", "y"}
 
 
 def _safe_corr(left: pd.Series, right: pd.Series, method: str) -> float:

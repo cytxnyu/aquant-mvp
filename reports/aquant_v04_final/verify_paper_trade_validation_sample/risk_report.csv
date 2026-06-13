@@ -1,0 +1,4 @@
+symbol,side,shares,price,order_value,target_weight,event_risk_count,event_impact_score,event_weighted_impact_score,event_confidence_mean,event_reliability_mean,latest_event_type,passed,reasons
+000630,BUY,2200,33.63435124611308,73995.57274144876,0.075,1.0,0.21121935661339022,0.06361491584058168,0.75,0.4,order_contract,True,none
+600362,BUY,800,84.95228237935595,67961.82590348476,0.075,1.0,0.21031284315832313,0.06461561898422279,0.75,0.4,commodity_shock,True,none
+601899,BUY,1400,50.595982408088005,70834.37537132321,0.075,1.0,0.21077937800661153,0.06410060965182869,0.75,0.4,order_contract,True,none

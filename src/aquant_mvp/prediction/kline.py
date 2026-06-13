@@ -9,7 +9,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from aquant_mvp.prediction.stock import StockForecastResult, build_stock_forecast
+from aquant_mvp.prediction.stock import (
+    StockForecastResult,
+    audit_stock_forecast_evidence,
+    build_stock_forecast,
+    write_stock_evidence_audit_outputs,
+)
 
 
 @dataclass(frozen=True)
@@ -19,6 +24,14 @@ class KLineForecastResult:
     horizon_summary: pd.DataFrame
     history: pd.DataFrame
     stock_forecast: StockForecastResult
+    quality_audit: "KLineQualityAudit"
+    summary: dict[str, object]
+    markdown: str
+
+
+@dataclass(frozen=True)
+class KLineQualityAudit:
+    checks: pd.DataFrame
     summary: dict[str, object]
     markdown: str
 
@@ -35,6 +48,8 @@ def build_kline_forecast(
     allow_sample: bool = False,
     event_factors: pd.DataFrame | None = None,
     model_registry_dir: Path | None = None,
+    stock_forecast_override: StockForecastResult | None = None,
+    intraday_points: int = 16,
 ) -> KLineForecastResult:
     """Build probabilistic future OHLC scenarios from the stock forecast table."""
     symbol = symbol.zfill(6)
@@ -47,17 +62,25 @@ def build_kline_forecast(
     required_horizons = {1, 5, 20}
     forecast_days = max(requested_days, max(required_horizons), *[int(horizon) for horizon in horizons if int(horizon) > 0])
     forecast_horizons = sorted({1, 5, 20, 60, forecast_days, *[int(horizon) for horizon in horizons if int(horizon) > 0]})
-    stock_forecast = build_stock_forecast(
-        bars_by_symbol,
-        symbol,
-        forecast_horizons,
-        source=source,
-        model_type=model_type,
-        embargo_days=embargo_days,
-        allow_sample=allow_sample,
-        event_factors=event_factors,
-        model_registry_dir=model_registry_dir,
-    )
+    if stock_forecast_override is not None:
+        missing_horizons = sorted(
+            set(forecast_horizons) - set(stock_forecast_override.forecast["horizon_days"].astype(int).tolist())
+        )
+        if missing_horizons:
+            raise ValueError(f"stock_forecast_override is missing K-line horizons: {missing_horizons}")
+        stock_forecast = stock_forecast_override
+    else:
+        stock_forecast = build_stock_forecast(
+            bars_by_symbol,
+            symbol,
+            forecast_horizons,
+            source=source,
+            model_type=model_type,
+            embargo_days=embargo_days,
+            allow_sample=allow_sample,
+            event_factors=event_factors,
+            model_registry_dir=model_registry_dir,
+        )
     bars = bars_by_symbol[symbol].sort_values("date").copy()
     bars["date"] = pd.to_datetime(bars["date"])
     latest_bar = bars.iloc[-1]
@@ -130,6 +153,7 @@ def build_kline_forecast(
         risk_scale=risk_scale,
         source=source,
         model_type=model_type,
+        intraday_points=intraday_points,
     )
     horizon_summary = _build_horizon_summary(stock_forecast.forecast, forecast, intraday_forecast)
     markdown = _build_markdown(symbol, latest_close, latest_date, stock_forecast.forecast, forecast, source, model_type, horizon_summary)
@@ -144,6 +168,7 @@ def build_kline_forecast(
         "latest_close": latest_close,
         "forecast_rows": int(len(forecast)),
         "intraday_forecast_rows": int(len(intraday_forecast)),
+        "intraday_points": int(max(2, intraday_points)),
         "horizon_summary_rows": int(len(horizon_summary)),
         "scenarios": ["bearish", "base", "bullish"],
         "required_kline_horizons": ["intraday_next_day", "1d", "5d", "20d"],
@@ -152,18 +177,35 @@ def build_kline_forecast(
         "trust_status_set": sorted(forecast["trust_status"].dropna().astype(str).unique().tolist()),
         "note": "Predicted K-line is a probability scenario chart, not a deterministic forecast.",
     }
+    quality_audit = audit_kline_forecast(
+        forecast=forecast,
+        intraday_forecast=intraday_forecast,
+        horizon_summary=horizon_summary,
+        history=history,
+        stock_forecast=stock_forecast.forecast,
+        summary=summary,
+    )
+    summary["kline_quality_audit"] = quality_audit.summary
     return KLineForecastResult(
         forecast=forecast,
         intraday_forecast=intraday_forecast,
         horizon_summary=horizon_summary,
         history=history,
         stock_forecast=stock_forecast,
+        quality_audit=quality_audit,
         summary=summary,
         markdown=markdown,
     )
 
 
-def save_kline_forecast_outputs(result: KLineForecastResult, output_dir: Path) -> dict[str, Path]:
+def save_kline_forecast_outputs(
+    result: KLineForecastResult,
+    output_dir: Path,
+    *,
+    source: str | None = None,
+    news_summary: dict[str, object] | None = None,
+    evidence_prefix: str = "stock_evidence_audit",
+) -> dict[str, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     paths = {
         "stock_forecast": output_dir / "stock_forecast.csv",
@@ -173,29 +215,79 @@ def save_kline_forecast_outputs(result: KLineForecastResult, output_dir: Path) -
         "intraday_kline": output_dir / "intraday_kline.csv",
         "horizon_kline_summary": output_dir / "horizon_kline_summary.csv",
         "horizon_kline_summary_json": output_dir / "horizon_kline_summary.json",
+        "kline_quality_audit": output_dir / "kline_quality_audit.csv",
+        "kline_quality_audit_json": output_dir / "kline_quality_audit.json",
+        "kline_quality_audit_md": output_dir / "kline_quality_audit.md",
         "history_kline": output_dir / "history_kline.csv",
         "forecast_kline_png": output_dir / "forecast_kline.png",
+        "forecast_kline_1d_png": output_dir / "forecast_kline_1d.png",
+        "forecast_kline_5d_png": output_dir / "forecast_kline_5d.png",
+        "forecast_kline_20d_png": output_dir / "forecast_kline_20d.png",
         "intraday_kline_png": output_dir / "intraday_kline.png",
         "forecast_kline_html": output_dir / "forecast_kline.html",
         "stock_prediction_report": output_dir / "stock_prediction_report.md",
     }
+    evidence_audit = audit_stock_forecast_evidence(
+        result.stock_forecast.forecast,
+        source=source or str(result.summary.get("source", "")),
+        news_summary=news_summary or {"with_news": False},
+    )
+    evidence_paths = write_stock_evidence_audit_outputs(output_dir, evidence_audit, prefix=evidence_prefix)
+    paths.update(
+        {
+            evidence_prefix: evidence_paths["csv"],
+            f"{evidence_prefix}_json": evidence_paths["json"],
+            f"{evidence_prefix}_md": evidence_paths["md"],
+        }
+    )
+    stock_summary = dict(result.stock_forecast.summary)
+    stock_summary["evidence_audit"] = evidence_audit.summary
+    stock_summary["evidence_audit_files"] = {key: str(value) for key, value in evidence_paths.items()}
+    kline_summary = dict(result.summary)
+    kline_summary["stock_evidence_audit"] = evidence_audit.summary
+    kline_summary["stock_evidence_audit_files"] = {key: str(value) for key, value in evidence_paths.items()}
+    kline_summary["kline_quality_audit"] = result.quality_audit.summary
+    kline_summary["kline_quality_audit_files"] = {
+        "csv": str(paths["kline_quality_audit"]),
+        "json": str(paths["kline_quality_audit_json"]),
+        "md": str(paths["kline_quality_audit_md"]),
+    }
     result.stock_forecast.forecast.to_csv(paths["stock_forecast"], index=False)
     paths["stock_forecast_json"].write_text(
-        json.dumps(result.stock_forecast.summary, ensure_ascii=False, indent=2, default=str),
+        json.dumps(stock_summary, ensure_ascii=False, indent=2, default=str),
         encoding="utf-8",
     )
     result.forecast.to_csv(paths["forecast_kline"], index=False)
-    paths["forecast_kline_json"].write_text(json.dumps(result.summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    paths["forecast_kline_json"].write_text(json.dumps(kline_summary, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     result.intraday_forecast.to_csv(paths["intraday_kline"], index=False)
     result.horizon_summary.to_csv(paths["horizon_kline_summary"], index=False)
     paths["horizon_kline_summary_json"].write_text(
         json.dumps(result.horizon_summary.to_dict(orient="records"), ensure_ascii=False, indent=2, default=str),
         encoding="utf-8",
     )
+    result.quality_audit.checks.to_csv(paths["kline_quality_audit"], index=False)
+    paths["kline_quality_audit_json"].write_text(
+        json.dumps(result.quality_audit.summary, ensure_ascii=False, indent=2, default=str),
+        encoding="utf-8",
+    )
+    paths["kline_quality_audit_md"].write_text(result.quality_audit.markdown, encoding="utf-8")
     result.history.to_csv(paths["history_kline"], index=False)
     save_kline_chart(result, paths["forecast_kline_png"])
+    save_horizon_kline_chart(result, paths["forecast_kline_1d_png"], horizon=1)
+    save_horizon_kline_chart(result, paths["forecast_kline_5d_png"], horizon=5)
+    save_horizon_kline_chart(result, paths["forecast_kline_20d_png"], horizon=20)
     save_intraday_chart(result, paths["intraday_kline_png"])
-    write_kline_html(result, paths["forecast_kline_html"], paths["forecast_kline_png"], paths["intraday_kline_png"])
+    write_kline_html(
+        result,
+        paths["forecast_kline_html"],
+        paths["forecast_kline_png"],
+        paths["intraday_kline_png"],
+        {
+            "1d": paths["forecast_kline_1d_png"],
+            "5d": paths["forecast_kline_5d_png"],
+            "20d": paths["forecast_kline_20d_png"],
+        },
+    )
     paths["stock_prediction_report"].write_text(result.markdown, encoding="utf-8")
     return paths
 
@@ -244,6 +336,68 @@ def save_kline_chart(result: KLineForecastResult, path: Path) -> None:
     ax.set_xticklabels([labels[idx] if idx < len(labels) else "" for idx in ticks], rotation=35, ha="right")
     symbol = str(result.summary.get("symbol", ""))
     ax.set_title(f"AQuant probabilistic K-line forecast: {symbol}")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+    ax.grid(True, alpha=0.22)
+    ax.legend(loc="best")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
+def save_horizon_kline_chart(result: KLineForecastResult, path: Path, *, horizon: int) -> None:
+    plt = _get_pyplot()
+    if plt is None:
+        return
+    from matplotlib.patches import Rectangle
+
+    horizon = int(horizon)
+    history = result.history.sort_values("date").copy()
+    history["date"] = pd.to_datetime(history["date"])
+    history_tail = history.tail(max(30, min(len(history), 80))).copy()
+    horizon_frame = result.forecast[result.forecast["day_index"].astype(int).le(horizon)].copy()
+    if horizon_frame.empty:
+        return
+    base = horizon_frame[horizon_frame["scenario"] == "base"].copy()
+    bearish = horizon_frame[horizon_frame["scenario"] == "bearish"].copy()
+    bullish = horizon_frame[horizon_frame["scenario"] == "bullish"].copy()
+    base["date"] = pd.to_datetime(base["date"])
+    n_hist = len(history_tail)
+    hist_x = np.arange(n_hist)
+    fut_x = np.arange(n_hist, n_hist + len(base))
+
+    fig, ax = plt.subplots(figsize=(12.8, 5.8))
+    _draw_candles(ax, hist_x, history_tail, width=0.62, alpha=0.90, forecast=False, Rectangle=Rectangle)
+    _draw_candles(ax, fut_x, base, width=0.56, alpha=0.50, forecast=True, Rectangle=Rectangle)
+    if not bearish.empty and not bullish.empty:
+        ax.fill_between(
+            fut_x,
+            bearish["close"].astype(float).to_numpy(),
+            bullish["close"].astype(float).to_numpy(),
+            color="#6f8fd6",
+            alpha=0.16,
+            label="scenario close band",
+        )
+    if not base.empty:
+        ax.plot(fut_x, base["close"].astype(float), color="#355cc9", linewidth=1.6, linestyle="--", label="base close")
+        ax.axvline(n_hist - 0.5, color="#222222", linewidth=1.0, linestyle=":", alpha=0.7)
+        last = base.iloc[-1]
+        ax.annotate(
+            f"{horizon}d\nclose={float(last['close']):.2f}\nprob={float(last['prob_up']):.2f}\ntrust={last['trust_status']}",
+            xy=(fut_x[-1], float(last["close"])),
+            xytext=(-80, 32),
+            textcoords="offset points",
+            fontsize=9,
+            bbox={"boxstyle": "round,pad=0.3", "fc": "white", "ec": "#999999", "alpha": 0.85},
+            arrowprops={"arrowstyle": "->", "color": "#666666"},
+        )
+    labels = _axis_labels(history_tail, base)
+    ticks = np.linspace(0, max(1, n_hist + len(base) - 1), num=min(9, max(2, n_hist + len(base))), dtype=int)
+    ax.set_xticks(ticks)
+    ax.set_xticklabels([labels[idx] if idx < len(labels) else "" for idx in ticks], rotation=35, ha="right")
+    symbol = str(result.summary.get("symbol", ""))
+    ax.set_title(f"AQuant {horizon}d predicted K-line scenario: {symbol}")
     ax.set_xlabel("Date")
     ax.set_ylabel("Price")
     ax.grid(True, alpha=0.22)
@@ -406,6 +560,7 @@ def _build_intraday_forecast(
     risk_scale: float,
     source: str,
     model_type: str,
+    intraday_points: int,
 ) -> pd.DataFrame:
     one_day = _nearest_forecast_row(stock_forecast, 1)
     expected = float(one_day.get("expected_return", 0.0) or 0.0)
@@ -414,14 +569,7 @@ def _build_intraday_forecast(
     p90 = float(one_day.get("return_p90", max(expected, 0.0)) or 0.0)
     p10, p50, p90 = sorted([p10, p50, p90])
     next_day = pd.Timestamp(latest_date) + pd.offsets.BDay(1)
-    checkpoints = [
-        ("09:30", 0.00, 0.00),
-        ("10:30", 0.18, 0.35),
-        ("11:30", 0.36, -0.15),
-        ("13:30", 0.62, 0.20),
-        ("14:30", 0.84, -0.10),
-        ("15:00", 1.00, 0.00),
-    ]
+    checkpoints = _intraday_checkpoints(intraday_points)
     scenarios = [
         ("bearish", p10, 1.10),
         ("base", p50, 0.95),
@@ -468,6 +616,29 @@ def _build_intraday_forecast(
                 }
             )
     return pd.DataFrame(rows)
+
+
+def _intraday_checkpoints(points: int) -> list[tuple[str, float, float]]:
+    points = int(np.clip(points, 6, 48))
+    total_minutes = 240
+    minute_marks = np.linspace(0, total_minutes, points)
+    checkpoints: list[tuple[str, float, float]] = []
+    for mark in minute_marks:
+        minute = int(round(float(mark)))
+        if minute <= 120:
+            hour = 9 + (30 + minute) // 60
+            minute_in_hour = (30 + minute) % 60
+        else:
+            after_break = minute - 120
+            hour = 13 + after_break // 60
+            minute_in_hour = after_break % 60
+        label = f"{hour:02d}:{minute_in_hour:02d}"
+        progress = minute / total_minutes
+        wave = float(np.sin(progress * 2.5 * np.pi) * (1 - abs(progress - 0.55) * 0.55))
+        checkpoints.append((label, float(progress), wave))
+    checkpoints[0] = ("09:30", 0.0, 0.0)
+    checkpoints[-1] = ("15:00", 1.0, 0.0)
+    return checkpoints
 
 
 def _build_horizon_summary(stock_forecast: pd.DataFrame, forecast: pd.DataFrame, intraday: pd.DataFrame) -> pd.DataFrame:
@@ -536,6 +707,167 @@ def _build_horizon_summary(stock_forecast: pd.DataFrame, forecast: pd.DataFrame,
                 },
             )
     return pd.DataFrame(rows)
+
+
+def audit_kline_forecast(
+    *,
+    forecast: pd.DataFrame,
+    intraday_forecast: pd.DataFrame,
+    horizon_summary: pd.DataFrame,
+    history: pd.DataFrame,
+    stock_forecast: pd.DataFrame,
+    summary: dict[str, object],
+) -> KLineQualityAudit:
+    checks: list[dict[str, object]] = []
+
+    def add_check(name: str, passed: bool, severity: str, detail: str, rows: int | None = None) -> None:
+        checks.append(
+            {
+                "check": name,
+                "passed": bool(passed),
+                "severity": severity,
+                "detail": detail,
+                "rows": "" if rows is None else int(rows),
+            }
+        )
+
+    scenario_set = set(forecast.get("scenario", pd.Series(dtype=str)).astype(str).unique().tolist())
+    intraday_scenarios = set(intraday_forecast.get("scenario", pd.Series(dtype=str)).astype(str).unique().tolist())
+    add_check(
+        "multi_day_scenarios",
+        {"bearish", "base", "bullish"}.issubset(scenario_set),
+        "error",
+        f"scenarios={sorted(scenario_set)}",
+        len(forecast),
+    )
+    add_check(
+        "intraday_scenarios",
+        {"bearish", "base", "bullish"}.issubset(intraday_scenarios),
+        "error",
+        f"scenarios={sorted(intraday_scenarios)}",
+        len(intraday_forecast),
+    )
+    add_check(
+        "required_horizon_nodes",
+        {"intraday_next_day", "1d", "5d", "20d"}.issubset(set(horizon_summary.get("horizon", pd.Series(dtype=str)).astype(str))),
+        "error",
+        "horizon_summary must include intraday_next_day, 1d, 5d, 20d.",
+        len(horizon_summary),
+    )
+    if not forecast.empty:
+        ohlc_ok = forecast["high"].ge(forecast[["open", "close"]].max(axis=1)).all() and forecast["low"].le(
+            forecast[["open", "close"]].min(axis=1)
+        ).all()
+        band_ok = forecast["p10_close"].le(forecast["p50_close"]).all() and forecast["p50_close"].le(forecast["p90_close"]).all()
+        horizon_ok = int(forecast["day_index"].astype(int).max()) >= 20
+    else:
+        ohlc_ok = False
+        band_ok = False
+        horizon_ok = False
+    add_check("multi_day_ohlc_valid", ohlc_ok, "error", "High/low must contain open and close for every forecast candle.", len(forecast))
+    add_check("probability_band_ordered", band_ok, "error", "p10_close <= p50_close <= p90_close is required.", len(forecast))
+    add_check("covers_20_day_path", horizon_ok, "error", "Forecast path must extend to at least 20 trading days.", len(forecast))
+    if not intraday_forecast.empty:
+        intraday_ohlc_ok = intraday_forecast["high"].ge(intraday_forecast[["open", "close"]].max(axis=1)).all() and intraday_forecast[
+            "low"
+        ].le(intraday_forecast[["open", "close"]].min(axis=1)).all()
+        intraday_points = int(intraday_forecast[intraday_forecast["scenario"] == "base"]["bar_index"].nunique())
+    else:
+        intraday_ohlc_ok = False
+        intraday_points = 0
+    add_check(
+        "intraday_ohlc_valid",
+        intraday_ohlc_ok,
+        "error",
+        "Intraday high/low must contain open and close for every scenario checkpoint.",
+        len(intraday_forecast),
+    )
+    add_check(
+        "intraday_checkpoint_depth",
+        intraday_points >= 12,
+        "warning",
+        f"base intraday checkpoints={intraday_points}; >=12 is preferred for a visible one-day path.",
+        intraday_points,
+    )
+    add_check(
+        "history_context",
+        len(history) >= 30,
+        "warning",
+        f"history rows={len(history)}; >=30 helps the chart show recent context.",
+        len(history),
+    )
+    required_stock_columns = {
+        "horizon_days",
+        "prob_up",
+        "expected_return",
+        "return_p10",
+        "return_p50",
+        "return_p90",
+        "trust_status",
+        "model_id",
+        "data_version",
+    }
+    missing_stock_columns = sorted(required_stock_columns - set(stock_forecast.columns))
+    add_check(
+        "stock_forecast_traceability",
+        not missing_stock_columns,
+        "error",
+        f"missing stock forecast columns={missing_stock_columns}",
+        len(stock_forecast),
+    )
+    trust_values = sorted(stock_forecast.get("trust_status", pd.Series(dtype=str)).astype(str).unique().tolist())
+    trusted_without_evidence = "trusted" in trust_values and not bool(summary.get("data_version"))
+    add_check(
+        "trusted_boundary",
+        not trusted_without_evidence,
+        "error",
+        f"trust_status_set={trust_values}; trusted requires data/model evidence.",
+        len(stock_forecast),
+    )
+    check_frame = pd.DataFrame(checks)
+    failed = check_frame[~check_frame["passed"].astype(bool)].copy()
+    error_failed = failed[failed["severity"] == "error"].copy()
+    audit_summary = {
+        "symbol": str(summary.get("symbol", "")),
+        "status": "passed" if error_failed.empty else "failed",
+        "checks": int(len(check_frame)),
+        "passed": int(check_frame["passed"].astype(bool).sum()) if not check_frame.empty else 0,
+        "failed": int(len(failed)),
+        "error_failed": int(len(error_failed)),
+        "failed_checks": failed["check"].astype(str).tolist(),
+        "warning_failed_checks": failed[failed["severity"] == "warning"]["check"].astype(str).tolist(),
+        "scenarios": sorted(scenario_set),
+        "intraday_points": intraday_points,
+        "horizon_nodes": horizon_summary.get("horizon", pd.Series(dtype=str)).astype(str).tolist(),
+        "note": "K-line audit checks chart/path integrity only; predictive trust still depends on stock evidence and walk-forward gates.",
+    }
+    markdown = _build_kline_audit_markdown(audit_summary, check_frame)
+    return KLineQualityAudit(checks=check_frame, summary=audit_summary, markdown=markdown)
+
+
+def _build_kline_audit_markdown(summary: dict[str, object], checks: pd.DataFrame) -> str:
+    lines = [
+        f"# K-line Quality Audit: {summary.get('symbol', '')}",
+        "",
+        f"- Status: `{summary.get('status')}`",
+        f"- Checks: `{summary.get('checks')}`",
+        f"- Failed: `{summary.get('failed')}`",
+        f"- Intraday checkpoints: `{summary.get('intraday_points')}`",
+        "",
+        "| check | passed | severity | detail | rows |",
+        "|---|---:|---|---|---:|",
+    ]
+    for row in checks.itertuples(index=False):
+        detail = str(row.detail).replace("|", "/")
+        rows = "" if row.rows == "" else str(row.rows)
+        lines.append(f"| {row.check} | {bool(row.passed)} | {row.severity} | {detail} | {rows} |")
+    lines.extend(
+        [
+            "",
+            "This audit only verifies that the predicted K-line artifact is internally traceable and drawable. It does not certify forecast accuracy or investment suitability.",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def _daily_range_scale(bars: pd.DataFrame) -> float:
@@ -668,6 +1000,7 @@ def _build_markdown(
             "- `intraday_kline.csv/png`: next-session intraday checkpoint scenario K-line.",
             "- `horizon_kline_summary.csv/json`: intraday, 1d, 5d, and 20d forecast-node evidence.",
             "- `history_kline.csv`: historical OHLC bars used by the chart.",
+            "- `stock_evidence_audit.csv/json/md`: evidence completeness audit for the K-line's underlying stock forecast.",
             "",
             "## K-line Trust Boundary",
             "",

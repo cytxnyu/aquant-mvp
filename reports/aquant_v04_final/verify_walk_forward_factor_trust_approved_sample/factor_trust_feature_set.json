@@ -1,0 +1,12 @@
+{
+  "factor_trust_audit_path": "reports\\aquant_v04_final\\verify_factor_trust_cost_regime_sample\\factor_trust_audit.csv",
+  "allowed_statuses": [
+    "approved"
+  ],
+  "audit_rows": 237,
+  "eligible_rows": 67,
+  "selected_feature_count": 67,
+  "available_factor_columns": 237,
+  "feature_set_source": "factor_trust_audit:reports\\aquant_v04_final\\verify_factor_trust_cost_regime_sample\\factor_trust_audit.csv:statuses=approved",
+  "note": "Only selected factor ids are used as base factors; event factors are appended separately when --with-news/event-aware is enabled."
+}

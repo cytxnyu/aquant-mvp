@@ -1,0 +1,33 @@
+{
+  "source": "sample",
+  "feature_version": "509a0c5dbdc4",
+  "rows": 3129,
+  "symbols": 3,
+  "start_date": "2022-01-03",
+  "end_date": "2025-12-31",
+  "feature_count": 250,
+  "base_factor_count": 237,
+  "event_feature_count": 13,
+  "event_features": [
+    "event_count_3d",
+    "event_count_20d",
+    "positive_event_count",
+    "negative_event_count",
+    "event_risk_count",
+    "event_impact_score",
+    "event_weighted_impact_score",
+    "event_confidence_mean",
+    "event_reliability_mean",
+    "event_high_reliability_count",
+    "event_entity_link_confidence_mean",
+    "latest_event_source_reliability",
+    "latest_entity_link_confidence"
+  ],
+  "event_factor_rows": 15,
+  "event_feature_quality_counts": {
+    "watchlist": 12,
+    "quarantine": 1
+  },
+  "event_feature_quality_passed": false,
+  "low_coverage_features": []
+}
